@@ -40,8 +40,6 @@ Setting up and configuring the project will take multiple minutes, up to 15 min 
 
 ## How to run the program
 
-# Test 
-
 1. Open the locally cloned repository with Visual Studio Code
     * If the "Do you trust the authors of the files in this folder?" dialog appears, click on "Yes, I trust the authors"
 2. Open up the file `project/project.ino`
