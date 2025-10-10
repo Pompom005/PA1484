@@ -115,3 +115,5 @@ void loop()
 {
   lv_timer_handler();
 }
+
+//Jag gör en liten ändring så jag kan pusha
