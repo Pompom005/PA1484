@@ -20,6 +20,7 @@ static lv_obj_t* t2;
 static lv_obj_t* t1_label;
 static lv_obj_t* t2_label;
 static bool t2_dark = false;  // start tile #2 in light mode
+lv_obj_t *slider;
 
 // Function: Tile #2 Color change
 static void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark)
@@ -93,6 +94,12 @@ static void connect_wifi()
   }
 }
 
+//Slider
+void slider_event_cb(lv_event_t *e) {
+  lv_obj_t *slider = lv_event_get_target(e);
+  int val = lv_slider_get_value(slider);
+}
+
 // Must have function: Setup is run once on startup
 void setup()
 {
@@ -108,6 +115,14 @@ void setup()
 
   create_ui();
   connect_wifi();
+
+  // Creates a slider at the bottom of the screen
+  slider = lv_slider_create(lv_scr_act());
+  lv_obj_set_width(slider, 300);
+  lv_slider_set_range(slider, 0, 100);
+  lv_slider_set_value(slider, 50, LV_ANIM_OFF);
+  lv_obj_align(slider, LV_ALIGN_BOTTOM_MID, 0, -10);
+  lv_obj_add_event_cb(slider, slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
 }
 
 // Must have function: Loop runs continously on device after setup
