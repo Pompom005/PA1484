@@ -7,5 +7,10 @@
 * Classes:
                   Everything we implement we do as a class
 
+*Version:
+                  First number is sprint/workshop number (counting after development workshop) and the other is our internal version.
+                  For example after first development workshop and two internal updates -> 1.2
+                  After third workshop -> 3.2 etc
+
 * Important guides and know hows
 * Smhi where to find data= https://www.smhi.se/data
