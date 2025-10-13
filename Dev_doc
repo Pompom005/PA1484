@@ -1,3 +1,11 @@
-* Code standard
-* Classes
+* Code standard:
+                  Static var == Uppercase
+                  Enum == Uppercase
+                  Everything else lowercase
+                  _ as space in var names
+
+* Classes:
+                  everything we implement we do as a class
+
 * Important guides and know hows
+* Smhi where to find data= https://www.smhi.se/data
