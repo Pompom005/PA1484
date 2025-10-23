@@ -7,6 +7,50 @@
 #include <LilyGo_AMOLED.h>
 #include <LV_Helper.h>
 #include <lvgl.h>
+#include <sstream>
+#include <iostream> 
+#include <string>
+#include <vector>
+using namespace std;
+
+template <typename T>
+class Dropdown{
+  private:
+    vector<T> choices;
+    lv_obj_t * dropdownBox;
+  public:
+    Dropdown(const vector<T>& cities, lv_obj_t * parent): choices(cities){
+
+        if(cities.size()==0){
+            Serial.println("Empty list");
+            return;
+        }
+        dropdownBox = lv_dropdown_create(parent);
+        string optionStr;
+        for(size_t i = 0; i < cities.size(); i++){
+            stringstream ss;
+            ss << cities[i];
+            optionStr += ss.str();
+            if (i < cities.size() - 1){
+            optionStr += "\n";
+            }
+        }
+        lv_dropdown_set_options(dropdownBox,optionStr.c_str());
+        lv_obj_align(dropdownBox, LV_ALIGN_BOTTOM_MID, 20, 100);// have a function to itself that can change these numbers 20 and 100
+        lv_dropdown_set_selected(dropdownBox, 0);
+        lv_obj_add_event_cb(dropdownBox, event_handler, LV_EVENT_VALUE_CHANGED, NULL);
+    }
+
+    static void event_handler(lv_event_t * e){
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t * obj = lv_event_get_target(e);
+    if(code == LV_EVENT_VALUE_CHANGED) {
+        char buf[32];
+        lv_dropdown_get_selected_str(obj, buf, sizeof(buf));
+        LV_LOG_USER("Option: %s", buf);
+    }
+  }
+};
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
 static const char* WIFI_SSID     = "SSID";
@@ -101,19 +145,24 @@ void slider_event_cb(lv_event_t *e) {
 }
 
 // Must have function: Setup is run once on startup
+//Dropdown <string> *myDropdown;
+
+
 void setup()
 {
   Serial.begin(115200);
   delay(200);
 
+
   if (!amoled.begin()) {
     Serial.println("Failed to init LilyGO AMOLED.");
     while (true) delay(1000);
   }
-
-  beginLvglHelper(amoled);   // init LVGL for this board
-
+  
+  beginLvglHelper(amoled);
   create_ui();
+  vector<string> stader = {"Lund", "karlskrona", "Malmö", "Stockholm"};
+  Dropdown<string> myDropdown(stader, t2);
   connect_wifi();
 
   // Creates a slider at the bottom of the screen
