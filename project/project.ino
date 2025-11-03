@@ -175,14 +175,15 @@ void setup()
   
   beginLvglHelper(amoled);// bootscreen start here
 // Boot screen sequence
-  boot.init();
+boot.init();
   boot.show();
-  for (int i = 0; i <= 100; i += 5) {
-    boot.updateProgress(i);
+
+  unsigned long start = millis();
+  while (millis() - start < 2500) {
     lv_timer_handler();
-    delay(50);
+    delay(5);
   }
-  delay(2000);
+
   boot.hide();
   bootDone = true;
 // delay 5 sec
