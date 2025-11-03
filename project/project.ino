@@ -7,6 +7,7 @@
 #include <LilyGo_AMOLED.h>
 #include <LV_Helper.h>
 #include <lvgl.h>
+#include "BootScreen.h"
 #include <sstream>
 #include <iostream> 
 #include <string>
@@ -156,6 +157,8 @@ void slider_event_cb(lv_event_t *e) {
 }
 
 // Must have function: Setup is run once on startup
+BootScreen boot;
+bool bootDone = false;
 //Dropdown <string> *myDropdown;
 
 
@@ -170,7 +173,20 @@ void setup()
     while (true) delay(1000);
   }
   
-  beginLvglHelper(amoled);
+  beginLvglHelper(amoled);// bootscreen start here
+// Boot screen sequence
+  boot.init();
+  boot.show();
+  for (int i = 0; i <= 100; i += 5) {
+    boot.updateProgress(i);
+    lv_timer_handler();
+    delay(50);
+  }
+  delay(2000);
+  boot.hide();
+  bootDone = true;
+// delay 5 sec
+// bootscreen gone
   create_ui();
   vector<string> stader = {"Lund", "karlskrona", "Malmö", "Stockholm"};
   Dropdown<string> myDropdown(stader, t2);
