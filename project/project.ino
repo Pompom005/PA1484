@@ -7,6 +7,50 @@
 #include <LilyGo_AMOLED.h>
 #include <LV_Helper.h>
 #include <lvgl.h>
+#include <sstream>
+#include <iostream> 
+#include <string>
+#include <vector>
+using namespace std;
+
+template <typename T>
+class Dropdown{
+  private:
+    vector<T> choices;
+    lv_obj_t * dropdownBox;
+  public:
+    Dropdown(const vector<T>& cities, lv_obj_t * parent): choices(cities){
+
+        if(cities.size()==0){
+            Serial.println("Empty list");
+            return;
+        }
+        dropdownBox = lv_dropdown_create(parent);
+        string optionStr;
+        for(size_t i = 0; i < cities.size(); i++){
+            stringstream ss;
+            ss << cities[i];
+            optionStr += ss.str();
+            if (i < cities.size() - 1){
+            optionStr += "\n";
+            }
+        }
+        lv_dropdown_set_options(dropdownBox,optionStr.c_str());
+        lv_obj_align(dropdownBox, LV_ALIGN_BOTTOM_MID, 20, 100);// have a function to itself that can change these numbers 20 and 100
+        lv_dropdown_set_selected(dropdownBox, 0);
+        lv_obj_add_event_cb(dropdownBox, event_handler, LV_EVENT_VALUE_CHANGED, NULL);
+    }
+
+    static void event_handler(lv_event_t * e){
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t * obj = lv_event_get_target(e);
+    if(code == LV_EVENT_VALUE_CHANGED) {
+        char buf[32];
+        lv_dropdown_get_selected_str(obj, buf, sizeof(buf));
+        LV_LOG_USER("Option: %s", buf);
+    }
+  }
+};
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
 static const char* WIFI_SSID     = "SSID";
@@ -20,6 +64,7 @@ static lv_obj_t* t2;
 static lv_obj_t* t1_label;
 static lv_obj_t* t2_label;
 static bool t2_dark = false;  // start tile #2 in light mode
+lv_obj_t *slider;
 
 // Function: Tile #2 Color change
 static void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark)
@@ -63,7 +108,7 @@ static void create_ui()
   // Tile #2
   {
     t2_label = lv_label_create(t2);
-    lv_label_set_text(t2_label, "Welcome to the workshop");
+    lv_label_set_text(t2_label, "Welcome to the jungle");
     lv_obj_set_style_text_font(t2_label, &lv_font_montserrat_28, 0);
     lv_obj_center(t2_label);
 
@@ -93,21 +138,40 @@ static void connect_wifi()
   }
 }
 
+//Slider
+void slider_event_cb(lv_event_t *e) {
+  lv_obj_t *slider = lv_event_get_target(e);
+  int val = lv_slider_get_value(slider);
+}
+
 // Must have function: Setup is run once on startup
+//Dropdown <string> *myDropdown;
+
+
 void setup()
 {
   Serial.begin(115200);
   delay(200);
 
+
   if (!amoled.begin()) {
     Serial.println("Failed to init LilyGO AMOLED.");
     while (true) delay(1000);
   }
-
-  beginLvglHelper(amoled);   // init LVGL for this board
-
+  
+  beginLvglHelper(amoled);
   create_ui();
+  vector<string> stader = {"Lund", "karlskrona", "Malmö", "Stockholm"};
+  Dropdown<string> myDropdown(stader, t2);
   connect_wifi();
+
+  // Creates a slider at the bottom of the screen
+  slider = lv_slider_create(lv_scr_act());
+  lv_obj_set_width(slider, 300);
+  lv_slider_set_range(slider, 0, 100);
+  lv_slider_set_value(slider, 50, LV_ANIM_OFF);
+  lv_obj_align(slider, LV_ALIGN_BOTTOM_MID, 0, -10);
+  lv_obj_add_event_cb(slider, slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
 }
 
 // Must have function: Loop runs continously on device after setup
