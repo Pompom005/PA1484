@@ -61,9 +61,11 @@ LilyGo_Class amoled;
 static lv_obj_t* tileview;
 static lv_obj_t* t1;
 static lv_obj_t* t2;
+static lv_obj_t* t3;
 static lv_obj_t* t1_label;
 static lv_obj_t* t2_label;
 static bool t2_dark = false;  // start tile #2 in light mode
+static lv_obj_t* t3_label;
 lv_obj_t *slider;
 
 // Function: Tile #2 Color change
@@ -116,6 +118,15 @@ static void create_ui()
     lv_obj_add_flag(t2, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(t2, on_tile2_clicked, LV_EVENT_CLICKED, NULL);
   }
+
+    // Tile #3
+  {
+    t3_label = lv_label_create(t3);
+    lv_label_set_text(t3_label, "Historic chart screen");
+    lv_obj_set_style_text_font(t3_label, &lv_font_montserrat_28, 0);
+    lv_obj_center(t3_label);
+    apply_tile_colors(t3, t3_label, /*dark=*/false);
+  }
 }
 
 // Function: Connects to WIFI
@@ -164,6 +175,12 @@ void setup()
   vector<string> stader = {"Lund", "karlskrona", "Malmö", "Stockholm"};
   Dropdown<string> myDropdown(stader, t2);
   connect_wifi();
+
+  //Chart with historic data
+  lv_obj_t *chart = lv_chart_create(t3); 
+  lv_obj_set_size(chart, 200, 120);
+  lv_obj_center(chart);
+
 
   // Creates a slider at the bottom of the screen
   slider = lv_slider_create(lv_scr_act());
