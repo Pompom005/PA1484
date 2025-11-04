@@ -1,5 +1,21 @@
 #pragma once
+#include <lvgl.h>
 
-#include "LilyGo_AMOLED.h"
+class BootScreen {
+private:
+    lv_obj_t* screen;
+    lv_obj_t* logoLabel;
+    lv_obj_t* text1;
+    lv_obj_t* text2;
+    lv_obj_t* flash;
 
-void showBootScreen(LilyGo_AMOLED &screen);
+    static void anim_cb(void* var, int32_t v);
+    static void flash_cb(void* var, int32_t v);
+
+public:
+    BootScreen();
+    void init();
+    void show();
+    void setLogoText(const char* text);
+    void hide();
+};
