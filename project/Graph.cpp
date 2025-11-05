@@ -1,0 +1,26 @@
+#include <LilyGo_AMOLED.h>
+#include "Graph.h"
+
+Graph::Graph(lv_obj_t* parent_tile)
+{
+    lv_obj_t* chart = lv_chart_create(parent_tile);
+    int graph_width = lv_obj_get_content_width(lv_scr_act());
+    int graph_height = lv_obj_get_content_height(lv_scr_act());
+    lv_obj_set_size(chart, graph_width + 100, graph_height);
+    lv_obj_center(chart);
+    lv_chart_set_type(chart, LV_CHART_TYPE_LINE); 
+    lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 0, 100);
+}
+
+/*
+  //Original chart code, lacks data
+
+  //Chart with historic data
+  lv_obj_t* chart = lv_chart_create(t3); 
+  int graph_width = lv_obj_get_content_width(lv_scr_act());
+  int graph_height = lv_obj_get_content_height(lv_scr_act());
+  lv_obj_set_size(chart, graph_width + 100, graph_height);
+  lv_obj_center(chart);
+  lv_chart_set_type(chart, LV_CHART_TYPE_LINE); 
+  lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 0, 100);
+*/  
