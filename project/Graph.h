@@ -2,12 +2,14 @@
 #include <string>
 #include <LV_Helper.h>
 
-class Graph {
+class Graph 
+{
     private:
 
     lv_obj_t* chart;
     lv_chart_series_t *series;
 
+    //Graph dimensions
     int graph_width;
     int graph_height;
 
@@ -16,5 +18,4 @@ class Graph {
     Graph(lv_obj_t* parent_tile);
 
     void AddDataseries();
-
 };
