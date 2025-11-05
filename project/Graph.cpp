@@ -15,7 +15,7 @@ Graph::Graph(lv_obj_t* parent_tile)
     lv_chart_set_type(chart, LV_CHART_TYPE_LINE); 
     lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 0, 100);
 
-    //Adds dataseries
+    //Adds dataseries and values
     lv_chart_series_t *series = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
 
     //Example code, should use weather data 
@@ -30,6 +30,13 @@ void Graph::AddDataseries()
     
 
     lv_chart_refresh(chart);
+}
+
+void Graph::ReplaceDataseries(int value_array)
+{
+    for(int i = 0; i < value_array.size(); i++) { ///???
+        lv_chart_set_next_value(chart, series, value_array[i]);
+    }
 }
 
 /*

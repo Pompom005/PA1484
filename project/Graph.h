@@ -9,7 +9,8 @@ class Graph
     lv_obj_t* chart;
     lv_chart_series_t *series;
 
-    //Graph dimensions
+    int value_array;
+
     int graph_width;
     int graph_height;
 
@@ -18,4 +19,5 @@ class Graph
     Graph(lv_obj_t* parent_tile);
 
     void AddDataseries();
+    void ReplaceDataseries(int value_array); //parameter?
 };
