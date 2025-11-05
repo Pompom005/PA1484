@@ -2,6 +2,7 @@
 #include <string>
 #include "WeatherType.h"
 #include "LV_Helper.h"
+#include "ScaleableLabel.h"
 
 class WeatherForecastElement
 {
@@ -9,10 +10,10 @@ class WeatherForecastElement
     lv_obj_t* tile;
     
     //Created elements
-    lv_obj_t* temperature_text; //Temperature
-    lv_obj_t* location_text; //Location
-    lv_obj_t* time_text; //Time (maybe date?)
-    lv_obj_t* symbol_text;//Description of symbol (rain/sunny/cloudy etc)
+    ScaleableLabel* temperature_text; //Temperature
+    ScaleableLabel* location_text; //Location
+    ScaleableLabel* time_text; //Time (maybe date?)
+    ScaleableLabel* symbol_text;//Description of symbol (rain/sunny/cloudy etc)
     lv_obj_t* symbol;//Image
 
     //Used for setting pos/size better
@@ -21,7 +22,6 @@ class WeatherForecastElement
     float yPos;
 
     void CreateTextsAndSymbol();
-    void UpdateFontsOnTexts();
     void SetDefaultValues();
 
     public:
