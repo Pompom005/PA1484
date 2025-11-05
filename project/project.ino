@@ -197,7 +197,8 @@ boot.init();
   lv_obj_t *chart = lv_chart_create(t3); 
   lv_obj_set_size(chart, 200, 120);
   lv_obj_center(chart);
-
+  lv_chart_set_type(chart, LV_CHART_TYPE_LINE); 
+  lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 0, 100);
 
   // Creates a slider at the bottom of the screen
   slider = lv_slider_create(lv_scr_act());
