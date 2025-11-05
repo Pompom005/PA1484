@@ -178,8 +178,8 @@ void setup()
 boot.init();
   boot.show();
 
-  unsigned long start = millis();
-  while (millis() - start < 2500) {
+  unsigned long start = millis(); // old val 2500 måste ta tiden och bestämma vad 3 sekunder är.
+  while (millis() - start < 3000) {
     lv_timer_handler();
     delay(5);
   }
