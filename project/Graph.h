@@ -5,11 +5,16 @@
 class Graph {
     private:
 
-    //Screen dimensions for graph. Maybe unneccesary?
+    lv_obj_t* chart;
+    lv_chart_series_t *series;
+
     int graph_width;
     int graph_height;
 
     public:
     
     Graph(lv_obj_t* parent_tile);
+
+    void AddDataseries();
+
 };

@@ -12,6 +12,7 @@
 #include <iostream> 
 #include <string>
 #include <vector>
+#include <graph.h>
 using namespace std;
 
 template <typename T>
