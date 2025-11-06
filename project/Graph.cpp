@@ -27,16 +27,15 @@ Graph::Graph(lv_obj_t* parent_tile)
 
 void Graph::AddDataseries()
 {
-    
 
     lv_chart_refresh(chart);
 }
 
 void Graph::ReplaceDataseries(int value_array)
 {
-    for(int i = 0; i < value_array.size(); i++) { ///???
-        lv_chart_set_next_value(chart, series, value_array[i]);
-    }
+    // for(int i = 0; i < value_array.size(); i++) { ///???
+    //     lv_chart_set_next_value(chart, series, value_array[i]);
+    // }
 }
 
 /*

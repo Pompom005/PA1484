@@ -28,7 +28,7 @@ void WeatherForecastElement::CreateTextsAndSymbol()
     lv_obj_align(symbol, LV_ALIGN_CENTER, 0, 0);
 
     //Temperature
-    temperature_text = new ScaleableLabel(tile, 1.0f, 0.4f);
+    temperature_text = new ScaleableLabel(tile, 1.0f, 0.8f);
     temperature_text->SetSize(size);
 
     //Location
@@ -112,19 +112,19 @@ void WeatherForecastElement::SetPosition(float x, float y)
     float ySize = lv_obj_get_content_height(tile); //Size of y in pixels
 
     //Symbol
-    lv_obj_set_pos(symbol, x*xSize, y*ySize); //Centered
+    lv_obj_set_pos(symbol, (x - 0.12 * size)*xSize, y*ySize); //Centered
 
     //Temp
-    temperature_text->SetPosition((x - 0.225 * size) *xSize, y*ySize);
+    temperature_text->SetPosition((x + 0.12 * size) *xSize, y*ySize);
 
     //Location
-    location_text->SetPosition(x*xSize, (y - 0.40f * size)*ySize); //Above
+    location_text->SetPosition(x*xSize, (y + 0.20f * size)*ySize); //Above
 
     //Time
-    time_text->SetPosition(x*xSize, (y - 0.30f * size)*ySize); //Above
+    time_text->SetPosition(x*xSize, (y + 0.28f * size)*ySize); //Above
 
     //Symbol text
-    symbol_text->SetPosition(x*xSize, (y + 0.30f * size)*ySize); //Above
+    symbol_text->SetPosition(x*xSize, (y - 0.20f * size)*ySize); //Above
 
     xPos = x;
     yPos = y;
@@ -135,7 +135,7 @@ void WeatherForecastElement::SetSize(float size) //In percentage
     float finalSize = lv_obj_get_content_width(tile) * size;
 
     //Symbol
-    float zoomPercentage = (finalSize / lv_obj_get_content_width(tile)) * 0.9f;
+    float zoomPercentage = (finalSize / lv_obj_get_content_width(tile)) * 0.6f;
     lv_img_set_zoom(symbol, 256 * zoomPercentage);
 
     //Size intervals for the text size:
