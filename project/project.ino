@@ -167,7 +167,7 @@ boot.init();
 // delay 5 sec
 // bootscreen gone
   create_ui();
-  connect_wifi();
+  //connect_wifi();
 }
 
 // Must have function: Loop runs continously on device after setup
