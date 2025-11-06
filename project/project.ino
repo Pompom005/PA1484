@@ -82,9 +82,9 @@ static void create_ui()
       forecast_elements[i]->SetPosition(i * 0.60f, 0); //-0.5f because it is centered, meaning left side is -0.5f
     }
 
-    forecast_elements[0]->SetValues(49, "Karlskrona", "11-01", WeatherType::Sunny);
-    forecast_elements[1]->SetValues(11, "Karlskrona", "11-02", WeatherType::Thunder);
-    forecast_elements[2]->SetValues(99, "Karlskrona", "11-03", WeatherType::Snow);
+    forecast_elements[0]->SetValues(25, "Karlskrona", "11-01", WeatherType::Sunny);
+    forecast_elements[1]->SetValues(15, "Karlskrona", "11-02", WeatherType::Thunder);
+    forecast_elements[2]->SetValues(-10, "Karlskrona", "11-03", WeatherType::Snow);
     forecast_elements[3]->SetValues(-36, "Karlskrona", "11-04", WeatherType::Snow);
     forecast_elements[4]->SetValues(13, "Karlskrona", "11-05", WeatherType::Rain);
     forecast_elements[5]->SetValues(15, "Karlskrona", "11-06", WeatherType::Thunder);
@@ -94,7 +94,7 @@ static void create_ui()
   // Tile #2
   {
     t2_label = lv_label_create(t2);
-    lv_label_set_text(t2_label, "Welcome to the jungle");
+    lv_label_set_text(t2_label, "Graph");
     lv_obj_set_style_text_font(t2_label, &lv_font_montserrat_28, 0);
     lv_obj_center(t2_label);
 
@@ -105,7 +105,10 @@ static void create_ui()
 
     // Tile #3
   {
-
+    t3_label = lv_label_create(t3);
+    lv_label_set_text(t3_label, "Historical view");
+    lv_obj_set_style_text_font(t3_label, &lv_font_montserrat_28, 0);
+    lv_obj_center(t3_label);
   }
 }
 
@@ -148,10 +151,11 @@ void setup()
   
   beginLvglHelper(amoled);// bootscreen start here
 // Boot screen sequence
+  create_ui();
 boot.init();
   boot.show();
 
-  unsigned long start = millis(); // old val 2500 måste ta tiden och bestämma vad 3 sekunder är.
+  unsigned long start = millis(); // old val 2500 måste ta tiden och bestämma vad 3 sekunder är. // ta bort en nolla 
   while (millis() - start < 3000) {
     lv_timer_handler();
     delay(5);
@@ -161,8 +165,7 @@ boot.init();
   bootDone = true;
 // delay 5 sec
 // bootscreen gone
-  create_ui();
-  connect_wifi();
+  //connect_wifi();
 }
 
 // Must have function: Loop runs continously on device after setup
