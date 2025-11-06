@@ -82,9 +82,9 @@ static void create_ui()
       forecast_elements[i]->SetPosition(i * 0.60f, 0); //-0.5f because it is centered, meaning left side is -0.5f
     }
 
-    forecast_elements[0]->SetValues(49, "Karlskrona", "11-01", WeatherType::Sunny);
-    forecast_elements[1]->SetValues(11, "Karlskrona", "11-02", WeatherType::Thunder);
-    forecast_elements[2]->SetValues(99, "Karlskrona", "11-03", WeatherType::Snow);
+    forecast_elements[0]->SetValues(25, "Karlskrona", "11-01", WeatherType::Sunny);
+    forecast_elements[1]->SetValues(15, "Karlskrona", "11-02", WeatherType::Thunder);
+    forecast_elements[2]->SetValues(-10, "Karlskrona", "11-03", WeatherType::Snow);
     forecast_elements[3]->SetValues(-36, "Karlskrona", "11-04", WeatherType::Snow);
     forecast_elements[4]->SetValues(13, "Karlskrona", "11-05", WeatherType::Rain);
     forecast_elements[5]->SetValues(15, "Karlskrona", "11-06", WeatherType::Thunder);
