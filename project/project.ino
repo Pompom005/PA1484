@@ -109,8 +109,6 @@ static void create_ui()
     lv_label_set_text(t3_label, "Historical view");
     lv_obj_set_style_text_font(t3_label, &lv_font_montserrat_28, 0);
     lv_obj_center(t3_label);
-
-    
   }
 }
 
@@ -167,7 +165,7 @@ boot.init();
 // delay 5 sec
 // bootscreen gone
   create_ui();
-  connect_wifi();
+  //connect_wifi();
 }
 
 // Must have function: Loop runs continously on device after setup
