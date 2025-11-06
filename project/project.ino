@@ -151,10 +151,11 @@ void setup()
   
   beginLvglHelper(amoled);// bootscreen start here
 // Boot screen sequence
+  create_ui();
 boot.init();
   boot.show();
 
-  unsigned long start = millis(); // old val 2500 måste ta tiden och bestämma vad 3 sekunder är.
+  unsigned long start = millis(); // old val 2500 måste ta tiden och bestämma vad 3 sekunder är. // ta bort en nolla 
   while (millis() - start < 3000) {
     lv_timer_handler();
     delay(5);
@@ -164,7 +165,6 @@ boot.init();
   bootDone = true;
 // delay 5 sec
 // bootscreen gone
-  create_ui();
   //connect_wifi();
 }
 

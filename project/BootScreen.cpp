@@ -12,10 +12,11 @@ void BootScreen::flash_cb(void* var, int32_t v) {
 }
 
 void BootScreen::init() {
-    screen = lv_obj_create(nullptr);
+    screen = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(screen, lv_obj_get_content_width(lv_scr_act()), lv_obj_get_content_height(lv_scr_act()));
     lv_obj_set_style_bg_color(screen, lv_color_black(), LV_PART_MAIN);
     lv_obj_set_style_border_width(screen, 0, LV_PART_MAIN);
-
+    lv_obj_clear_flag(screen,LV_OBJ_FLAG_SCROLLABLE);
     logoLabel = lv_label_create(screen);
     lv_label_set_text(logoLabel, "Weather app");
     lv_obj_set_style_text_color(logoLabel, lv_color_white(), LV_PART_MAIN);
@@ -41,7 +42,7 @@ void BootScreen::init() {
 }
 
 void BootScreen::show() {
-    lv_scr_load(screen);
+    //lv_scr_load(screen);
 
     // Drop animation
     lv_anim_t drop;
@@ -72,8 +73,8 @@ void BootScreen::setLogoText(const char* text) {
 
 void BootScreen::hide() {
     if (!screen) return;
-    lv_obj_t* blank = lv_obj_create(nullptr);
-    lv_scr_load(blank);
+    // lv_obj_t* blank = lv_obj_create(nullptr);
+    // lv_scr_load(blank);
     lv_obj_del(screen);
     screen = nullptr;
 }
