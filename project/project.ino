@@ -18,7 +18,7 @@
 using namespace std;
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
-WiFiHandler wifi("Prdz", "5998703 1");
+WiFiHandler wifi(" ", "");
 
 LilyGo_Class amoled;
 
