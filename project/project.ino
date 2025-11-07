@@ -15,6 +15,7 @@
 #include "Graph.h"
 #include "WeatherForecastElement.h"
 #include "WiFiHandler.h"
+#include<Dropdown.h>
 
 using namespace std;
 
@@ -35,6 +36,7 @@ static lv_obj_t* t3_label;
 //OUR variables
 
 static std::vector<WeatherForecastElement*> forecast_elements;
+static Dropdown<string>* dropdownobj;
 
 //END of our variables
 
@@ -110,6 +112,9 @@ static void create_ui()
     lv_label_set_text(t3_label, "Historical view");
     lv_obj_set_style_text_font(t3_label, &lv_font_montserrat_28, 0);
     lv_obj_center(t3_label);
+    
+    vector<string> stader = {"lund", "Karlkrona", "Stockholm"};
+    dropdownobj = new Dropdown<string>(stader, t3);
   }
 }
 
