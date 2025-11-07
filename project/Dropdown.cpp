@@ -45,7 +45,7 @@ string Dropdown<T>:: makeittostring(const vector<T> & stad){
 
 template <typename T>
 void Dropdown<T>::screenpos(int x, int y){
-    lv_obj_align(dropdownBox, LV_ALIGN_CENTER, x, y);
+    lv_obj_align(dropdownBox, LV_ALIGN_BOTTOM_MID, x, y);
 }
 
 template class Dropdown <string>;
