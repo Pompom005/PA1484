@@ -17,7 +17,6 @@ WeatherForecastElement::WeatherForecastElement(lv_obj_t* parent_tile, float size
     yPos = 0;
     tile = parent_tile;
     CreateTextsAndSymbol();
-    UpdateFontsOnTexts();
     SetDefaultValues(); //Just sets random 0 values.  
 }
 
@@ -29,58 +28,20 @@ void WeatherForecastElement::CreateTextsAndSymbol()
     lv_obj_align(symbol, LV_ALIGN_CENTER, 0, 0);
 
     //Temperature
-    temperature_text = lv_label_create(tile);
-    lv_obj_align(temperature_text, LV_ALIGN_CENTER, 0, 0);
+    temperature_text = new ScaleableLabel(tile, 1.0f, 0.8f);
+    temperature_text->SetSize(size);
 
     //Location
-    location_text = lv_label_create(tile);
-    lv_obj_align(location_text, LV_ALIGN_CENTER, 0, 0);
+    location_text = new ScaleableLabel(tile, 1.0f, -0.2f);
+    location_text->SetSize(size);
 
     //Time
-    time_text = lv_label_create(tile);
-    lv_obj_align(time_text, LV_ALIGN_CENTER, 0, 0);
+    time_text = new ScaleableLabel(tile, 1.0f, -0.2f);
+    time_text->SetSize(size);
 
     //Symbol text
-    symbol_text = lv_label_create(tile);
-    lv_obj_align(symbol_text, LV_ALIGN_CENTER, 0, 0);
-}
-
-void WeatherForecastElement::UpdateFontsOnTexts()
-{
-    //Smaller font for smaller sizes
-    const lv_font_t* font = nullptr;
-    if(size > 0.8f)
-    {
-        font = &lv_font_montserrat_28;
-    }
-    else if(size > 0.6f)
-    {
-        font = &lv_font_montserrat_24;
-    }
-    else if(size > 0.4f)
-    {
-        font = &lv_font_montserrat_20;
-    }
-    else if(size > 0.2f)
-    {
-        font = &lv_font_montserrat_16;
-    }
-    else
-    {
-        font = &lv_font_montserrat_12;
-    }
-
-    //Temperature
-    lv_obj_set_style_text_font(temperature_text, font, 0);
-
-    //Location
-    lv_obj_set_style_text_font(location_text, font, 0);
-
-    //Time
-    lv_obj_set_style_text_font(time_text, font, 0);
-
-    //Symbol text
-    lv_obj_set_style_text_font(symbol_text, font, 0);
+    symbol_text = new ScaleableLabel(tile);
+    symbol_text->SetSize(size);
 }
 
 void WeatherForecastElement::SetDefaultValues()
@@ -102,22 +63,22 @@ void WeatherForecastElement::SetTemp(float temperature)
 {
     std::stringstream stream;
     stream << std::fixed << std::setprecision(1) << temperature;
-    lv_label_set_text(temperature_text, (stream.str() + "°").c_str());
+    temperature_text->SetText((stream.str() + "°").c_str());
 }
 
 void WeatherForecastElement::SetLocation(const std::string &location)
 {
-    lv_label_set_text(location_text, location.c_str());
+    location_text->SetText(location.c_str());
 }
 
 void WeatherForecastElement::SetTime(const std::string &time)
 {
-    lv_label_set_text(time_text, time.c_str());
+    time_text->SetText(time.c_str());
 }
 
 void WeatherForecastElement::SetWeatherType(WeatherType type)
 {
-    lv_label_set_text(symbol_text, GetTypeName(type).c_str());
+    symbol_text->SetText(GetTypeName(type).c_str());
     switch (type)
     {
     case WeatherType::Sunny:
@@ -151,36 +112,39 @@ void WeatherForecastElement::SetPosition(float x, float y)
     float ySize = lv_obj_get_content_height(tile); //Size of y in pixels
 
     //Symbol
-    lv_obj_set_pos(symbol, x*xSize, y*ySize); //Centered
+    lv_obj_set_pos(symbol, (x - 0.12 * size)*xSize, y*ySize); //Centered
 
     //Temp
-    lv_obj_set_pos(temperature_text, x*xSize, y*ySize); //Centered
+    temperature_text->SetPosition((x + 0.12 * size) *xSize, y*ySize);
 
     //Location
-    lv_obj_set_pos(location_text, x*xSize, (y - 0.40f * size)*ySize); //Above
+    location_text->SetPosition(x*xSize, (y + 0.20f * size)*ySize); //Above
 
     //Time
-    lv_obj_set_pos(time_text, x*xSize, (y - 0.30f * size)*ySize); //Above
+    time_text->SetPosition(x*xSize, (y + 0.28f * size)*ySize); //Above
 
     //Symbol text
-    lv_obj_set_pos(symbol_text, x*xSize, (y + 0.30f * size)*ySize); //Above
+    symbol_text->SetPosition(x*xSize, (y - 0.20f * size)*ySize); //Above
 
     xPos = x;
     yPos = y;
 }
 
-void WeatherForecastElement::SetSize(float size)
+void WeatherForecastElement::SetSize(float size) //In percentage
 {
     float finalSize = lv_obj_get_content_width(tile) * size;
 
     //Symbol
-    float zoomPercentage = (finalSize / lv_obj_get_content_width(tile)) * 0.9f;
+    float zoomPercentage = (finalSize / lv_obj_get_content_width(tile)) * 0.6f;
     lv_img_set_zoom(symbol, 256 * zoomPercentage);
 
     //Size intervals for the text size:
     if(this->size != size)
     {
-        UpdateFontsOnTexts();
+        temperature_text->SetSize(size);
+        symbol_text->SetSize(size);
+        location_text->SetSize(size);
+        time_text->SetSize(size);
             
         //Do this to update position relative to screen
         this->size = size;

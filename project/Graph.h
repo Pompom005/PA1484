@@ -2,14 +2,22 @@
 #include <string>
 #include <LV_Helper.h>
 
-class Graph {
+class Graph 
+{
     private:
 
-    //Screen dimensions for graph. Maybe unneccesary?
+    lv_obj_t* chart;
+    lv_chart_series_t *series;
+
+    int value_array;
+
     int graph_width;
     int graph_height;
 
     public:
     
     Graph(lv_obj_t* parent_tile);
+
+    void AddDataseries();
+    void ReplaceDataseries(int value_array); //parameter?
 };

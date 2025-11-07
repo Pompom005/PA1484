@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <TFT_eSPI.h>
@@ -13,11 +12,14 @@
 #include <iostream> 
 #include <string>
 #include <vector>
+#include "Graph.h"
+#include "WeatherForecastElement.h"
+#include "WiFiHandler.h"
+
 using namespace std;
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
-static const char* WIFI_SSID     = "SSID";
-static const char* WIFI_PASSWORD = "PWD";
+WiFiHandler wifi(" ", "");
 
 LilyGo_Class amoled;
 
@@ -29,7 +31,12 @@ static lv_obj_t* t1_label;
 static lv_obj_t* t2_label;
 static bool t2_dark = false;  // start tile #2 in light mode
 static lv_obj_t* t3_label;
-lv_obj_t *slider;
+
+//OUR variables
+
+static std::vector<WeatherForecastElement*> forecast_elements;
+
+//END of our variables
 
 // Function: Tile #2 Color change
 static void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark)
@@ -60,20 +67,35 @@ static void create_ui()
   // Add two horizontal tiles
   t1 = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR);
   t2 = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR);
+  t3 = lv_tileview_add_tile(tileview, 2, 0, LV_DIR_HOR);
 
   // Tile #1
   {
-    t1_label = lv_label_create(t1);
-    lv_label_set_text(t1_label, "Hello WORKING");
-    lv_obj_set_style_text_font(t1_label, &lv_font_montserrat_28, 0);
-    lv_obj_center(t1_label);
-    apply_tile_colors(t1, t1_label, /*dark=*/false);
+    //Creating 7-day screen with example values
+    int amount = 7;
+    forecast_elements = std::vector<WeatherForecastElement*>();
+    forecast_elements.resize(amount);
+
+    float element_size = 1.0 / ((float)amount);
+    for(int i = 0; i < amount; i++)
+    {
+      forecast_elements[i] = new WeatherForecastElement(t1); //Even smaller to act as padding
+      forecast_elements[i]->SetPosition(i * 0.60f, 0); //-0.5f because it is centered, meaning left side is -0.5f
+    }
+
+    forecast_elements[0]->SetValues(25, "Karlskrona", "11-01", WeatherType::Sunny);
+    forecast_elements[1]->SetValues(15, "Karlskrona", "11-02", WeatherType::Thunder);
+    forecast_elements[2]->SetValues(-10, "Karlskrona", "11-03", WeatherType::Snow);
+    forecast_elements[3]->SetValues(-36, "Karlskrona", "11-04", WeatherType::Snow);
+    forecast_elements[4]->SetValues(13, "Karlskrona", "11-05", WeatherType::Rain);
+    forecast_elements[5]->SetValues(15, "Karlskrona", "11-06", WeatherType::Thunder);
+    forecast_elements[6]->SetValues(12, "Karlskrona", "11-07", WeatherType::Cloudy);
   }
 
   // Tile #2
   {
     t2_label = lv_label_create(t2);
-    lv_label_set_text(t2_label, "Welcome to the jungle");
+    lv_label_set_text(t2_label, "Graph");
     lv_obj_set_style_text_font(t2_label, &lv_font_montserrat_28, 0);
     lv_obj_center(t2_label);
 
@@ -85,38 +107,12 @@ static void create_ui()
     // Tile #3
   {
     t3_label = lv_label_create(t3);
-    lv_label_set_text(t3_label, "Historic chart screen");
+    lv_label_set_text(t3_label, "Historical view");
     lv_obj_set_style_text_font(t3_label, &lv_font_montserrat_28, 0);
     lv_obj_center(t3_label);
-    apply_tile_colors(t3, t3_label, /*dark=*/false);
   }
 }
 
-// Function: Connects to WIFI
-static void connect_wifi()
-{
-  Serial.printf("Connecting to WiFi SSID: %s\n", WIFI_SSID);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-
-  const uint32_t start = millis();
-  while (WiFi.status() != WL_CONNECTED && (millis() - start) < 15000) {
-    delay(250);
-  }
-  Serial.println();
-
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.print("WiFi connected.");
-  } else {
-    Serial.println("WiFi could not connect (timeout).");
-  }
-}
-
-//Slider
-void slider_event_cb(lv_event_t *e) {
-  lv_obj_t *slider = lv_event_get_target(e);
-  int val = lv_slider_get_value(slider);
-}
 
 // Must have function: Setup is run once on startup
 BootScreen boot;
@@ -137,10 +133,11 @@ void setup()
   
   beginLvglHelper(amoled);// bootscreen start here
 // Boot screen sequence
+  create_ui();
 boot.init();
   boot.show();
 
-  unsigned long start = millis(); // old val 2500 måste ta tiden och bestämma vad 3 sekunder är.
+  unsigned long start = millis(); // old val 2500 måste ta tiden och bestämma vad 3 sekunder är. // ta bort en nolla 
   while (millis() - start < 3000) {
     lv_timer_handler();
     delay(5);
@@ -148,30 +145,21 @@ boot.init();
 
   boot.hide();
   bootDone = true;
-// delay 5 sec
-// bootscreen gone
-  create_ui();
-  connect_wifi();
 
-  //Chart with historic data
-  //TODO: Add graph here once Graph.cpp is done
-
-
-  // Creates a slider at the bottom of the screen
-  slider = lv_slider_create(lv_scr_act());
-  lv_obj_set_width(slider, 300);
-  lv_slider_set_range(slider, 0, 100);
-  lv_slider_set_value(slider, 50, LV_ANIM_OFF);
-  lv_obj_align(slider, LV_ALIGN_BOTTOM_MID, 0, -10);
-  lv_obj_add_event_cb(slider, slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
-
-  vector<string> stader = {"Lund", "karlskrona", "Malmö", "Stockholm"};
-  Dropdown<string> myDropdown(stader, t2);
-  myDropdown.screenpos(10, 20);
+// initiate wifi here
+wifi.createWiFiStatusIcon();
+  if (wifi.connect()) {
+    Serial.println("connected to WiFi");
+  }
+  else { 
+    Serial.println("Failed to connect to WiFi");
+  }
 }
 
 // Must have function: Loop runs continously on device after setup
 void loop()
 {
+wifi.UpdateWiFiStatusIcon();
+
   lv_timer_handler();
 }
