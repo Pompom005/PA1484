@@ -130,7 +130,7 @@ static void create_ui()
     t0_label = lv_label_create(t0);
     lv_label_set_text(t0_label, "Weather app");
     lv_obj_set_style_text_font(t0_label, &lv_font_montserrat_32, LV_PART_MAIN);
-    lv_obj_align(t0_label,LV_ALIGN_TOP_MID, 0, 120);
+    lv_obj_align(t0_label,LV_ALIGN_TOP_MID, 0, 95);
 
     t0_text1 = lv_label_create(t0);
     lv_label_set_text(t0_text1, "v1.0");
@@ -145,10 +145,11 @@ static void create_ui()
     apply_tile_colors(t0, t0_label, /*dark=*/true);
   }
 // Sätt start-tile till t0 som ligger i kolumn 0, rad 0 utan animation
-lv_tileview_set_act(tileview, 0, 0, LV_ANIM_OFF);
+//lv_tileview_set_act(tileview, 0, 0, LV_ANIM_OFF);
 
 // Ladda tileview som aktiv skärm så det syns direkt
-lv_scr_load(tileview);
+lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
+//lv_scr_load(tileview);
 
 }
 
