@@ -16,7 +16,10 @@
 #include<Dropdown.h>
 
 using namespace std;
-
+const String SMHI_ENTRY_JSON        = "https://opendata-download-metobs.smhi.se/api.json";
+// om du vill kan du byta 'latest' till '1.0' här för att testa:
+// static const char* SMHI_VERSION_LATEST_JS = "https://opendata-download-metobs.smhi.se/api/version/1.0.json";
+const String SMHI_VERSION_LATEST_JS = "https://opendata-download-metobs.smhi.se/api/version/latest.json";
 // Wi-Fi credentials (Delete these before commiting to GitHub)
 
 
