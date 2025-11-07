@@ -17,16 +17,10 @@
 
 using namespace std;
 const String SMHI_ENTRY_JSON        = "https://opendata-download-metobs.smhi.se/api.json";
-// om du vill kan du byta 'latest' till '1.0' här för att testa:
-// static const char* SMHI_VERSION_LATEST_JS = "https://opendata-download-metobs.smhi.se/api/version/1.0.json";
 const String SMHI_VERSION_LATEST_JS = "https://opendata-download-metobs.smhi.se/api/version/latest.json";
+
 // Wi-Fi credentials (Delete these before commiting to GitHub)
-
-
-
-
-
-WiFiHandler wifi("BTH_Guest","melon32guld");
+WiFiHandler wifi("ASUS_5G","GHINAtuka1!");
 
 LilyGo_Class amoled;
 
@@ -199,12 +193,14 @@ wifi.createWiFiStatusIcon();
   else { 
     Serial.println("Failed to connect to WiFi");
   }
-  DynamicJsonDocument doc(320*1221);
+  JsonDocument doc;
   bool res = httpsGetJson(SMHI_ENTRY_JSON, doc);
   if (res)
-    Serial.println("got json");
+    Serial.println("\ngot json");
   else
-    Serial.println("didnt got json");
+    Serial.println("\ndidnt got json");
+  
+    
 }
 
 // Must have function: Loop runs continously on device after setup
