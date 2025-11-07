@@ -73,8 +73,6 @@ void BootScreen::setLogoText(const char* text) {
 
 void BootScreen::hide() {
     if (!screen) return;
-    // lv_obj_t* blank = lv_obj_create(nullptr);
-    // lv_scr_load(blank);
     lv_obj_del(screen);
     screen = nullptr;
 }

@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <TFT_eSPI.h>
@@ -14,11 +13,12 @@
 #include <vector>
 #include "Graph.h"
 #include "WeatherForecastElement.h"
+#include "WiFiHandler.h"
+
 using namespace std;
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
-static const char* WIFI_SSID     = "SSID";
-static const char* WIFI_PASSWORD = "PWD";
+WiFiHandler wifi("Prdz", "5998703 1");
 
 LilyGo_Class amoled;
 
@@ -112,25 +112,6 @@ static void create_ui()
   }
 }
 
-// Function: Connects to WIFI
-static void connect_wifi()
-{
-  Serial.printf("Connecting to WiFi SSID: %s\n", WIFI_SSID);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-
-  const uint32_t start = millis();
-  while (WiFi.status() != WL_CONNECTED && (millis() - start) < 15000) {
-    delay(250);
-  }
-  Serial.println();
-
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.print("WiFi connected.");
-  } else {
-    Serial.println("WiFi could not connect (timeout).");
-  }
-}
 
 // Must have function: Setup is run once on startup
 BootScreen boot;
@@ -163,13 +144,21 @@ boot.init();
 
   boot.hide();
   bootDone = true;
-// delay 5 sec
-// bootscreen gone
-  //connect_wifi();
+
+// initiate wifi here
+wifi.createWiFiStatusIcon();
+  if (wifi.connect()) {
+    Serial.println("connected to WiFi");
+  }
+  else { 
+    Serial.println("Failed to connect to WiFi");
+  }
 }
 
 // Must have function: Loop runs continously on device after setup
 void loop()
 {
+wifi.UpdateWiFiStatusIcon();
+
   lv_timer_handler();
 }
