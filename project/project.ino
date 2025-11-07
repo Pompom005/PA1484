@@ -20,19 +20,24 @@
 using namespace std;
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
-WiFiHandler wifi(" ", "");
+WiFiHandler wifi("BTH_Guest","melon32guld");
 
 LilyGo_Class amoled;
 
 static lv_obj_t* tileview;
+
 static lv_obj_t* t1;
 static lv_obj_t* t2;
 static lv_obj_t* t3;
+
 static lv_obj_t* t1_label;
 static lv_obj_t* t2_label;
 static bool t2_dark = false;  // start tile #2 in light mode
 static lv_obj_t* t3_label;
-
+static lv_obj_t* t0_text1;
+static lv_obj_t* t0_text2;
+static lv_obj_t* t0_label;
+static lv_obj_t* t0;
 //OUR variables
 
 static std::vector<WeatherForecastElement*> forecast_elements;
@@ -67,11 +72,14 @@ static void create_ui()
   lv_obj_set_scrollbar_mode(tileview, LV_SCROLLBAR_MODE_OFF);
 
   // Add two horizontal tiles
-  t1 = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR);
-  t2 = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR);
-  t3 = lv_tileview_add_tile(tileview, 2, 0, LV_DIR_HOR);
+  t0 = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR);
+  t1 = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR);
+  t2 = lv_tileview_add_tile(tileview, 2, 0, LV_DIR_HOR);
+  t3 = lv_tileview_add_tile(tileview, 3, 0, LV_DIR_HOR);
+
 
   // Tile #1
+
   {
     //Creating 7-day screen with example values
     int amount = 7;
@@ -116,6 +124,32 @@ static void create_ui()
     vector<string> stader = {"lund", "Karlkrona", "Stockholm"};
     dropdownobj = new Dropdown<string>(stader, t3);
   }
+  
+    {
+    
+    t0_label = lv_label_create(t0);
+    lv_label_set_text(t0_label, "Weather app");
+    lv_obj_set_style_text_font(t0_label, &lv_font_montserrat_32, LV_PART_MAIN);
+    lv_obj_align(t0_label,LV_ALIGN_TOP_MID, 0, 120);
+
+    t0_text1 = lv_label_create(t0);
+    lv_label_set_text(t0_text1, "v1.0");
+    lv_obj_set_style_text_color(t0_text1, lv_color_white(), LV_PART_MAIN);
+    lv_obj_align(t0_text1, LV_ALIGN_BOTTOM_LEFT, 10, -30);
+
+    t0_text2 = lv_label_create(t0);
+    lv_label_set_text(t0_text2, "Grupp 9");
+    lv_obj_set_style_text_color(t0_text2, lv_color_white(), LV_PART_MAIN);
+    lv_obj_align(t0_text2, LV_ALIGN_BOTTOM_LEFT, 10, -10);
+
+    apply_tile_colors(t0, t0_label, /*dark=*/true);
+  }
+// Sätt start-tile till t0 som ligger i kolumn 0, rad 0 utan animation
+lv_tileview_set_act(tileview, 0, 0, LV_ANIM_OFF);
+
+// Ladda tileview som aktiv skärm så det syns direkt
+lv_scr_load(tileview);
+
 }
 
 
