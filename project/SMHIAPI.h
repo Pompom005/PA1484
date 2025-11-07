@@ -5,5 +5,5 @@
 #include <WiFiClientSecure.h>
 #include <string>
 
-static bool httpsGetJson(const String& url, DynamicJsonDocument& doc); //hämtar json document
+bool httpsGetJson(const String& url, DynamicJsonDocument& doc); //hämtar json document
 

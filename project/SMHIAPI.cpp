@@ -16,7 +16,7 @@ const String SMHI_ENTRY_JSON        = "https://opendata-download-metobs.smhi.se/
 const String SMHI_VERSION_LATEST_JS = "https://opendata-download-metobs.smhi.se/api/version/latest.json";
 
 // Generic HTTPS → JSON helper (ESP32)
-static bool httpsGetJson(const String& url, DynamicJsonDocument& doc) {
+bool httpsGetJson(const String& url, DynamicJsonDocument& doc) {
 
   WiFiClientSecure client;
   client.setInsecure();  // simplify TLS on ESP32
