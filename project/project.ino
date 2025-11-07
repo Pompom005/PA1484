@@ -149,7 +149,6 @@ static void create_ui()
 
 // Ladda tileview som aktiv skärm så det syns direkt
 lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
-//lv_scr_load(tileview);
 
 }
 
