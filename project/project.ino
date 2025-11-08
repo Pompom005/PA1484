@@ -16,12 +16,10 @@
 #include<Dropdown.h>
 
 using namespace std;
-const String SMHI_ENTRY_JSON        = "https://opendata-download-metobs.smhi.se/api.json";
-const String SMHI_VERSION_LATEST_JS = "https://opendata-download-metobs.smhi.se/api/version/latest.json";
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
-WiFiHandler wifi("ASUS_5G","GHINAtuka1!");
-
+WiFiHandler wifi("BTH_Guest","melon32guld");
+// BTH "BTH_Guest","melon32guld"
 LilyGo_Class amoled;
 
 static lv_obj_t* tileview;
@@ -193,14 +191,27 @@ wifi.createWiFiStatusIcon();
   else { 
     Serial.println("Failed to connect to WiFi");
   }
-  JsonDocument doc;
+
+  //httpsgetjson test
+  /*JsonDocument doc; 
   bool res = httpsGetJson(SMHI_ENTRY_JSON, doc);
   if (res)
     Serial.println("\ngot json");
   else
-    Serial.println("\ndidnt got json");
+    Serial.println("\ndidnt got json");*/
   
-    
+    //test for get parameter
+  JsonDocument doc;  
+  bool res = getparameter("lufttemperatur", doc);
+
+  lv_timer_handler();
+  if (res) {
+    serializeJsonPretty(doc, Serial);
+    Serial.println();
+  }
+  else {
+    Serial.println("Couldnt print json.");
+  }
 }
 
 // Must have function: Loop runs continously on device after setup
