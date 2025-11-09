@@ -12,4 +12,6 @@ bool httpsGetJson(const String& url, JsonDocument& doc); //hämtar json document
 
 bool getparameter(String parameter, JsonDocument& doc, const String url = SMHI_VERSION_LATEST_JS);
 
+bool getCity(String City, JsonDocument& doc);
+
 struct SmhiObs;

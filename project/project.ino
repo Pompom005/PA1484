@@ -161,6 +161,8 @@ void setup()
 {
   Serial.begin(115200);
   delay(200);
+  Serial.print("Free heap 1: ");
+  Serial.println(ESP.getFreeHeap());  
 
 
   if (!amoled.begin()) {
@@ -201,9 +203,11 @@ wifi.createWiFiStatusIcon();
     Serial.println("\ndidnt got json");*/
   
     //test for get parameter
+  Serial.print("Free heap 2: ");
+  Serial.println(ESP.getFreeHeap());
   JsonDocument doc;  
   bool res = getparameter("lufttemperatur", doc);
-
+  res = getCity("karlskrona", doc);
   lv_timer_handler();
   if (res) {
     serializeJsonPretty(doc, Serial);
@@ -212,6 +216,9 @@ wifi.createWiFiStatusIcon();
   else {
     Serial.println("Couldnt print json.");
   }
+
+  Serial.print("Free heap 3: ");
+  Serial.println(ESP.getFreeHeap());
 }
 
 // Must have function: Loop runs continously on device after setup

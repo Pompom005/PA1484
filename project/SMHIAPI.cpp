@@ -20,8 +20,9 @@ bool httpsGetJson(const String& url, JsonDocument& doc) {
     return false;
   }
 
+  Serial.println("Calling http.get");
   const int code = http.GET();
-  Serial.printf("\nGet command returned: %d", code);
+  Serial.printf("\nGet command returned: %d\n", code);
   if (code != HTTP_CODE_OK) { // HTTP_CODE_OK = 200
     http.end();
     return false;
@@ -32,7 +33,7 @@ bool httpsGetJson(const String& url, JsonDocument& doc) {
 
   DeserializationError err = deserializeJson(doc, payload);
   if (err) {
-    Serial.printf("Deserialise json returned: %s", err.c_str());
+    Serial.printf("\nDeserialise json returned: %s", err.c_str());
     return false;
   }
 
@@ -75,5 +76,27 @@ bool getparameter(String parameter, JsonDocument& doc, const String url) {
   return false;
 }
 
+bool getCity(String city, JsonDocument& doc) {
 
+  for (JsonObject obj : doc["station"].as<JsonArray>()) {
+    String name = obj["name"].as<String>();
+    name.toLowerCase();
+    if (name.indexOf(city) >= 0) {
+      Serial.printf("\nFound city: %s", name.c_str());
+      for (JsonObject obj1 : obj["link"].as<JsonArray>()) {
+        String link = obj1["href"].as<String>();
+        Serial.printf("\nTook first link: %s\n", link.c_str());
+        bool res = httpsGetJson(link, doc);
 
+        if (res) {
+          Serial.printf("\nGot json for city: %s", city.c_str());
+          return true;
+        }
+      }
+    }
+  }
+      
+  Serial.printf("\ncouldn't find city: %s", city.c_str());
+  Serial.println("getCity functioncall failed.");
+  return false;
+}
