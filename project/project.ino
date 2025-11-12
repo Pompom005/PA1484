@@ -16,11 +16,12 @@
 #include "WeatherForecastElement.h"
 #include "WiFiHandler.h"
 #include<Dropdown.h>
+#include "SettingsScreen.h"
 
 using namespace std;
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
-WiFiHandler wifi("BTH_Guest","melon32guld");
+WiFiHandler wifi("BTH_Guest","nektarin87rosa");
 
 LilyGo_Class amoled;
 
@@ -42,6 +43,7 @@ static lv_obj_t* t0;
 
 static std::vector<WeatherForecastElement*> forecast_elements;
 static Dropdown<string>* dropdownobj;
+static SettingsScreen* settings;
 
 //END of our variables
 
@@ -151,6 +153,18 @@ static void create_ui()
 lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
 //lv_scr_load(tileview);
 
+  settings = new SettingsScreen();
+
+  settings->AddListenerToLocation([&](std::string newLocation)
+  {
+    forecast_elements[0]->SetLocation(newLocation);
+    forecast_elements[1]->SetLocation(newLocation);
+    forecast_elements[2]->SetLocation(newLocation);
+    forecast_elements[3]->SetLocation(newLocation);
+    forecast_elements[4]->SetLocation(newLocation);
+    forecast_elements[5]->SetLocation(newLocation);
+    forecast_elements[6]->SetLocation(newLocation);
+  });
 }
 
 
