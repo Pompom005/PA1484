@@ -11,7 +11,7 @@ class Graph
     lv_obj_t* chart;
     lv_chart_series_t *series;
 
-    int value_array;
+    vector<int> value_vector; 
 
     int graph_width;
     int graph_height;
@@ -20,6 +20,6 @@ class Graph
     
     Graph(lv_obj_t* parent_tile, vector<string> data); 
 
-    void AddDataseries();
-    void ReplaceDataseries(int value_array); //parameter?
+    void AddDataseries(vector<int> value_vector);
+    void ReplaceDataseries(vector<int> value_vector); //parameter?
 };
