@@ -1,9 +1,7 @@
 #include <LilyGo_AMOLED.h>
 #include "Graph.h"
-#include <sstream> // Remove?
-#include <iomanip> // Remove?
 
-Graph::Graph(lv_obj_t* parent_tile)
+Graph::Graph(lv_obj_t* parent_tile, vector<string> data)
 {
     //Creates the graph
     lv_obj_t* chart = lv_chart_create(parent_tile);
@@ -19,8 +17,9 @@ Graph::Graph(lv_obj_t* parent_tile)
     lv_chart_series_t *series = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
 
     //Example code, should use weather data 
-    for(int i = 0; i < 10; i++) {
-        series->y_points[i] = lv_rand(50,90);
+    for(int i = 0; i < 10; i++) { //have to cycle through the dates
+        int temperature = stoi(data.back()); 
+        series->y_points[i] = temperature;
     }
     lv_chart_refresh(chart);
 }

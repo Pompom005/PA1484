@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
+#include <vector>
 #include <LV_Helper.h>
+using namespace std;
 
 class Graph 
 {
@@ -16,7 +18,7 @@ class Graph
 
     public:
     
-    Graph(lv_obj_t* parent_tile);
+    Graph(lv_obj_t* parent_tile, vector<string> data); 
 
     void AddDataseries();
     void ReplaceDataseries(int value_array); //parameter?
