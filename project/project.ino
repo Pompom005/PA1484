@@ -45,6 +45,8 @@ static std::vector<WeatherForecastElement*> forecast_elements;
 static Dropdown<string>* dropdownobj;
 static SettingsScreen* settings;
 
+static lv_obj_t* forecast_parent;
+
 //END of our variables
 
 // Function: Tile #2 Color change
@@ -88,10 +90,15 @@ static void create_ui()
     forecast_elements = std::vector<WeatherForecastElement*>();
     forecast_elements.resize(amount);
 
+    forecast_parent = lv_obj_create(t1);
+    lv_obj_align(forecast_parent, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_content_height(forecast_parent, lv_obj_get_content_height(t1) * 0.85f);
+    lv_obj_set_content_width(forecast_parent, lv_obj_get_content_width(t1) * 0.65f);
+
     float element_size = 1.0 / ((float)amount);
     for(int i = 0; i < amount; i++)
     {
-      forecast_elements[i] = new WeatherForecastElement(t1); //Even smaller to act as padding
+      forecast_elements[i] = new WeatherForecastElement(forecast_parent); //Even smaller to act as padding
       forecast_elements[i]->SetPosition(i * 0.60f, 0); //-0.5f because it is centered, meaning left side is -0.5f
     }
 
