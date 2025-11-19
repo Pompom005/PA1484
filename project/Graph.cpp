@@ -1,7 +1,7 @@
 #include <LilyGo_AMOLED.h>
 #include "Graph.h"
 
-Graph::Graph(lv_obj_t* parent_tile, vector<string> data)
+Graph::Graph(lv_obj_t* parent_tile, vector<float> data)
 {
     //Creates the graph
     lv_obj_t* chart = lv_chart_create(parent_tile);
@@ -17,13 +17,13 @@ Graph::Graph(lv_obj_t* parent_tile, vector<string> data)
     lv_chart_series_t *series = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
 
     for(int i = 0; i < 10; i++) { //have to cycle through the dates, i < amount_of_dates ?
-        int temperature = stof(data.back()); 
+        float temperature = data.back(); 
         series->y_points[i] = temperature;
     }
     lv_chart_refresh(chart);
 }
 
-void Graph::AddDataseries(vector<int> value_vector)
+void Graph::AddDataseries(vector<float> value_vector)
 {
     for(int value: value_vector) {
         lv_chart_set_next_value(chart, series, value_vector[value]); 
@@ -31,13 +31,13 @@ void Graph::AddDataseries(vector<int> value_vector)
     lv_chart_refresh(chart);
 }
 
-void Graph::ReplaceDataseries(vector<int> value_vector)
+void Graph::ReplaceDataseries(vector<float> value_vector)
 {
     //Rough example code, not final
     lv_chart_series_t *series = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
 
     for(int value: value_vector) { 
-        int temperature = value_vector[value]; 
+        float temperature = value_vector[value]; 
         series->y_points[value] = temperature;
     }
     lv_chart_refresh(chart);

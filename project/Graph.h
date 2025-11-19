@@ -11,15 +11,15 @@ class Graph
     lv_obj_t* chart;
     lv_chart_series_t *series;
 
-    vector<int> value_vector; 
+    vector<float> value_vector; 
 
     int graph_width;
     int graph_height;
 
     public:
     
-    Graph(lv_obj_t* parent_tile, vector<string> data); 
+    Graph(lv_obj_t* parent_tile, vector<float> data); 
 
-    void AddDataseries(vector<int> value_vector);
-    void ReplaceDataseries(vector<int> value_vector); //parameter?
+    void AddDataseries(vector<float> value_vector);
+    void ReplaceDataseries(vector<float> value_vector); //parameter?
 };
