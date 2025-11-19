@@ -18,8 +18,10 @@
 using namespace std;
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
-WiFiHandler wifi("BTH_Guest","melon32guld");
-// BTH "BTH_Guest","melon32guld"
+WiFiHandler wifi("BTH_Guest","oliv95lila");
+// BTH "BTH_Guest","nectarin87rosa"
+// salleh "Salleh","00000000"
+// BTH old melon32guld vecka 1
 LilyGo_Class amoled;
 
 static lv_obj_t* tileview;
@@ -161,7 +163,7 @@ void setup()
 {
   Serial.begin(115200);
   delay(200);
-  Serial.print("Free heap 1: ");
+  Serial.print("Free heap at start of setup(): ");
   Serial.println(ESP.getFreeHeap());  
 
 
@@ -193,32 +195,26 @@ wifi.createWiFiStatusIcon();
   else { 
     Serial.println("Failed to connect to WiFi");
   }
+//////////////////////////////////////////////////////////////// smhi grejer
 
-  //httpsgetjson test
-  /*JsonDocument doc; 
-  bool res = httpsGetJson(SMHI_ENTRY_JSON, doc);
-  if (res)
-    Serial.println("\ngot json");
-  else
-    Serial.println("\ndidnt got json");*/
+  Serial.print("Free heap before test: ");
+  Serial.println(ESP.getFreeHeap());
+
+  Serial.println("\n=== Testing CSV Data ===");
   
-    //test for get parameter
-  Serial.print("Free heap 2: ");
-  Serial.println(ESP.getFreeHeap());
-  JsonDocument doc;  
-  bool res = getparameter("lufttemperatur", doc);
-  res = getCity("karlskrona", doc);
-  lv_timer_handler();
-  if (res) {
-    serializeJsonPretty(doc, Serial);
-    Serial.println();
-  }
-  else {
-    Serial.println("Couldnt print json.");
+  String testCSVUrl = buildURL("lufttemperatur", "karlskrona");
+  
+  String csvData;
+  if (httpsGetCSV(testCSVUrl, csvData)) {
+    Serial.println("SUCCESS - Got CSV data:");
+    Serial.println(csvData);  // Just print everything
+  } else {
+    Serial.println("FAILED to get CSV data");
   }
 
-  Serial.print("Free heap 3: ");
+  Serial.print("Free heap after test: ");
   Serial.println(ESP.getFreeHeap());
+////////////////////////////////////////////////////////////////
 }
 
 // Must have function: Loop runs continously on device after setup
