@@ -17,7 +17,7 @@ Graph::Graph(lv_obj_t* parent_tile, vector<string> data)
     lv_chart_series_t *series = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
 
     for(int i = 0; i < 10; i++) { //have to cycle through the dates, i < amount_of_dates ?
-        int temperature = stoi(data.back()); 
+        int temperature = stof(data.back()); 
         series->y_points[i] = temperature;
     }
     lv_chart_refresh(chart);
