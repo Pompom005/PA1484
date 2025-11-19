@@ -16,11 +16,12 @@
 #include "WeatherForecastElement.h"
 #include "WiFiHandler.h"
 #include<Dropdown.h>
+#include<Linegraf.h>
 
 using namespace std;
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
-WiFiHandler wifi(" ", "");
+WiFiHandler wifi("BTH_Guest", "nektarin87rosa");
 
 LilyGo_Class amoled;
 
@@ -36,8 +37,9 @@ static lv_obj_t* t3_label;
 //OUR variables
 
 static std::vector<WeatherForecastElement*> forecast_elements;
-static Dropdown<string>* dropdownobj;
-
+//static Dropdown<string>* dropdownobj;
+//static Dropdown <string> * dropdownobj2;
+static Linegraf* grafobj;
 //END of our variables
 
 // Function: Tile #2 Color change
@@ -97,13 +99,15 @@ static void create_ui()
   // Tile #2
   {
     t2_label = lv_label_create(t2);
-    lv_label_set_text(t2_label, "Graph");
+    lv_label_set_text(t2_label, "");
     lv_obj_set_style_text_font(t2_label, &lv_font_montserrat_28, 0);
     lv_obj_center(t2_label);
 
     apply_tile_colors(t2, t2_label, /*dark=*/false);
     lv_obj_add_flag(t2, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(t2, on_tile2_clicked, LV_EVENT_CLICKED, NULL);
+    vector<int> koord = {30, 10, 50, 40, 20};
+    grafobj = new Linegraf(t2, koord, "Lund");
   }
 
     // Tile #3
@@ -113,8 +117,10 @@ static void create_ui()
     lv_obj_set_style_text_font(t3_label, &lv_font_montserrat_28, 0);
     lv_obj_center(t3_label);
     
-    vector<string> stader = {"lund", "Karlkrona", "Stockholm"};
-    dropdownobj = new Dropdown<string>(stader, t3);
+    //vector<string> stader = {"lund", "Karlkrona", "Stockholm"};
+    //vector <string> weathertypes = {"Temperature", "Humidity"};
+    //dropdownobj = new Dropdown<string>(stader, t3, 10, 0);
+    //dropdownobj2 = new Dropdown<string> (weathertypes, t3, -10, 0);
   }
 }
 
