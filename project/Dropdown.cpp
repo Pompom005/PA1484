@@ -17,6 +17,8 @@ Dropdown <T>::Dropdown(const vector<T>& cities, lv_obj_t * parent, int x, int y)
         screenpos(x, y);//lv_obj_align(dropdownBox, LV_ALIGN_BOTTOM_MID, 0, 10);// have a function to itself that can change these numbers 20 and 10
         lv_dropdown_set_selected(dropdownBox, 0);
         lv_obj_add_event_cb(dropdownBox, event_handler, LV_EVENT_VALUE_CHANGED, this);
+
+        listeners = std::vector<std::function<void(T)>>();
 }
 
 template <typename T>
@@ -27,9 +29,16 @@ lv_obj_t * obj = lv_event_get_target(e);
 if(code == LV_EVENT_VALUE_CHANGED) {
     char buf[64];
     lv_dropdown_get_selected_str(obj, buf, sizeof(buf));
-    Dropdown<T>* instance = static_cast<Dropdown<T>*>(lv_event_get_user_data(e));
-    instance->selectedValue = buf;
-    LV_LOG_USER("Selected: %s", buf);
+    LV_LOG_USER("Option: %s", buf);
+
+    Dropdown<T>* dropdown = reinterpret_cast<Dropdown<T>*>(e->user_data);
+
+    T option = dropdown->choices[lv_dropdown_get_option_index(obj, buf)];
+
+    for(int i = 0; i < dropdown->listeners.size(); i++)
+    {
+        dropdown->listeners[i](option);
+    }
 }
 }
 
@@ -45,6 +54,12 @@ string Dropdown<T>:: makeittostring(const vector<T> & stad){
         }
     }
     return option;
+}
+
+template <typename T>
+void Dropdown<T>::addlistener(std::function<void(T)> func)
+{
+    listeners.push_back(func);
 }
 
 template <typename T>

@@ -17,29 +17,37 @@
 #include "WiFiHandler.h"
 #include<Dropdown.h>
 #include<Linegraf.h>
+#include "SettingsScreen.h"
 
 using namespace std;
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
-WiFiHandler wifi("BTH_Guest", "nektarin87rosa");
+WiFiHandler wifi("BTH_Guest","nektarin87rosa");
 
 LilyGo_Class amoled;
 
 static lv_obj_t* tileview;
+
+static lv_obj_t* t0;
 static lv_obj_t* t1;
 static lv_obj_t* t2;
-static lv_obj_t* t3;
+
 static lv_obj_t* t1_label;
 static lv_obj_t* t2_label;
 static bool t2_dark = false;  // start tile #2 in light mode
 static lv_obj_t* t3_label;
-
+static lv_obj_t* t0_text1;
+static lv_obj_t* t0_text2;
+static lv_obj_t* t0_label;
 //OUR variables
 
 static std::vector<WeatherForecastElement*> forecast_elements;
 //static Dropdown<string>* dropdownobj;
 //static Dropdown <string> * dropdownobj2;
-static Linegraf* grafobj;
+static Linegraf* grafobj;static SettingsScreen* settings;
+
+static lv_obj_t* forecast_parent;
+
 //END of our variables
 
 // Function: Tile #2 Color change
@@ -69,21 +77,27 @@ static void create_ui()
   lv_obj_set_scrollbar_mode(tileview, LV_SCROLLBAR_MODE_OFF);
 
   // Add two horizontal tiles
-  t1 = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR);
-  t2 = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR);
-  t3 = lv_tileview_add_tile(tileview, 2, 0, LV_DIR_HOR);
+  t0 = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR);
+  t1 = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR);
+  t2 = lv_tileview_add_tile(tileview, 2, 0, LV_DIR_HOR);
 
   // Tile #1
+
   {
     //Creating 7-day screen with example values
     int amount = 7;
     forecast_elements = std::vector<WeatherForecastElement*>();
     forecast_elements.resize(amount);
 
+    forecast_parent = lv_obj_create(t1);
+    lv_obj_align(forecast_parent, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_content_height(forecast_parent, lv_obj_get_content_height(t1) * 0.85f);
+    lv_obj_set_content_width(forecast_parent, lv_obj_get_content_width(t1) * 0.65f);
+
     float element_size = 1.0 / ((float)amount);
     for(int i = 0; i < amount; i++)
     {
-      forecast_elements[i] = new WeatherForecastElement(t1); //Even smaller to act as padding
+      forecast_elements[i] = new WeatherForecastElement(forecast_parent); //Even smaller to act as padding
       forecast_elements[i]->SetPosition(i * 0.60f, 0); //-0.5f because it is centered, meaning left side is -0.5f
     }
 
@@ -109,19 +123,44 @@ static void create_ui()
     vector<int> koord = {30, 10, 50, 40, 20};
     grafobj = new Linegraf(t2, koord, "Lund");
   }
-
-    // Tile #3
+  
   {
-    t3_label = lv_label_create(t3);
-    lv_label_set_text(t3_label, "Historical view");
-    lv_obj_set_style_text_font(t3_label, &lv_font_montserrat_28, 0);
-    lv_obj_center(t3_label);
-    
-    //vector<string> stader = {"lund", "Karlkrona", "Stockholm"};
-    //vector <string> weathertypes = {"Temperature", "Humidity"};
-    //dropdownobj = new Dropdown<string>(stader, t3, 10, 0);
-    //dropdownobj2 = new Dropdown<string> (weathertypes, t3, -10, 0);
+    t0_label = lv_label_create(t0);
+    lv_label_set_text(t0_label, "Weather app");
+    lv_obj_set_style_text_font(t0_label, &lv_font_montserrat_32, LV_PART_MAIN);
+    lv_obj_align(t0_label,LV_ALIGN_TOP_MID, 0, 95);
+
+    t0_text1 = lv_label_create(t0);
+    lv_label_set_text(t0_text1, "v1.0");
+    lv_obj_set_style_text_color(t0_text1, lv_color_white(), LV_PART_MAIN);
+    lv_obj_align(t0_text1, LV_ALIGN_BOTTOM_LEFT, 10, -30);
+
+    t0_text2 = lv_label_create(t0);
+    lv_label_set_text(t0_text2, "Grupp 9");
+    lv_obj_set_style_text_color(t0_text2, lv_color_white(), LV_PART_MAIN);
+    lv_obj_align(t0_text2, LV_ALIGN_BOTTOM_LEFT, 10, -10);
+
+    apply_tile_colors(t0, t0_label, /*dark=*/true);
   }
+// Sätt start-tile till t0 som ligger i kolumn 0, rad 0 utan animation
+//lv_tileview_set_act(tileview, 0, 0, LV_ANIM_OFF);
+
+  // Ladda tileview som aktiv skärm så det syns direkt
+  lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
+  //lv_scr_load(tileview);
+
+  settings = new SettingsScreen();
+
+  settings->AddListenerToLocation([&](std::string newLocation)
+  {
+    forecast_elements[0]->SetLocation(newLocation);
+    forecast_elements[1]->SetLocation(newLocation);
+    forecast_elements[2]->SetLocation(newLocation);
+    forecast_elements[3]->SetLocation(newLocation);
+    forecast_elements[4]->SetLocation(newLocation);
+    forecast_elements[5]->SetLocation(newLocation);
+    forecast_elements[6]->SetLocation(newLocation);
+  });
 }
 
 
@@ -174,3 +213,5 @@ wifi.UpdateWiFiStatusIcon();
 
   lv_timer_handler();
 }
+
+//Jag gör en liten ändring så jag kan pusha

@@ -28,7 +28,7 @@ void WeatherForecastElement::CreateTextsAndSymbol()
     lv_obj_align(symbol, LV_ALIGN_CENTER, 0, 0);
 
     //Temperature
-    temperature_text = new ScaleableLabel(tile, 1.0f, 0.8f);
+    temperature_text = new ScaleableLabel(tile, 1.0f, 0.6f);
     temperature_text->SetSize(size);
 
     //Location
@@ -135,7 +135,7 @@ void WeatherForecastElement::SetSize(float size) //In percentage
     float finalSize = lv_obj_get_content_width(tile) * size;
 
     //Symbol
-    float zoomPercentage = (finalSize / lv_obj_get_content_width(tile)) * 0.6f;
+    float zoomPercentage = (finalSize / lv_obj_get_content_width(tile)) * 0.4f;
     lv_img_set_zoom(symbol, 256 * zoomPercentage);
 
     //Size intervals for the text size:
