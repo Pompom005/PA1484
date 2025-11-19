@@ -120,7 +120,7 @@ static void create_ui()
     apply_tile_colors(t2, t2_label, /*dark=*/false);
     lv_obj_add_flag(t2, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(t2, on_tile2_clicked, LV_EVENT_CLICKED, NULL);
-    vector<int> koord = {30, 10, 50, 40, 20};
+    vector<float> koord = {30, 10, 50, 40, 20};
     grafobj = new Linegraf(t2, koord, "Lund");
   }
   
