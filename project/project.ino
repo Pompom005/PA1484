@@ -1,6 +1,4 @@
-#include <Arduino.h>
-#include <HTTPClient.h>
-#include <ArduinoJson.h>
+#include "SMHIAPI.h"
 #include <TFT_eSPI.h>
 #include <time.h>
 #include <LilyGo_AMOLED.h>
@@ -145,9 +143,8 @@ static void create_ui()
 // Sätt start-tile till t0 som ligger i kolumn 0, rad 0 utan animation
 //lv_tileview_set_act(tileview, 0, 0, LV_ANIM_OFF);
 
-  // Ladda tileview som aktiv skärm så det syns direkt
-  lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
-  //lv_scr_load(tileview);
+// Ladda tileview som aktiv skärm så det syns direkt
+lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
 
   settings = new SettingsScreen();
 
@@ -174,6 +171,8 @@ void setup()
 {
   Serial.begin(115200);
   delay(200);
+  Serial.print("Free heap at start of setup(): ");
+  Serial.println(ESP.getFreeHeap());  
 
 
   if (!amoled.begin()) {
@@ -204,6 +203,26 @@ wifi.createWiFiStatusIcon();
   else { 
     Serial.println("Failed to connect to WiFi");
   }
+//////////////////////////////////////////////////////////////// smhi grejer
+
+  Serial.print("Free heap before test: ");
+  Serial.println(ESP.getFreeHeap());
+
+  Serial.println("\n=== Testing CSV Data ===");
+  
+  String testCSVUrl = buildURL("lufttemperatur", "karlskrona");
+  
+  String csvData;
+  if (httpsGetCSV(testCSVUrl, csvData)) {
+    Serial.println("SUCCESS - Got CSV data:");
+    Serial.println(csvData);  // Just print everything
+  } else {
+    Serial.println("FAILED to get CSV data");
+  }
+
+  Serial.print("Free heap after test: ");
+  Serial.println(ESP.getFreeHeap());
+////////////////////////////////////////////////////////////////
 }
 
 // Must have function: Loop runs continously on device after setup
