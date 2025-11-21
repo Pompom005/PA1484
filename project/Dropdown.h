@@ -20,10 +20,9 @@ class Dropdown{
 
     std::vector<std::function<void(T)>> listeners;
   public:
-    Dropdown(const vector<T>& cities, lv_obj_t * parent, int x, int y);
+    Dropdown(const vector<T>& cities, lv_obj_t * parent, int x = 0, int y = 0);
     static void event_handler(lv_event_t * e);
     void screenpos(int x, int y);
     string makeittostring(const vector<T> & stad);
     void addlistener(std::function<void(T)> func);
-    string Dropdown<T>:: getValue();
 };
