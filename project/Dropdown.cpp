@@ -1,4 +1,5 @@
 #include<Dropdown.h>
+#include "SMHIStationsAndParameters/SMHIStationsAndParameters.h"
 
 template <typename T>
 Dropdown <T>::Dropdown(const vector<T>& cities, lv_obj_t * parent, int x, int y): choices(cities){
@@ -63,6 +64,34 @@ void Dropdown<T>::addlistener(std::function<void(T)> func)
 }
 
 template <typename T>
+void Dropdown<T>::UpdateList(const vector<T> &cities)
+{
+    choices = cities;
+    char buf[64];
+    lv_dropdown_get_selected_str(dropdownBox, buf, sizeof(buf));
+
+    optionStr = makeittostring(cities);
+    lv_dropdown_set_options(dropdownBox,optionStr.c_str());
+
+    int index = lv_dropdown_get_option_index(dropdownBox, buf);
+    if(index != -1)
+    {
+        //The same station exists, so it should be selected now aswell!
+        lv_dropdown_set_selected(dropdownBox, index);
+    }
+    else
+    {
+        lv_dropdown_set_selected(dropdownBox, 0);
+
+        T option = choices[0];
+        for(int i = 0; i < listeners.size(); i++)
+        {
+            listeners[i](option);
+        }
+    }
+}
+
+template <typename T>
 void Dropdown<T>::screenpos(int x, int y){
     lv_obj_align(dropdownBox, LV_ALIGN_BOTTOM_MID, x, y);
 }
@@ -71,3 +100,5 @@ template class Dropdown <string>;
 template class Dropdown <int>;
 template class Dropdown <float>;
 template class Dropdown <bool>;
+template class Dropdown <DropdownParameter>;
+template class Dropdown <DropdownStation>;

@@ -1,3 +1,6 @@
+# 1 "C:\\Users\\Jebr\\AppData\\Local\\Temp\\tmpc3_k5gpl"
+#include <Arduino.h>
+# 1 "D:/Progg/PA1484/PA1484/project/project.ino"
 #include "SMHIAPI.h"
 #include <TFT_eSPI.h>
 #include <time.h>
@@ -7,7 +10,7 @@
 #include <Dropdown.h>
 #include "BootScreen.h"
 #include <sstream>
-#include <iostream> 
+#include <iostream>
 #include <string>
 #include <vector>
 #include "Graph.h"
@@ -20,7 +23,7 @@
 
 using namespace std;
 
-// Wi-Fi credentials (Delete these before commiting to GitHub)
+
 WiFiHandler wifi("OWNIT_5GHz_C1EB51","TP4YG3ANFJ", 2000);
 
 LilyGo_Class amoled;
@@ -33,30 +36,32 @@ static lv_obj_t* t2;
 
 static lv_obj_t* t1_label;
 static lv_obj_t* t2_label;
-static bool t2_dark = false;  // start tile #2 in light mode
+static bool t2_dark = false;
 static lv_obj_t* t3_label;
 static lv_obj_t* t0_text1;
 static lv_obj_t* t0_text2;
 static lv_obj_t* t0_label;
-//OUR variables
+
 
 static std::vector<WeatherForecastElement*> forecast_elements;
-//static Dropdown<string>* dropdownobj;
-//static Dropdown <string> * dropdownobj2;
+
+
 static Linegraf* grafobj;static SettingsScreen* settings;
 
 static lv_obj_t* forecast_parent;
-
-//END of our variables
-
-// Function: Tile #2 Color change
+static void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark);
+static void on_tile2_clicked(lv_event_t* e);
+static void create_ui();
+void setup();
+void loop();
+#line 53 "D:/Progg/PA1484/PA1484/project/project.ino"
 static void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark)
 {
-  // Background
+
   lv_obj_set_style_bg_opa(tile, LV_OPA_COVER, 0);
   lv_obj_set_style_bg_color(tile, dark ? lv_color_black() : lv_color_white(), 0);
 
-  // Text
+
   lv_obj_set_style_text_color(label, dark ? lv_color_white() : lv_color_black(), 0);
 }
 
@@ -67,23 +72,23 @@ static void on_tile2_clicked(lv_event_t* e)
   apply_tile_colors(t2, t2_label, t2_dark);
 }
 
-// Function: Creates UI
+
 static void create_ui()
 {
-  // Fullscreen Tileview
+
   tileview = lv_tileview_create(lv_scr_act());
   lv_obj_set_size(tileview, lv_disp_get_hor_res(NULL), lv_disp_get_ver_res(NULL));
   lv_obj_set_scrollbar_mode(tileview, LV_SCROLLBAR_MODE_OFF);
 
-  // Add two horizontal tiles
+
   t0 = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR);
   t1 = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR);
   t2 = lv_tileview_add_tile(tileview, 2, 0, LV_DIR_HOR);
 
-  // Tile #1
+
 
   {
-    //Creating 7-day screen with example values
+
     int amount = 7;
     forecast_elements = std::vector<WeatherForecastElement*>();
     forecast_elements.resize(amount);
@@ -96,8 +101,8 @@ static void create_ui()
     float element_size = 1.0 / ((float)amount);
     for(int i = 0; i < amount; i++)
     {
-      forecast_elements[i] = new WeatherForecastElement(forecast_parent); //Even smaller to act as padding
-      forecast_elements[i]->SetPosition(i * 0.60f, 0); //-0.5f because it is centered, meaning left side is -0.5f
+      forecast_elements[i] = new WeatherForecastElement(forecast_parent);
+      forecast_elements[i]->SetPosition(i * 0.60f, 0);
     }
 
     forecast_elements[0]->SetValues(25, "Karlskrona", "11-01", WeatherType::Sunny);
@@ -109,20 +114,20 @@ static void create_ui()
     forecast_elements[6]->SetValues(12, "Karlskrona", "11-07", WeatherType::Cloudy);
   }
 
-  // Tile #2
+
   {
     t2_label = lv_label_create(t2);
     lv_label_set_text(t2_label, "");
     lv_obj_set_style_text_font(t2_label, &lv_font_montserrat_28, 0);
     lv_obj_center(t2_label);
 
-    apply_tile_colors(t2, t2_label, /*dark=*/false);
+    apply_tile_colors(t2, t2_label, false);
     lv_obj_add_flag(t2, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(t2, on_tile2_clicked, LV_EVENT_CLICKED, NULL);
     vector<float> koord = {30, 10, 50, 40, 20};
     grafobj = new Linegraf(t2, koord, "Lund");
   }
-  
+
   {
     t0_label = lv_label_create(t0);
     lv_label_set_text(t0_label, "Weather app");
@@ -139,12 +144,12 @@ static void create_ui()
     lv_obj_set_style_text_color(t0_text2, lv_color_white(), LV_PART_MAIN);
     lv_obj_align(t0_text2, LV_ALIGN_BOTTOM_LEFT, 10, -10);
 
-    apply_tile_colors(t0, t0_label, /*dark=*/true);
+    apply_tile_colors(t0, t0_label, true);
   }
-// Sätt start-tile till t0 som ligger i kolumn 0, rad 0 utan animation
-//lv_tileview_set_act(tileview, 0, 0, LV_ANIM_OFF);
 
-// Ladda tileview som aktiv skärm så det syns direkt
+
+
+
 lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
 
   settings = new SettingsScreen();
@@ -162,10 +167,10 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
 }
 
 
-// Must have function: Setup is run once on startup
+
 BootScreen boot;
 bool bootDone = false;
-//Dropdown <string> *myDropdown;
+
 
 
 void setup()
@@ -173,7 +178,7 @@ void setup()
   Serial.begin(115200);
   delay(200);
   Serial.print("Free heap at start of setup(): ");
-  Serial.println(ESP.getFreeHeap());  
+  Serial.println(ESP.getFreeHeap());
 
 
   if (!amoled.begin()) {
@@ -181,16 +186,16 @@ void setup()
     while (true) delay(1000);
   }
 
-  //Needs to be before UI
+
   SMHIStationsAndParameters::GetInstance().Init();
 
-  beginLvglHelper(amoled);// bootscreen start here
-// Boot screen sequence
+  beginLvglHelper(amoled);
+
   create_ui();
   boot.init();
   boot.show();
 
-  unsigned long start = millis(); // old val 2500 måste ta tiden och bestämma vad 3 sekunder är. // ta bort en nolla 
+  unsigned long start = millis();
   while (millis() - start < 3000) {
     lv_timer_handler();
     delay(5);
@@ -199,42 +204,40 @@ void setup()
   boot.hide();
   bootDone = true;
 
-// initiate wifi here
+
 wifi.createWiFiStatusIcon();
   if (wifi.connect()) {
     Serial.println("connected to WiFi");
   }
-  else { 
+  else {
     Serial.println("Failed to connect to WiFi");
   }
-//////////////////////////////////////////////////////////////// smhi grejer
+
 
   Serial.print("Free heap before test: ");
   Serial.println(ESP.getFreeHeap());
 
   Serial.println("\n=== Testing CSV Data ===");
-  
+
   String testCSVUrl = buildURL("lufttemperatur", "karlskrona");
-  
+
   String csvData;
   if (httpsGetCSV(testCSVUrl, csvData)) {
     Serial.println("SUCCESS - Got CSV data:");
-    Serial.println(csvData);  // Just print everything
+    Serial.println(csvData);
   } else {
     Serial.println("FAILED to get CSV data");
   }
 
   Serial.print("Free heap after test: ");
   Serial.println(ESP.getFreeHeap());
-////////////////////////////////////////////////////////////////
+
 }
 
-// Must have function: Loop runs continously on device after setup
+
 void loop()
 {
 wifi.UpdateWiFiStatusIcon();
 
   lv_timer_handler();
 }
-
-//Jag gör en liten ändring så jag kan pusha

@@ -1,4 +1,5 @@
 #include "SettingsScreen.h"
+#include "SMHIStationsAndParameters/SMHIStationsAndParameters.h"
 
 LV_IMG_DECLARE(settings)
 LV_IMG_DECLARE(cancel)
@@ -65,8 +66,8 @@ SettingsScreen::SettingsScreen()
     lv_obj_set_pos(open_image, lv_obj_get_content_width(lv_scr_act()) * -0.4f, lv_obj_get_content_height(lv_scr_act()) * -0.4f);
 
     //Dropdowns
-    locations_dropdown = new Dropdown<std::string>({"Karlskrona", "Malmö", "Stockholm", "Göteborg"}, popup_screen);
-    conditions_dropdown = new Dropdown<std::string>({"Temperature", "Avg Temperature", "Nuclear warheads", "Ducks per square inch"}, popup_screen);
+    locations_dropdown = new Dropdown<DropdownStation>(SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageDaily), popup_screen);
+    conditions_dropdown = new Dropdown<DropdownParameter>(SMHIStationsAndParameters::GetInstance().GetParameters(), popup_screen);
 
     locations_dropdown->screenpos(popup_width * -0.25f, popup_height * -0.5f);
     conditions_dropdown->screenpos(popup_width * 0.25, popup_height * -0.5f);
@@ -90,14 +91,20 @@ SettingsScreen::SettingsScreen()
     //Set default values. Close popup and close image by default
     lv_obj_add_flag(close_image, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(popup_screen, LV_OBJ_FLAG_HIDDEN);
+
+    //Important listener to change eligiblestations when we change parameter
+    AddListenerToCondition([&](DropdownParameter newParameter)
+    {
+        locations_dropdown->UpdateList(SMHIStationsAndParameters::GetInstance().GetEligibleStations(newParameter.realParameter->enumParameterkey));
+    });
 }
 
-void SettingsScreen::AddListenerToLocation(std::function<void(std::string)> func)
+void SettingsScreen::AddListenerToLocation(std::function<void(DropdownStation)> func)
 {
     locations_dropdown->addlistener(func);
 }
 
-void SettingsScreen::AddListenerToCondition(std::function<void(std::string)> func)
+void SettingsScreen::AddListenerToCondition(std::function<void(DropdownParameter)> func)
 {
     conditions_dropdown->addlistener(func);
 }
