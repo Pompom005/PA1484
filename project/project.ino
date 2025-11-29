@@ -20,6 +20,99 @@
 
 using namespace std;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////SMHI PARSER TESTER
+#include "ParserStuff/SMHIFileManager.h"
+#include "ParserStuff/SMHIForecastParser.h"
+#include "ParserStuff/SMHIHistoricalParser.h"
+
+// Add these global variables
+SMHIFileManager fileManager;
+SMHIForecastParser forecastParser;
+SMHIHistoricalParser historicalParser;
+
+// Test function to demonstrate parsing
+void testSMHIParsing() {
+    Serial.println("\n=== Testing SMHI JSON Parsing ===");
+    
+    // Initialize file manager
+    if (!fileManager.begin()) {
+        Serial.println("Failed to initialize file manager");
+        return;
+    }
+    
+    // Show storage info
+    fileManager.printStorageInfo();
+    
+    // List available files
+    fileManager.listAllFiles();
+    
+    // Test parsing each file
+    std::vector<String> files = fileManager.getAvailableFiles();
+    
+    for (const String& filename : files) {
+        Serial.printf("\n--- Testing file: %s ---\n", filename.c_str());
+        
+        // Try as forecast file first
+        if (forecastParser.parseJSONFromFile("/ParserStuff/SMHIJsonFiles/" + filename)) {
+            Serial.println("✓ Successfully parsed as FORECAST data");
+            forecastParser.printData();
+            
+            // Get data for graphing
+            std::vector<float> tempData = forecastParser.getTemperatureData();
+            std::vector<float> windData = forecastParser.getWindSpeedData();
+            
+            Serial.printf("Temperature data points: %d\n", tempData.size());
+            Serial.printf("Wind speed data points: %d\n", windData.size());
+            
+            // Show first few values
+            if (tempData.size() > 0) {
+                Serial.print("First 5 temperatures: ");
+                for (int i = 0; i < min(5, (int)tempData.size()); i++) {
+                    Serial.printf("%.1f ", tempData[i]);
+                }
+                Serial.println();
+            }
+            
+        } 
+        // Try as historical file
+        else if (historicalParser.parseJSONFromFile("/SMHIJsonFiles/" + filename)) {
+            Serial.println("✓ Successfully parsed as HISTORICAL data");
+            historicalParser.printData();
+            
+            std::vector<float> valueData = historicalParser.getValueData();
+            Serial.printf("Data points: %d\n", valueData.size());
+            Serial.printf("Parameter: %s\n", historicalParser.getParameterName().c_str());
+            Serial.printf("Unit: %s\n", historicalParser.getUnit().c_str());
+            
+            // Show first few values
+            if (valueData.size() > 0) {
+                Serial.print("First 5 values: ");
+                for (int i = 0; i < min(5, (int)valueData.size()); i++) {
+                    Serial.printf("%.1f ", valueData[i]);
+                }
+                Serial.println();
+            }
+        } 
+        else {
+            Serial.println("✗ Failed to parse file");
+        }
+        
+        // Delete file after testing (optional)
+         fileManager.deleteFile(filename);
+         Serial.printf("Deleted file: %s\n", filename.c_str());
+    }
+    
+    if (files.empty()) {
+        Serial.println("No files found in SMHIJsonFiles folder!");
+        Serial.println("Please upload JSON files to the SMHIJsonFiles folder");
+    }
+}
+
+// Function to manually trigger testing
+void manualTest() {
+    testSMHIParsing();
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Wi-Fi credentials (Delete these before commiting to GitHub)
 WiFiHandler wifi("OWNIT_5GHz_C1EB51","TP4YG3ANFJ", 2000);
 
@@ -183,6 +276,11 @@ void setup()
 
   //Needs to be before UI
   SMHIStationsAndParameters::GetInstance().Init();
+  
+  fileManager.begin();
+  
+  testSMHIParsing();
+
 
   beginLvglHelper(amoled);// bootscreen start here
 // Boot screen sequence
@@ -207,26 +305,7 @@ wifi.createWiFiStatusIcon();
   else { 
     Serial.println("Failed to connect to WiFi");
   }
-//////////////////////////////////////////////////////////////// smhi grejer
 
-  Serial.print("Free heap before test: ");
-  Serial.println(ESP.getFreeHeap());
-
-  Serial.println("\n=== Testing CSV Data ===");
-  
-  String testCSVUrl = buildURL("lufttemperatur", "karlskrona");
-  
-  String csvData;
-  if (httpsGetCSV(testCSVUrl, csvData)) {
-    Serial.println("SUCCESS - Got CSV data:");
-    Serial.println(csvData);  // Just print everything
-  } else {
-    Serial.println("FAILED to get CSV data");
-  }
-
-  Serial.print("Free heap after test: ");
-  Serial.println(ESP.getFreeHeap());
-////////////////////////////////////////////////////////////////
 }
 
 // Must have function: Loop runs continously on device after setup
