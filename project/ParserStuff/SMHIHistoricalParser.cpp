@@ -1,6 +1,5 @@
 #include "SMHIHistoricalParser.h"
-#include <FS.h>
-#include <SPIFFS.h>
+#include <LittleFS.h>
 
 SMHIHistoricalParser::SMHIHistoricalParser() : parameterName(""), unit("") {
 }
@@ -10,10 +9,13 @@ SMHIHistoricalParser::~SMHIHistoricalParser() {
 }
 
 void SMHIHistoricalParser::timestampToDateTime(unsigned long timestamp, int& year, int& month, int& day, int& hour, int& minute) {
-    // Convert UNIX timestamp (milliseconds) to date/time
-    time_t rawTime = timestamp / 1000;
-    struct tm* timeInfo = gmtime(&rawTime);
+    // SMHI timestamps are milliseconds since 1900
+    // Convert to seconds since 1970
+    unsigned long offset = 2208988800000UL; // 70 years in milliseconds
+    unsigned long millisecondsSince1970 = timestamp - offset;
+    time_t rawTime = millisecondsSince1970 / 1000;
     
+    struct tm* timeInfo = gmtime(&rawTime);
     year = timeInfo->tm_year + 1900;
     month = timeInfo->tm_mon + 1;
     day = timeInfo->tm_mday;
@@ -29,8 +31,6 @@ void SMHIHistoricalParser::extractHistoricalData(const String& jsonString) {
     
     DeserializationError error = deserializeJson(doc, jsonString);
     if (error) {
-        Serial.print("Historical JSON deserialization failed: ");
-        Serial.println(error.c_str());
         return;
     }
     
@@ -45,53 +45,55 @@ void SMHIHistoricalParser::extractHistoricalData(const String& jsonString) {
     // Extract values array
     JsonArray values = doc["value"];
     if (values.isNull()) {
-        Serial.println("No value array found in historical JSON");
         return;
     }
     
     for (JsonObject dataPoint : values) {
-        unsigned long timestamp = dataPoint["date"];
-        const char* valueStr = dataPoint["value"];
-        const char* quality = dataPoint["quality"];
+        // Handle both string and number types for all fields
+        unsigned long timestamp = 0;
+        float value = 0.0f;
+        const char* quality = nullptr;
         
-        if (valueStr && quality && String(quality) == "Y") { // Only use validated data
+        // Date can be string or number
+        if (dataPoint["date"].is<const char*>()) {
+            timestamp = String(dataPoint["date"].as<const char*>()).toInt();
+        } else {
+            timestamp = dataPoint["date"].as<unsigned long>();
+        }
+        
+        // Value can be string or number  
+        if (dataPoint["value"].is<const char*>()) {
+            value = String(dataPoint["value"].as<const char*>()).toFloat();
+        } else {
+            value = dataPoint["value"].as<float>();
+        }
+        
+        // Quality is always string
+        quality = dataPoint["quality"].as<const char*>();
+        
+        if (quality && (String(quality) == "Y" || String(quality) == "G")) {
             HistoricalDataPoint point;
             
             timestampToDateTime(timestamp, point.year, point.month, point.day, point.hour, point.minute);
-            point.value = String(valueStr).toFloat();
+            point.value = value;
             point.quality = String(quality);
             
             historicalData.push_back(point);
         }
     }
-    
-    Serial.print("Parsed ");
-    Serial.print(historicalData.size());
-    Serial.print(" historical data points for ");
-    Serial.println(parameterName);
 }
 
 bool SMHIHistoricalParser::parseJSONFromFile(const String& filename) {
-    if (!SPIFFS.begin(true)) {
-        Serial.println("SPIFFS mount failed");
-        return false;
+    if (LittleFS.begin(true)) {
+        File file = LittleFS.open(filename, "r");
+        if (file) {
+            String jsonString = file.readString();
+            file.close();
+            extractHistoricalData(jsonString);
+            return historicalData.size() > 0;
+        }
     }
-    
-    File file = SPIFFS.open(filename, "r");
-    if (!file) {
-        Serial.println("Failed to open historical file for reading");
-        return false;
-    }
-    
-    String jsonString = file.readString();
-    file.close();
-    
-    extractHistoricalData(jsonString);
-    
-    // Delete file to save space
-    SPIFFS.remove(filename);
-    
-    return historicalData.size() > 0;
+    return false;
 }
 
 bool SMHIHistoricalParser::parseJSONFromString(const String& jsonString) {
@@ -124,8 +126,7 @@ void SMHIHistoricalParser::printData() const {
     Serial.print("Unit: ");
     Serial.println(unit);
     
-    // Print first 10 and last 10 data points
-    size_t printCount = min(historicalData.size(), (size_t)20);
+    size_t printCount = min(historicalData.size(), (size_t)10);
     for (size_t i = 0; i < printCount; i++) {
         const auto& data = historicalData[i];
         Serial.printf("[%zu] %04d-%02d-%02d %02d:%02d - Value: %.1f%s, Quality: %s\n",
@@ -133,14 +134,7 @@ void SMHIHistoricalParser::printData() const {
                      data.value, unit.c_str(), data.quality.c_str());
     }
     
-    if (historicalData.size() > 20) {
-        Serial.println("... (more data points)");
-        
-        for (size_t i = historicalData.size() - 10; i < historicalData.size(); i++) {
-            const auto& data = historicalData[i];
-            Serial.printf("[%zu] %04d-%02d-%02d %02d:%02d - Value: %.1f%s, Quality: %s\n",
-                         i, data.year, data.month, data.day, data.hour, data.minute,
-                         data.value, unit.c_str(), data.quality.c_str());
-        }
+    if (historicalData.size() > 10) {
+        Serial.printf("... and %zu more data points\n", historicalData.size() - 10);
     }
 }

@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <vector>
-#include <string>
+#include <String>
 
 struct HistoricalDataPoint {
     int year;

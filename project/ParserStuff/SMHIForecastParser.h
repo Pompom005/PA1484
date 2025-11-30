@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <vector>
-#include <string>
+#include <String>
 
 struct ForecastDataPoint {
     int year;
@@ -31,7 +31,6 @@ public:
     bool parseJSONFromFile(const String& filename);
     bool parseJSONFromString(const String& jsonString);
     
-    // Get data for graphing (only noon values)
     std::vector<float> getTemperatureData() const;
     std::vector<float> getWindSpeedData() const;
     std::vector<float> getHumidityData() const;

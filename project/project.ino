@@ -18,151 +18,51 @@
 #include "SettingsScreen.h"
 #include "SMHIStationsAndParameters/SMHIStationsAndParameters.h"
 
+// test system includes
+#include "ParserStuff/SMHIFileManager.h"
+#include "lib/SMHITestdata/SMHITestRunner.h"
+
 using namespace std;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////SMHI PARSER TESTER
-#include "ParserStuff/SMHIFileManager.h"
-#include "ParserStuff/SMHIForecastParser.h"
-#include "ParserStuff/SMHIHistoricalParser.h"
-
-// Add these global variables
-SMHIFileManager fileManager;
-SMHIForecastParser forecastParser;
-SMHIHistoricalParser historicalParser;
-
-// Test function to demonstrate parsing
-void testSMHIParsing() {
-    Serial.println("\n=== Testing SMHI JSON Parsing ===");
-    
-    // Initialize file manager
-    if (!fileManager.begin()) {
-        Serial.println("Failed to initialize file manager");
-        return;
-    }
-    
-    // Show storage info
-    fileManager.printStorageInfo();
-    
-    // List available files
-    fileManager.listAllFiles();
-    
-    // Test parsing each file
-    std::vector<String> files = fileManager.getAvailableFiles();
-    
-    for (const String& filename : files) {
-        Serial.printf("\n--- Testing file: %s ---\n", filename.c_str());
-        
-        // Try as forecast file first
-        if (forecastParser.parseJSONFromFile("/ParserStuff/SMHIJsonFiles/" + filename)) {
-            Serial.println("✓ Successfully parsed as FORECAST data");
-            forecastParser.printData();
-            
-            // Get data for graphing
-            std::vector<float> tempData = forecastParser.getTemperatureData();
-            std::vector<float> windData = forecastParser.getWindSpeedData();
-            
-            Serial.printf("Temperature data points: %d\n", tempData.size());
-            Serial.printf("Wind speed data points: %d\n", windData.size());
-            
-            // Show first few values
-            if (tempData.size() > 0) {
-                Serial.print("First 5 temperatures: ");
-                for (int i = 0; i < min(5, (int)tempData.size()); i++) {
-                    Serial.printf("%.1f ", tempData[i]);
-                }
-                Serial.println();
-            }
-            
-        } 
-        // Try as historical file
-        else if (historicalParser.parseJSONFromFile("/SMHIJsonFiles/" + filename)) {
-            Serial.println("✓ Successfully parsed as HISTORICAL data");
-            historicalParser.printData();
-            
-            std::vector<float> valueData = historicalParser.getValueData();
-            Serial.printf("Data points: %d\n", valueData.size());
-            Serial.printf("Parameter: %s\n", historicalParser.getParameterName().c_str());
-            Serial.printf("Unit: %s\n", historicalParser.getUnit().c_str());
-            
-            // Show first few values
-            if (valueData.size() > 0) {
-                Serial.print("First 5 values: ");
-                for (int i = 0; i < min(5, (int)valueData.size()); i++) {
-                    Serial.printf("%.1f ", valueData[i]);
-                }
-                Serial.println();
-            }
-        } 
-        else {
-            Serial.println("✗ Failed to parse file");
-        }
-        
-        // Delete file after testing (optional)
-         fileManager.deleteFile(filename);
-         Serial.printf("Deleted file: %s\n", filename.c_str());
-    }
-    
-    if (files.empty()) {
-        Serial.println("No files found in SMHIJsonFiles folder!");
-        Serial.println("Please upload JSON files to the SMHIJsonFiles folder");
-    }
-}
-
-// Function to manually trigger testing
-void manualTest() {
-    testSMHIParsing();
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Wi-Fi credentials (Delete these before commiting to GitHub)
+// Wi-Fi credentials
 WiFiHandler wifi("OWNIT_5GHz_C1EB51","TP4YG3ANFJ", 2000);
 
 LilyGo_Class amoled;
 
 static lv_obj_t* tileview;
-
 static lv_obj_t* t0;
 static lv_obj_t* t1;
 static lv_obj_t* t2;
-
 static lv_obj_t* t1_label;
 static lv_obj_t* t2_label;
-static bool t2_dark = false;  // start tile #2 in light mode
+static bool t2_dark = false;
 static lv_obj_t* t3_label;
 static lv_obj_t* t0_text1;
 static lv_obj_t* t0_text2;
 static lv_obj_t* t0_label;
-//OUR variables
-
 static std::vector<WeatherForecastElement*> forecast_elements;
-//static Dropdown<string>* dropdownobj;
-//static Dropdown <string> * dropdownobj2;
-static Linegraf* grafobj;static SettingsScreen* settings;
-
+static Linegraf* grafobj;
+static SettingsScreen* settings;
 static lv_obj_t* forecast_parent;
 
-//END of our variables
+// Add test runner instance
+SMHITestRunner testRunner;
 
 // Function: Tile #2 Color change
-static void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark)
-{
-  // Background
+static void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark) {
   lv_obj_set_style_bg_opa(tile, LV_OPA_COVER, 0);
   lv_obj_set_style_bg_color(tile, dark ? lv_color_black() : lv_color_white(), 0);
-
-  // Text
   lv_obj_set_style_text_color(label, dark ? lv_color_white() : lv_color_black(), 0);
 }
 
-static void on_tile2_clicked(lv_event_t* e)
-{
+static void on_tile2_clicked(lv_event_t* e) {
   LV_UNUSED(e);
   t2_dark = !t2_dark;
   apply_tile_colors(t2, t2_label, t2_dark);
 }
 
 // Function: Creates UI
-static void create_ui()
-{
+static void create_ui() {
   // Fullscreen Tileview
   tileview = lv_tileview_create(lv_scr_act());
   lv_obj_set_size(tileview, lv_disp_get_hor_res(NULL), lv_disp_get_ver_res(NULL));
@@ -173,10 +73,8 @@ static void create_ui()
   t1 = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR);
   t2 = lv_tileview_add_tile(tileview, 2, 0, LV_DIR_HOR);
 
-  // Tile #1
-
+  // Tile #1 - Weather forecast
   {
-    //Creating 7-day screen with example values
     int amount = 7;
     forecast_elements = std::vector<WeatherForecastElement*>();
     forecast_elements.resize(amount);
@@ -187,35 +85,38 @@ static void create_ui()
     lv_obj_set_content_width(forecast_parent, lv_obj_get_content_width(t1) * 0.65f);
 
     float element_size = 1.0 / ((float)amount);
-    for(int i = 0; i < amount; i++)
-    {
-      forecast_elements[i] = new WeatherForecastElement(forecast_parent); //Even smaller to act as padding
-      forecast_elements[i]->SetPosition(i * 0.60f, 0); //-0.5f because it is centered, meaning left side is -0.5f
+    for(int i = 0; i < amount; i++) {
+      forecast_elements[i] = new WeatherForecastElement(forecast_parent);
+      forecast_elements[i]->SetPosition(i * 0.60f, 0);
     }
 
-    forecast_elements[0]->SetValues(25, "Karlskrona", "11-01", WeatherType::Sunny);
-    forecast_elements[1]->SetValues(15, "Karlskrona", "11-02", WeatherType::Thunder);
-    forecast_elements[2]->SetValues(-10, "Karlskrona", "11-03", WeatherType::Snow);
-    forecast_elements[3]->SetValues(-36, "Karlskrona", "11-04", WeatherType::Snow);
-    forecast_elements[4]->SetValues(13, "Karlskrona", "11-05", WeatherType::Rain);
-    forecast_elements[5]->SetValues(15, "Karlskrona", "11-06", WeatherType::Thunder);
-    forecast_elements[6]->SetValues(12, "Karlskrona", "11-07", WeatherType::Cloudy);
+    // Use test data for display
+    forecast_elements[0]->SetValues(7.7, "Karlskrona", "11-29", WeatherType::Cloudy);
+    forecast_elements[1]->SetValues(7.4, "Karlskrona", "11-30", WeatherType::Rain);
+    forecast_elements[2]->SetValues(7.0, "Karlskrona", "12-01", WeatherType::Cloudy);
+    forecast_elements[3]->SetValues(6.3, "Karlskrona", "12-02", WeatherType::Rain);
+    forecast_elements[4]->SetValues(5.7, "Karlskrona", "12-03", WeatherType::Sunny);
+    forecast_elements[5]->SetValues(6.0, "Karlskrona", "12-04", WeatherType::Sunny);
+    forecast_elements[6]->SetValues(5.8, "Karlskrona", "12-05", WeatherType::Cloudy);
   }
 
-  // Tile #2
+  // Tile #2 - Graph
   {
     t2_label = lv_label_create(t2);
     lv_label_set_text(t2_label, "");
     lv_obj_set_style_text_font(t2_label, &lv_font_montserrat_28, 0);
     lv_obj_center(t2_label);
 
-    apply_tile_colors(t2, t2_label, /*dark=*/false);
+    apply_tile_colors(t2, t2_label, false);
     lv_obj_add_flag(t2, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(t2, on_tile2_clicked, LV_EVENT_CLICKED, NULL);
-    vector<float> koord = {30, 10, 50, 40, 20};
-    grafobj = new Linegraf(t2, koord, "Lund");
+    
+    // Use test temperature data for the graph
+    vector<float> testTemperatures = {7.7, 7.4, 7.0, 6.3, 5.7, 6.0, 5.8};
+    grafobj = new Linegraf(t2, testTemperatures, "Karlskrona");
   }
   
+  // Tile #0 - Welcome screen
   {
     t0_label = lv_label_create(t0);
     lv_label_set_text(t0_label, "Weather app");
@@ -232,18 +133,13 @@ static void create_ui()
     lv_obj_set_style_text_color(t0_text2, lv_color_white(), LV_PART_MAIN);
     lv_obj_align(t0_text2, LV_ALIGN_BOTTOM_LEFT, 10, -10);
 
-    apply_tile_colors(t0, t0_label, /*dark=*/true);
+    apply_tile_colors(t0, t0_label, true);
   }
-// Sätt start-tile till t0 som ligger i kolumn 0, rad 0 utan animation
-//lv_tileview_set_act(tileview, 0, 0, LV_ANIM_OFF);
 
-// Ladda tileview som aktiv skärm så det syns direkt
-lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
+  lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
 
   settings = new SettingsScreen();
-
-  settings->AddListenerToLocation([&](DropdownStation newLocation)
-  {
+  settings->AddListenerToLocation([&](DropdownStation newLocation) {
     forecast_elements[0]->SetLocation(newLocation.realStation->name);
     forecast_elements[1]->SetLocation(newLocation.realStation->name);
     forecast_elements[2]->SetLocation(newLocation.realStation->name);
@@ -254,41 +150,56 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
   });
 }
 
+// Test function that runs the parser tests
+void runSMHITests() {
+    Serial.println("\n" + String(60, '='));
+    Serial.println("STARTING SMHI PARSER TESTS");
+    Serial.println(String(60, '='));
+    
+    // Run all tests
+    testRunner.runAllTests();
+    
+    // Optional: Run debug tests
+    // testRunner.runTimestampDebug();
+    // testRunner.runFileSystemTest();
+    
+    Serial.println("\n" + String(60, '='));
+    Serial.println("TESTS COMPLETED - READY FOR GRAPHING");
+    Serial.println(String(60, '='));
+}
 
-// Must have function: Setup is run once on startup
 BootScreen boot;
 bool bootDone = false;
-//Dropdown <string> *myDropdown;
 
-
-void setup()
-{
+void setup() {
   Serial.begin(115200);
   delay(200);
   Serial.print("Free heap at start of setup(): ");
   Serial.println(ESP.getFreeHeap());  
-
 
   if (!amoled.begin()) {
     Serial.println("Failed to init LilyGO AMOLED.");
     while (true) delay(1000);
   }
 
-  //Needs to be before UI
+  // Run SMHI parser tests FIRST (before UI creation)
+  runSMHITests();
+
+  // Then continue with normal setup
+  beginLvglHelper(amoled);
+  
+  // Needs to be before UI
   SMHIStationsAndParameters::GetInstance().Init();
-  
-  fileManager.begin();
-  
-  testSMHIParsing();
 
 
-  beginLvglHelper(amoled);// bootscreen start here
-// Boot screen sequence
+
+  
+
   create_ui();
   boot.init();
   boot.show();
 
-  unsigned long start = millis(); // old val 2500 måste ta tiden och bestämma vad 3 sekunder är. // ta bort en nolla 
+  unsigned long start = millis();
   while (millis() - start < 3000) {
     lv_timer_handler();
     delay(5);
@@ -297,23 +208,17 @@ void setup()
   boot.hide();
   bootDone = true;
 
-// initiate wifi here
-wifi.createWiFiStatusIcon();
+  // Initiate wifi here
+  wifi.createWiFiStatusIcon();
   if (wifi.connect()) {
     Serial.println("connected to WiFi");
   }
   else { 
     Serial.println("Failed to connect to WiFi");
   }
-
 }
 
-// Must have function: Loop runs continously on device after setup
-void loop()
-{
-wifi.UpdateWiFiStatusIcon();
-
+void loop() {
+  wifi.UpdateWiFiStatusIcon();
   lv_timer_handler();
 }
-
-//Jag gör en liten ändring så jag kan pusha

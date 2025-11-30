@@ -1,6 +1,5 @@
 #include "SMHIForecastParser.h"
-#include <FS.h>
-#include <SPIFFS.h>
+#include <LittleFS.h>
 
 SMHIForecastParser::SMHIForecastParser() {
 }
@@ -20,7 +19,6 @@ bool SMHIForecastParser::parseDateTime(const String& dateTimeStr, int& year, int
 }
 
 bool SMHIForecastParser::isNoonTime(const String& dateTimeStr) {
-    // Check if time is 12:00 (format: "2025-11-29T12:00:00Z")
     if (dateTimeStr.length() < 16) return false;
     
     int hour = dateTimeStr.substring(11, 13).toInt();
@@ -35,14 +33,11 @@ void SMHIForecastParser::extractForecastData(const String& jsonString) {
     
     DeserializationError error = deserializeJson(doc, jsonString);
     if (error) {
-        Serial.print("Forecast JSON deserialization failed: ");
-        Serial.println(error.c_str());
         return;
     }
     
     JsonArray timeSeries = doc["timeSeries"];
     if (timeSeries.isNull()) {
-        Serial.println("No timeSeries found in forecast JSON");
         return;
     }
     
@@ -54,44 +49,48 @@ void SMHIForecastParser::extractForecastData(const String& jsonString) {
             ForecastDataPoint point;
             
             if (parseDateTime(String(timeStr), point.year, point.month, point.day)) {
-                point.temperature = data["air_temperature"] | -999.0f;
-                point.windSpeed = data["wind_speed"] | -999.0f;
-                point.humidity = data["relative_humidity"] | -999.0f;
-                point.pressure = data["air_pressure_at_mean_sea_level"] | -999.0f;
-                point.precipitation = data["precipitation_amount_mean"] | -999.0f;
-                point.weatherSymbol = data["symbol_code"] | 0;
+                // Handle both string and number types for all data fields
+                point.temperature = data["air_temperature"].is<const char*>() ? 
+                    String(data["air_temperature"].as<const char*>()).toFloat() : 
+                    data["air_temperature"].as<float>();
+                    
+                point.windSpeed = data["wind_speed"].is<const char*>() ? 
+                    String(data["wind_speed"].as<const char*>()).toFloat() : 
+                    data["wind_speed"].as<float>();
+                    
+                point.humidity = data["relative_humidity"].is<const char*>() ? 
+                    String(data["relative_humidity"].as<const char*>()).toFloat() : 
+                    data["relative_humidity"].as<float>();
+                    
+                point.pressure = data["air_pressure_at_mean_sea_level"].is<const char*>() ? 
+                    String(data["air_pressure_at_mean_sea_level"].as<const char*>()).toFloat() : 
+                    data["air_pressure_at_mean_sea_level"].as<float>();
+                    
+                point.precipitation = data["precipitation_amount_mean"].is<const char*>() ? 
+                    String(data["precipitation_amount_mean"].as<const char*>()).toFloat() : 
+                    data["precipitation_amount_mean"].as<float>();
+                    
+                point.weatherSymbol = data["symbol_code"].is<const char*>() ? 
+                    String(data["symbol_code"].as<const char*>()).toInt() : 
+                    data["symbol_code"].as<int>();
                 
                 forecastData.push_back(point);
             }
         }
     }
-    
-    Serial.print("Parsed ");
-    Serial.print(forecastData.size());
-    Serial.println(" forecast data points (12:00 only)");
 }
 
 bool SMHIForecastParser::parseJSONFromFile(const String& filename) {
-    if (!SPIFFS.begin(true)) {
-        Serial.println("SPIFFS mount failed");
-        return false;
+    if (LittleFS.begin(true)) {
+        File file = LittleFS.open(filename, "r");
+        if (file) {
+            String jsonString = file.readString();
+            file.close();
+            extractForecastData(jsonString);
+            return forecastData.size() > 0;
+        }
     }
-    
-    File file = SPIFFS.open(filename, "r");
-    if (!file) {
-        Serial.println("Failed to open forecast file for reading");
-        return false;
-    }
-    
-    String jsonString = file.readString();
-    file.close();
-    
-    extractForecastData(jsonString);
-    
-    // Delete file to save space
-    SPIFFS.remove(filename);
-    
-    return forecastData.size() > 0;
+    return false;
 }
 
 bool SMHIForecastParser::parseJSONFromString(const String& jsonString) {
