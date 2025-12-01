@@ -1,6 +1,4 @@
-#include <Arduino.h>
-#include <HTTPClient.h>
-#include <ArduinoJson.h>
+#include "SMHIAPI/SMHIAPI.h"
 #include <TFT_eSPI.h>
 #include <time.h>
 #include <LilyGo_AMOLED.h>
@@ -18,11 +16,12 @@
 #include<Dropdown.h>
 #include<Linegraf.h>
 #include "SettingsScreen.h"
+#include "SMHIStationsAndParameters/SMHIStationsAndParameters.h"
 
 using namespace std;
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
-WiFiHandler wifi("BTH_Guest","nektarin87rosa");
+WiFiHandler wifi("BTH_Guest","papaya21turkos", 2000);
 
 LilyGo_Class amoled;
 
@@ -151,21 +150,20 @@ static void create_ui()
 // Sätt start-tile till t0 som ligger i kolumn 0, rad 0 utan animation
 //lv_tileview_set_act(tileview, 0, 0, LV_ANIM_OFF);
 
-  // Ladda tileview som aktiv skärm så det syns direkt
-  lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
-  //lv_scr_load(tileview);
+// Ladda tileview som aktiv skärm så det syns direkt
+lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
 
   settings = new SettingsScreen();
 
-  settings->AddListenerToLocation([&](std::string newLocation)
+  settings->AddListenerToLocation([&](DropdownStation newLocation)
   {
-    forecast_elements[0]->SetLocation(newLocation);
-    forecast_elements[1]->SetLocation(newLocation);
-    forecast_elements[2]->SetLocation(newLocation);
-    forecast_elements[3]->SetLocation(newLocation);
-    forecast_elements[4]->SetLocation(newLocation);
-    forecast_elements[5]->SetLocation(newLocation);
-    forecast_elements[6]->SetLocation(newLocation);
+    forecast_elements[0]->SetLocation(newLocation.realStation->name);
+    forecast_elements[1]->SetLocation(newLocation.realStation->name);
+    forecast_elements[2]->SetLocation(newLocation.realStation->name);
+    forecast_elements[3]->SetLocation(newLocation.realStation->name);
+    forecast_elements[4]->SetLocation(newLocation.realStation->name);
+    forecast_elements[5]->SetLocation(newLocation.realStation->name);
+    forecast_elements[6]->SetLocation(newLocation.realStation->name);
   });
 }
 
@@ -180,17 +178,22 @@ void setup()
 {
   Serial.begin(115200);
   delay(200);
+  Serial.print("Free heap at start of setup(): ");
+  Serial.println(ESP.getFreeHeap());  
 
 
   if (!amoled.begin()) {
     Serial.println("Failed to init LilyGO AMOLED.");
     while (true) delay(1000);
   }
-  
+
+  //Needs to be before UI
+  SMHIStationsAndParameters::GetInstance().Init();
+
   beginLvglHelper(amoled);// bootscreen start here
 // Boot screen sequence
   create_ui();
-boot.init();
+  boot.init();
   boot.show();
 
   unsigned long start = millis(); // old val 2500 måste ta tiden och bestämma vad 3 sekunder är. // ta bort en nolla 
@@ -210,6 +213,26 @@ wifi.createWiFiStatusIcon();
   else { 
     Serial.println("Failed to connect to WiFi");
   }
+//////////////////////////////////////////////////////////////// smhi grejer
+
+  Serial.print("Free heap before test: ");
+  Serial.println(ESP.getFreeHeap());
+
+  Serial.println("\n=== Testing CSV Data ===");
+  
+  String testCSVUrl = buildURL("lufttemperatur", "karlskrona");
+  
+  String csvData;
+  if (httpsGetCSV(testCSVUrl, csvData)) {
+    Serial.println("SUCCESS - Got CSV data:");
+    Serial.println(csvData);  // Just print everything
+  } else {
+    Serial.println("FAILED to get CSV data");
+  }
+
+  Serial.print("Free heap after test: ");
+  Serial.println(ESP.getFreeHeap());
+////////////////////////////////////////////////////////////////
 }
 
 // Must have function: Loop runs continously on device after setup

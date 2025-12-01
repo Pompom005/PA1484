@@ -2,6 +2,7 @@
 #include "Dropdown.h"
 #include <string>
 #include <functional>
+#include "SMHIStationsAndParameters/SMHIStationsAndParameters.h"
 
 class SettingsScreen
 {
@@ -18,8 +19,8 @@ class SettingsScreen
         lv_obj_t* conditions_label;
 
         //Dropdowns
-        Dropdown<std::string>* locations_dropdown;
-        Dropdown<std::string>* conditions_dropdown; 
+        Dropdown<DropdownStation>* locations_dropdown;
+        Dropdown<DropdownParameter>* conditions_dropdown; 
         
         bool state = false; //True == open, false == closed
 
@@ -29,8 +30,8 @@ class SettingsScreen
     public:
         SettingsScreen();
 
-        void AddListenerToLocation(std::function<void(std::string)> func);
-        void AddListenerToCondition(std::function<void(std::string)> func);
+        void AddListenerToLocation(std::function<void(DropdownStation)> func);
+        void AddListenerToCondition(std::function<void(DropdownParameter)> func);
 };
 
 //Create button on scr, not tile

@@ -25,4 +25,5 @@ class Dropdown{
     void screenpos(int x, int y);
     string makeittostring(const vector<T> & stad);
     void addlistener(std::function<void(T)> func);
+    void UpdateList(const vector<T>& cities);
 };
