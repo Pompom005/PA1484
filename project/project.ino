@@ -1,4 +1,4 @@
-#include "SMHIAPI.h"
+#include "SMHIAPI/SMHIAPI.h"
 #include <TFT_eSPI.h>
 #include <time.h>
 #include <LilyGo_AMOLED.h>
@@ -21,7 +21,7 @@
 using namespace std;
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
-WiFiHandler wifi("OWNIT_5GHz_C1EB51","TP4YG3ANFJ", 2000);
+WiFiHandler wifi("BTH_Guest","papaya21turkos", 2000);
 
 LilyGo_Class amoled;
 
