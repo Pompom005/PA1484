@@ -69,6 +69,11 @@ void WeatherForecastElement::SetTemp(float temperature)
 void WeatherForecastElement::SetLocation(const std::string &location)
 {
     location_text->SetText(location.c_str());
+    int referenceTextAmount = 12; //This amount of chars are a good fit with 0.0f offset
+    int locationAmount = location.length();
+
+    int diff = referenceTextAmount - locationAmount;
+    location_text->SetSizeOffset((float)diff * 0.1f);
 }
 
 void WeatherForecastElement::SetTime(const std::string &time)

@@ -1,6 +1,8 @@
 #include<Dropdown.h>
 #include "SMHIStationsAndParameters/SMHIStationsAndParameters.h"
 
+LV_FONT_DECLARE(arial_12);
+
 template <typename T>
 Dropdown <T>::Dropdown(const vector<T>& cities, lv_obj_t * parent, int x, int y): choices(cities){
         if(cities.size()==0){

@@ -30,6 +30,9 @@ class SettingsScreen
     public:
         SettingsScreen();
 
+        void HideOnTiles();
+        void ShowOnTiles();
+
         void AddListenerToLocation(std::function<void(DropdownStation)> func);
         void AddListenerToCondition(std::function<void(DropdownParameter)> func);
 };

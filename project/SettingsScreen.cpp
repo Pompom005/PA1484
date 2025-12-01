@@ -47,7 +47,9 @@ SettingsScreen::SettingsScreen()
     lv_obj_set_content_width(button, 40);
     lv_obj_align(button, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_event_cb(button, OnButtonPressed, LV_EVENT_CLICKED, this);
-    
+    //lv_obj_set_style_bg_color(button, lv_color_make(255, 19, 240), LV_STATE_DEFAULT); //Neon pink, superior color
+    lv_obj_set_style_bg_color(button, lv_color_make(128, 128, 128), LV_STATE_DEFAULT); //Grey
+
     lv_obj_set_pos(button, lv_obj_get_content_width(lv_scr_act()) * -0.4f, lv_obj_get_content_height(lv_scr_act()) * -0.4f);
 
     //Images
@@ -97,6 +99,20 @@ SettingsScreen::SettingsScreen()
     {
         locations_dropdown->UpdateList(SMHIStationsAndParameters::GetInstance().GetEligibleStations(newParameter.realParameter->enumParameterkey));
     });
+}
+
+void SettingsScreen::HideOnTiles()
+{
+    lv_obj_add_flag(button, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(close_image, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(open_image, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(popup_screen, LV_OBJ_FLAG_HIDDEN);
+}
+
+void SettingsScreen::ShowOnTiles()
+{
+    lv_obj_clear_flag(button, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(open_image, LV_OBJ_FLAG_HIDDEN);
 }
 
 void SettingsScreen::AddListenerToLocation(std::function<void(DropdownStation)> func)

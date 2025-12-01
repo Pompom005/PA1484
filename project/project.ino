@@ -31,10 +31,8 @@ static lv_obj_t* t0;
 static lv_obj_t* t1;
 static lv_obj_t* t2;
 
-static lv_obj_t* t1_label;
 static lv_obj_t* t2_label;
 static bool t2_dark = false;  // start tile #2 in light mode
-static lv_obj_t* t3_label;
 static lv_obj_t* t0_text1;
 static lv_obj_t* t0_text2;
 static lv_obj_t* t0_label;
@@ -60,11 +58,19 @@ static void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark)
   lv_obj_set_style_text_color(label, dark ? lv_color_white() : lv_color_black(), 0);
 }
 
-static void on_tile2_clicked(lv_event_t* e)
+static void OnTileChanged(_lv_event_t* event)
 {
-  LV_UNUSED(e);
-  t2_dark = !t2_dark;
-  apply_tile_colors(t2, t2_label, t2_dark);
+  if(event->code == LV_EVENT_VALUE_CHANGED)
+  {
+    if(lv_tileview_get_tile_act(tileview) == t0)
+    {
+      settings->HideOnTiles();
+    }
+    else
+    {
+      settings->ShowOnTiles();
+    }
+  }
 }
 
 // Function: Creates UI
@@ -74,6 +80,7 @@ static void create_ui()
   tileview = lv_tileview_create(lv_scr_act());
   lv_obj_set_size(tileview, lv_disp_get_hor_res(NULL), lv_disp_get_ver_res(NULL));
   lv_obj_set_scrollbar_mode(tileview, LV_SCROLLBAR_MODE_OFF);
+  lv_obj_add_event_cb(tileview, OnTileChanged, LV_EVENT_VALUE_CHANGED, 0);
 
   // Add two horizontal tiles
   t0 = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR);
@@ -118,7 +125,6 @@ static void create_ui()
 
     apply_tile_colors(t2, t2_label, /*dark=*/false);
     lv_obj_add_flag(t2, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_add_event_cb(t2, on_tile2_clicked, LV_EVENT_CLICKED, NULL);
     vector<float> koord = {30, 10, 50, 40, 20};
     grafobj = new Linegraf(t2, koord, "Lund");
   }
@@ -159,6 +165,8 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
     forecast_elements[5]->SetLocation(newLocation.realStation->name);
     forecast_elements[6]->SetLocation(newLocation.realStation->name);
   });
+
+  settings->HideOnTiles();
 }
 
 
