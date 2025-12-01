@@ -25,7 +25,7 @@
 using namespace std;
 
 // Wi-Fi credentials
-WiFiHandler wifi("OWNIT_5GHz_C1EB51","TP4YG3ANFJ", 2000);
+WiFiHandler wifi("BTH_Guest","papaya21turkos", 2000);
 
 LilyGo_Class amoled;
 
@@ -216,17 +216,19 @@ wifi.createWiFiStatusIcon();
   Serial.print("Free heap before test: ");
   Serial.println(ESP.getFreeHeap());
 
-  Serial.println("\n=== Testing CSV Data ===");
   
+  const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureAverageDaily);
+  std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageDaily);
   
-  String testCSVUrl = buildURL("lufttemperatur", "karlskrona");
-  
-  String csvData;
-  if (httpsGetCSV(testCSVUrl, csvData)) {
-    Serial.println("SUCCESS - Got CSV data:");
-    Serial.println(csvData);  // Just print everything
-  } else {
-    Serial.println("FAILED to get CSV data");
+  JsonDocument doc;
+
+  bool res = buildURL(doc, param, *stations[0].realStation, true);
+  String str;
+  serializeJson(doc, str);
+  Serial.println(str);
+
+  if (res) {
+    Serial.println();
   }
 
   Serial.print("Free heap after test: ");

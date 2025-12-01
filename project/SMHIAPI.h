@@ -5,13 +5,14 @@
 #include <WiFiClientSecure.h>
 #include <string>
 #include <unordered_map>
+#include <SMHIStationsAndParameters/SMHIStationsAndParameters.h>
 
 const String SMHI_ENTRY_JSON        = "https://opendata-download-metobs.smhi.se/api.json";
 const String SMHI_VERSION_LATEST_JS = "https://opendata-download-metobs.smhi.se/api/version/latest.json";
 
 
 //New work
-String buildURL(std::string parameter, std::string station, bool latest = true);
+bool buildURL(JsonDocument& doc, const SMHIParameter& parameter, SMHIStation& station, bool latest);
 
 bool httpsGetCSV(const String& url, String& csvData);
 
