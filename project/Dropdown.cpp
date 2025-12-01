@@ -67,10 +67,6 @@ void Dropdown<T>::screenpos(int x, int y){
     lv_obj_align(dropdownBox, LV_ALIGN_BOTTOM_MID, x, y);
 }
 
-template <typename T>
-string Dropdown<T>:: getValue(){
-    return selectedValue;
-}
 template class Dropdown <string>;
 template class Dropdown <int>;
 template class Dropdown <float>;

@@ -44,8 +44,8 @@ static lv_obj_t* t0_label;
 static std::vector<WeatherForecastElement*> forecast_elements;
 //static Dropdown<string>* dropdownobj;
 //static Dropdown <string> * dropdownobj2;
-static Linegraf* grafobj;static SettingsScreen* settings;
-
+static lv_obj_t* grafobj;static SettingsScreen* settings;
+static Linegraf* mygrafobj;
 static lv_obj_t* forecast_parent;
 
 //END of our variables
@@ -120,8 +120,14 @@ static void create_ui()
     apply_tile_colors(t2, t2_label, /*dark=*/false);
     lv_obj_add_flag(t2, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(t2, on_tile2_clicked, LV_EVENT_CLICKED, NULL);
-    vector<float> koord = {30, 10, 50, 40, 20};
-    grafobj = new Linegraf(t2, koord, "Lund");
+
+    grafobj = lv_obj_create(t2);
+    lv_obj_align(grafobj, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_content_height(grafobj, lv_obj_get_content_height(t2) * 0.85f);
+    lv_obj_set_content_width(grafobj, lv_obj_get_content_width(t2) * 0.65f);
+
+    vector<float> koord = {30, 10, 50, 40, 20, 24, 85, 74, 26, 45, 56, 78, 90, 65, 98};
+    mygrafobj = new Linegraf(grafobj, koord);
   }
   
   {

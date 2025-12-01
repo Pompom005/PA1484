@@ -1,13 +1,21 @@
 #include<Linegraf.h>
-Linegraf:: Linegraf(lv_obj_t*parent, const vector<float>& chosen, string name){ // test chosen
-    obj1 = lv_chart_create(parent);
-    lv_obj_set_size(obj1, 500, 400);
-    lv_obj_center(obj1);
+Linegraf:: Linegraf(lv_obj_t*parent_tile, const vector<float>& chosen){
+    obj1 = lv_chart_create(parent_tile);
+    //lv_obj_t* chart = lv_chart_create(parent_tile);
+    int graph_width = lv_obj_get_content_width(lv_scr_act());
+    int graph_height = lv_obj_get_content_height(lv_scr_act());
+    
+    lv_obj_set_size(obj1, graph_width-50, graph_height); //graph_width is a temp example. TODO: test for better value 
+    //lv_obj_center(chart);
+    //lv_chart_set_type(chart, LV_CHART_TYPE_LINE); 
+    //lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 0, 100);
+    //lv_obj_set_size(obj1, 500, 400);
     lv_chart_set_type(obj1, LV_CHART_TYPE_LINE);
-    changelocation(name);
+    
     //first fill in the list
     // getminmaxsize
     int result = getminmaxsize(chosen);
+    lv_chart_set_point_count(obj1, result);
     // replacedata
     replacedata(mx, mn, result);
 }
@@ -39,13 +47,5 @@ int Linegraf:: getminmaxsize(const vector<float>& grafvalues){
 }
 
 
-void Linegraf:: changelocation(string changed){
-    location = changed;
-    // either create a helpfunction or (adddatatolist directly?)
-    //adddatatolist();
-}
 
-void Linegraf:: thehelpfunction(){
-    //adddatatolist()
-}
 
