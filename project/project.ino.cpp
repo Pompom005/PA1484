@@ -43,6 +43,8 @@ static lv_obj_t* t3_label;
 static lv_obj_t* t0_text1;
 static lv_obj_t* t0_text2;
 static lv_obj_t* t0_label;
+
+
 static std::vector<WeatherForecastElement*> forecast_elements;
 static Linegraf* grafobj;
 static SettingsScreen* settings;
@@ -82,7 +84,9 @@ static void create_ui() {
   t2 = lv_tileview_add_tile(tileview, 2, 0, LV_DIR_HOR);
 
 
+
   {
+
     int amount = 7;
     forecast_elements = std::vector<WeatherForecastElement*>();
     forecast_elements.resize(amount);
@@ -144,7 +148,10 @@ static void create_ui() {
     apply_tile_colors(t0, t0_label, true);
   }
 
-  lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
+
+
+
+lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
 
   settings = new SettingsScreen();
   settings->AddListenerToLocation([&](DropdownStation newLocation) {
@@ -217,7 +224,7 @@ void setup() {
   bootDone = true;
 
 
-  wifi.createWiFiStatusIcon();
+wifi.createWiFiStatusIcon();
   if (wifi.connect()) {
     Serial.println("connected to WiFi");
   }
@@ -227,6 +234,7 @@ void setup() {
 }
 
 void loop() {
-  wifi.UpdateWiFiStatusIcon();
+wifi.UpdateWiFiStatusIcon();
+
   lv_timer_handler();
 }
