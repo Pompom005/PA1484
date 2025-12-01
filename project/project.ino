@@ -1,10 +1,10 @@
-#include "SMHIAPI/SMHIAPI.h"
+//#include "SMHIAPI/SMHIAPI.h"
 #include <TFT_eSPI.h>
 #include <time.h>
 #include <LilyGo_AMOLED.h>
 #include <LV_Helper.h>
 #include <lvgl.h>
-#include <Dropdown.h>
+#include "Dropdown.h"
 #include "BootScreen.h"
 #include <sstream>
 #include <iostream> 
@@ -13,8 +13,7 @@
 #include "Graph.h"
 #include "WeatherForecastElement.h"
 #include "WiFiHandler.h"
-#include<Dropdown.h>
-#include<Linegraf.h>
+#include "Linegraf.h"
 #include "SettingsScreen.h"
 #include "SMHIStationsAndParameters/SMHIStationsAndParameters.h"
 
@@ -43,7 +42,8 @@ static lv_obj_t* t0_label;
 static std::vector<WeatherForecastElement*> forecast_elements;
 //static Dropdown<string>* dropdownobj;
 //static Dropdown <string> * dropdownobj2;
-static lv_obj_t* grafobj;static SettingsScreen* settings;
+static lv_obj_t* grafobj;
+static SettingsScreen* settings;
 static Linegraf* mygrafobj;
 static lv_obj_t* forecast_parent;
 
@@ -220,19 +220,19 @@ wifi.createWiFiStatusIcon();
 
   Serial.println("\n=== Testing CSV Data ===");
   
-  String testCSVUrl = buildURL("lufttemperatur", "karlskrona");
+//   String testCSVUrl = buildURL("lufttemperatur", "karlskrona");
   
-  String csvData;
-  if (httpsGetCSV(testCSVUrl, csvData)) {
-    Serial.println("SUCCESS - Got CSV data:");
-    Serial.println(csvData);  // Just print everything
-  } else {
-    Serial.println("FAILED to get CSV data");
-  }
+//   String csvData;
+//   if (httpsGetCSV(testCSVUrl, csvData)) {
+//     Serial.println("SUCCESS - Got CSV data:");
+//     Serial.println(csvData);  // Just print everything
+//   } else {
+//     Serial.println("FAILED to get CSV data");
+//   }
 
-  Serial.print("Free heap after test: ");
-  Serial.println(ESP.getFreeHeap());
-////////////////////////////////////////////////////////////////
+//   Serial.print("Free heap after test: ");
+//   Serial.println(ESP.getFreeHeap());
+// ////////////////////////////////////////////////////////////////
 }
 
 // Must have function: Loop runs continously on device after setup
