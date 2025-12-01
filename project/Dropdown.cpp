@@ -94,6 +94,24 @@ void Dropdown<T>::UpdateList(const vector<T> &cities)
 }
 
 template <typename T>
+void Dropdown<T>::SetSelected(int index)
+{        
+    lv_dropdown_set_selected(dropdownBox, index);
+    T option = choices[index];
+    for(int i = 0; i < listeners.size(); i++)
+    {
+        listeners[i](option);
+    }
+}
+
+template <typename T>
+T Dropdown<T>::GetSelected()
+{
+    int selectedIndex = lv_dropdown_get_selected(dropdownBox);
+    return choices[selectedIndex];
+}
+
+template <typename T>
 void Dropdown<T>::screenpos(int x, int y){
     lv_obj_align(dropdownBox, LV_ALIGN_BOTTOM_MID, x, y);
 }

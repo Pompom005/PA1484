@@ -173,6 +173,9 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
   });
 
   settings->HideOnTiles();
+
+  //ADD ALL THE STUFF TO REACT TO SETTINGS BEFORE THIS. Otherwise default might not apply etc
+  settings->LoadDefaultValues();
 }
 
 
