@@ -20,10 +20,9 @@ class Linegraf{
         float mn=0;
         // i need a pointer to the graf too 
     public:
-        Linegraf(lv_obj_t* parent, const vector<float>& chosen, string name);
+        Linegraf(lv_obj_t* parent_tile, const vector<float>& chosen);
         void replacedata(float max_value, float value_min, int numberofdots);
         void adddatatolist(float data);
         int getminmaxsize(const vector<float>& grafvalues);
-        void changelocation(string changed);
-        void thehelpfunction();
+
 };
