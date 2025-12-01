@@ -3,12 +3,6 @@
 #include <sstream>
 #include <iomanip>
 
-LV_IMG_DECLARE(Sunny);
-LV_IMG_DECLARE(Cloudy);
-LV_IMG_DECLARE(Rain);
-LV_IMG_DECLARE(Thunder);
-LV_IMG_DECLARE(Snow);
-
 //Very good to set size and pos in constructor to avoid having to delete texts right now
 WeatherForecastElement::WeatherForecastElement(lv_obj_t* parent_tile, float size)
 {
@@ -83,32 +77,16 @@ void WeatherForecastElement::SetTime(const std::string &time)
 
 void WeatherForecastElement::SetWeatherType(WeatherType type)
 {
-    symbol_text->SetText(GetTypeName(type).c_str());
-    switch (type)
-    {
-    case WeatherType::Sunny:
-        lv_img_set_src(symbol, &Sunny);
-        break;
-    
-    case WeatherType::Cloudy:
-        lv_img_set_src(symbol, &Cloudy);
-        break;
+    std::string text = GetTypeName(type);
+    symbol_text->SetText(text.c_str());
 
-    case WeatherType::Rain:
-        lv_img_set_src(symbol, &Rain);
-        break;
+    int referenceTextAmount = 12; //This amount of chars are a good fit with 0.0f offset
+    int locationAmount = text.length();
 
-    case WeatherType::Snow:
-        lv_img_set_src(symbol, &Snow);
-        break;
+    int diff = referenceTextAmount - locationAmount;
+    symbol_text->SetSizeOffset((float)diff * 0.1f);
 
-    case WeatherType::Thunder:
-        lv_img_set_src(symbol, &Thunder);
-        break;
-
-    default:
-        break;
-    }
+    lv_img_set_src(symbol, GetWeatherSymbol(type));
 }
 
 void WeatherForecastElement::SetPosition(float x, float y)

@@ -1,9 +1,6 @@
 #include "SettingsScreen.h"
 #include "SMHIStationsAndParameters/SMHIStationsAndParameters.h"
 
-LV_IMG_DECLARE(settings)
-LV_IMG_DECLARE(cancel)
-
 void SettingsScreen::OnButtonPressed(lv_event_t *event)
 {
     SettingsScreen* settings = reinterpret_cast<SettingsScreen*>(event->user_data);
@@ -53,18 +50,18 @@ SettingsScreen::SettingsScreen()
     lv_obj_set_pos(button, lv_obj_get_content_width(lv_scr_act()) * -0.4f, lv_obj_get_content_height(lv_scr_act()) * -0.4f);
 
     //Images
-    close_image = lv_img_create(lv_scr_act());
-    lv_img_set_src(close_image, &cancel);
+    close_image = lv_label_create(lv_scr_act());
+    lv_label_set_text(close_image, LV_SYMBOL_CLOSE);
+    lv_obj_set_style_text_font(close_image, &lv_font_montserrat_30, 0);
     lv_obj_align(close_image, LV_ALIGN_CENTER, 0, 0);
     lv_obj_clear_flag(close_image, LV_OBJ_FLAG_CLICKABLE);
-    lv_img_set_zoom(close_image, 256 * 0.1);
     lv_obj_set_pos(close_image, lv_obj_get_content_width(lv_scr_act()) * -0.4f, lv_obj_get_content_height(lv_scr_act()) * -0.4f);
 
-    open_image = lv_img_create(lv_scr_act());
-    lv_img_set_src(open_image, &settings);
+    open_image = lv_label_create(lv_scr_act());
+    lv_label_set_text(open_image, LV_SYMBOL_SETTINGS);
+    lv_obj_set_style_text_font(open_image, &lv_font_montserrat_30, 0);
     lv_obj_align(open_image, LV_ALIGN_CENTER, 0, 0);
     lv_obj_clear_flag(open_image, LV_OBJ_FLAG_CLICKABLE);
-    lv_img_set_zoom(open_image, 256 * 0.1);
     lv_obj_set_pos(open_image, lv_obj_get_content_width(lv_scr_act()) * -0.4f, lv_obj_get_content_height(lv_scr_act()) * -0.4f);
 
     //Dropdowns
