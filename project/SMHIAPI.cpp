@@ -1,14 +1,5 @@
 #include "SMHIAPI.h"
 
-//Struct för data hantering
-struct SmhiObs {
-  bool ok;
-  float value;
-  String unit;
-  String station;
-  String timestampUTC;
-};
-
 WiFiClientSecure* getSSLClient() {
     static WiFiClientSecure client;
     static bool initialized = false;
@@ -21,9 +12,47 @@ WiFiClientSecure* getSSLClient() {
     return &client;
 }
 
-String buildURL(std::string parameter, std::string station, bool latest) {
+bool httpsGetJson(const String& url, JsonDocument& doc) {
 
-    std::unordered_map<std::string, std::string> parameterMap = {
+  WiFiClientSecure* client = getSSLClient();
+  HTTPClient http;
+  if (!http.begin(*client, url)) {
+    Serial.println("httpsGetJson http.begin() failed");
+    return false;
+  }
+
+  Serial.println("\nCalling http.get():");
+  const int code = http.GET();
+  Serial.printf("\nGet command returned: %d\n", code);
+  if (code != HTTP_CODE_OK) { // HTTP_CODE_OK = 200
+    http.end();
+    return false;
+  }
+
+  int contentLength = http.getSize();
+  Serial.printf("Content-Length: %d bytes (%.1f KB)\n", contentLength, contentLength / 1024.0);
+
+  const String payload = http.getString();
+  Serial.printf("Actual payload size: %d bytes (%.1f KB)\n", payload.length(), payload.length() / 1024.0);
+
+  http.end();
+
+  Serial.printf("Memory after receiving data: %d\n", ESP.getFreeHeap());
+
+  doc.clear();
+  DeserializationError err = deserializeJson(doc, payload);
+  if (err) {
+    Serial.printf("\nDeserialise json returned: %s", err.c_str());
+    return false;
+  }
+
+  http.end();
+  return true;
+}
+
+bool buildURL(JsonDocument doc, SMHIParameter& parameter, SMHIStation& station, bool latest) {
+
+    /*std::unordered_map<std::string, std::string> parameterMap = {
     {"lufttemperatur", "22"},
     {"luftfuktighet", "6"}, 
     {"vindhastighet", "4"}, 
@@ -45,19 +74,26 @@ String buildURL(std::string parameter, std::string station, bool latest) {
     {"stockholm", "09740"},     // Stockholm //här och neråt funkar inte
     {"göteborg", "07160"},      // Göteborg
     {"uppsala", "09760"}        // Uppsala
-    };
+    };*/
 
+    std::string parameterKey = std::to_string(parameter.smhiParameterkey);
+    std::string stationKey = std::to_string(station.key);
     std::string URL = "https://opendata-download-metobs.smhi.se/api/version/latest/parameter/" 
-                  + parameterMap[parameter] + "/station/" 
-                  + cityMap[station] + "/period/";
+                  + parameterKey + "/station/" 
+                  + stationKey + "/period/";
 
     if (latest) 
-        URL += "latest-months/data.csv";
+      URL += "latest-months/data.json";
     else 
-    URL += "corrected-archive/data.csv";
+      URL += "corrected-archive/data.json";
 
-    return URL.c_str();
+    if (httpsGetJson(URL.c_str(), doc))
+      return true;
+    else 
+      return false;
 }
+
+
 
 bool httpsGetCSV(const String& url, String& csvData) {
   WiFiClientSecure* client = getSSLClient();
@@ -124,43 +160,7 @@ bool httpsGetCSV(const String& url, String& csvData) {
 
 //////////////////////////////
 // Generic HTTPS → JSON helper (ESP32)
-bool httpsGetJson(const String& url, JsonDocument& doc) {
 
-  WiFiClientSecure* client = getSSLClient();
-  HTTPClient http;
-  if (!http.begin(*client, url)) {
-    Serial.println("httpsGetJson http.begin() failed");
-    return false;
-  }
-
-  Serial.println("\nCalling http.get():");
-  const int code = http.GET();
-  Serial.printf("\nGet command returned: %d\n", code);
-  if (code != HTTP_CODE_OK) { // HTTP_CODE_OK = 200
-    http.end();
-    return false;
-  }
-
-  int contentLength = http.getSize();
-  Serial.printf("Content-Length: %d bytes (%.1f KB)\n", contentLength, contentLength / 1024.0);
-
-  const String payload = http.getString();
-  Serial.printf("Actual payload size: %d bytes (%.1f KB)\n", payload.length(), payload.length() / 1024.0);
-
-  http.end();
-
-  Serial.printf("Memory after receiving data: %d\n", ESP.getFreeHeap());
-
-  doc.clear();
-  DeserializationError err = deserializeJson(doc, payload);
-  if (err) {
-    Serial.printf("\nDeserialise json returned: %s", err.c_str());
-    return false;
-  }
-
-  http.end();
-  return true;
-}
 
 bool getParameter(String parameter, JsonDocument& doc, const String url) {
   doc.clear();
