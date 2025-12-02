@@ -16,6 +16,7 @@
 #include "Linegraf.h"
 #include "SettingsScreen.h"
 #include "SMHIStationsAndParameters/SMHIStationsAndParameters.h"
+#include "SMHIAPI/SMHIAPI.h"
 
 // test system includes
 #include "ParserStuff/SMHIFileManager.h"
