@@ -1,8 +1,6 @@
 #include "SettingsScreen.h"
 #include "SMHIStationsAndParameters/SMHIStationsAndParameters.h"
-
-LV_IMG_DECLARE(settings)
-LV_IMG_DECLARE(cancel)
+#include <Preferences.h>
 
 void SettingsScreen::OnButtonPressed(lv_event_t *event)
 {
@@ -31,6 +29,16 @@ void SettingsScreen::InternalButtonPressed()
     }
 }
 
+void SettingsScreen::ButtonSave(lv_event_t *e)
+{
+    reinterpret_cast<SettingsScreen*>(e->user_data)->SaveSelectionAsDefault();
+}
+
+void SettingsScreen::ButtonLoad(lv_event_t *e)
+{
+    reinterpret_cast<SettingsScreen*>(e->user_data)->LoadDefaultValues();
+}
+
 SettingsScreen::SettingsScreen()
 {   
     //Popup, has to be before button and images
@@ -47,22 +55,24 @@ SettingsScreen::SettingsScreen()
     lv_obj_set_content_width(button, 40);
     lv_obj_align(button, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_event_cb(button, OnButtonPressed, LV_EVENT_CLICKED, this);
-    
+    //lv_obj_set_style_bg_color(button, lv_color_make(255, 19, 240), LV_STATE_DEFAULT); //Neon pink, superior color
+    lv_obj_set_style_bg_color(button, lv_color_make(128, 128, 128), LV_STATE_DEFAULT); //Grey
+
     lv_obj_set_pos(button, lv_obj_get_content_width(lv_scr_act()) * -0.4f, lv_obj_get_content_height(lv_scr_act()) * -0.4f);
 
     //Images
-    close_image = lv_img_create(lv_scr_act());
-    lv_img_set_src(close_image, &cancel);
+    close_image = lv_label_create(lv_scr_act());
+    lv_label_set_text(close_image, LV_SYMBOL_CLOSE);
+    lv_obj_set_style_text_font(close_image, &lv_font_montserrat_30, 0);
     lv_obj_align(close_image, LV_ALIGN_CENTER, 0, 0);
     lv_obj_clear_flag(close_image, LV_OBJ_FLAG_CLICKABLE);
-    lv_img_set_zoom(close_image, 256 * 0.1);
     lv_obj_set_pos(close_image, lv_obj_get_content_width(lv_scr_act()) * -0.4f, lv_obj_get_content_height(lv_scr_act()) * -0.4f);
 
-    open_image = lv_img_create(lv_scr_act());
-    lv_img_set_src(open_image, &settings);
+    open_image = lv_label_create(lv_scr_act());
+    lv_label_set_text(open_image, LV_SYMBOL_SETTINGS);
+    lv_obj_set_style_text_font(open_image, &lv_font_montserrat_30, 0);
     lv_obj_align(open_image, LV_ALIGN_CENTER, 0, 0);
     lv_obj_clear_flag(open_image, LV_OBJ_FLAG_CLICKABLE);
-    lv_img_set_zoom(open_image, 256 * 0.1);
     lv_obj_set_pos(open_image, lv_obj_get_content_width(lv_scr_act()) * -0.4f, lv_obj_get_content_height(lv_scr_act()) * -0.4f);
 
     //Dropdowns
@@ -71,6 +81,23 @@ SettingsScreen::SettingsScreen()
 
     locations_dropdown->screenpos(popup_width * -0.25f, popup_height * -0.5f);
     conditions_dropdown->screenpos(popup_width * 0.25, popup_height * -0.5f);
+
+    //Save and Load defaults
+    save_button = lv_btn_create(popup_screen);
+    lv_obj_set_content_height(save_button, 40);
+    lv_obj_set_content_width(save_button, 80);
+    lv_obj_align(save_button, LV_ALIGN_BOTTOM_MID, popup_width * -0.25f, popup_height * -0.25f);
+    lv_obj_add_event_cb(save_button, ButtonSave, LV_EVENT_CLICKED, this);
+    //lv_obj_set_style_bg_color(button, lv_color_make(255, 19, 240), LV_STATE_DEFAULT); //Neon pink, superior color
+    lv_obj_set_style_bg_color(save_button, lv_color_make(128, 128, 128), LV_STATE_DEFAULT); //Grey
+
+    load_button = lv_btn_create(popup_screen);
+    lv_obj_set_content_height(load_button, 40);
+    lv_obj_set_content_width(load_button, 80);
+    lv_obj_align(load_button, LV_ALIGN_BOTTOM_MID, popup_width * +0.25f, popup_height * -0.25f);
+    lv_obj_add_event_cb(load_button, ButtonLoad, LV_EVENT_CLICKED, this);
+    //lv_obj_set_style_bg_color(button, lv_color_make(255, 19, 240), LV_STATE_DEFAULT); //Neon pink, superior color
+    lv_obj_set_style_bg_color(load_button, lv_color_make(128, 128, 128), LV_STATE_DEFAULT); //Grey
 
     //Labels
     settings_label = lv_label_create(popup_screen);
@@ -88,6 +115,16 @@ SettingsScreen::SettingsScreen()
     lv_obj_set_style_text_font(conditions_label, &lv_font_montserrat_18, 0);
     lv_label_set_text(conditions_label, "Condition");
 
+    save_label = lv_label_create(save_button);
+    lv_obj_align(save_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_style_text_font(save_label, &lv_font_montserrat_16, 0);
+    lv_label_set_text(save_label, "Save Default");
+
+    load_label = lv_label_create(load_button);
+    lv_obj_align(load_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_style_text_font(load_label, &lv_font_montserrat_16, 0);
+    lv_label_set_text(load_label, "Load Default");
+
     //Set default values. Close popup and close image by default
     lv_obj_add_flag(close_image, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(popup_screen, LV_OBJ_FLAG_HIDDEN);
@@ -99,6 +136,20 @@ SettingsScreen::SettingsScreen()
     });
 }
 
+void SettingsScreen::HideOnTiles()
+{
+    lv_obj_add_flag(button, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(close_image, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(open_image, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(popup_screen, LV_OBJ_FLAG_HIDDEN);
+}
+
+void SettingsScreen::ShowOnTiles()
+{
+    lv_obj_clear_flag(button, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(open_image, LV_OBJ_FLAG_HIDDEN);
+}
+
 void SettingsScreen::AddListenerToLocation(std::function<void(DropdownStation)> func)
 {
     locations_dropdown->addlistener(func);
@@ -107,4 +158,69 @@ void SettingsScreen::AddListenerToLocation(std::function<void(DropdownStation)> 
 void SettingsScreen::AddListenerToCondition(std::function<void(DropdownParameter)> func)
 {
     conditions_dropdown->addlistener(func);
+}
+
+void SettingsScreen::SaveSelectionAsDefault()
+{
+    Preferences pref;
+    pref.begin("defaults", false);
+
+    pref.putInt("defaultParam", conditions_dropdown->GetSelected().realParameter->smhiParameterkey);
+    pref.putInt("defaultStation", locations_dropdown->GetSelected().realStation->key);
+    pref.end();
+}
+
+void SettingsScreen::LoadDefaultValues()
+{  
+    Preferences pref;
+
+    pref.begin("defaults", false);
+
+    if(!pref.isKey("defaultParam")) //Doesnt exist
+    {
+        const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureAverageDaily);
+        pref.putInt("defaultParam", param.smhiParameterkey);
+
+        const std::vector<DropdownStation>& stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageDaily);
+
+        if(stations.size() > 0)
+        {
+            pref.putInt("defaultStation", stations[0].realStation->key);
+        }
+        else
+        {
+            pref.putInt("defaultStation", 0);
+        }
+        conditions_dropdown->SetSelected(log2(static_cast<int>(SupportedParameter::AirTemperatureAverageDaily)));
+        locations_dropdown->SetSelected(0);
+    }
+    else
+    {
+        int paramKey = pref.getInt("defaultParam");
+        int stationKey = pref.getInt("defaultStation");
+
+        const std::vector<DropdownParameter> allParams = SMHIStationsAndParameters::GetInstance().GetParameters();
+        for(int i = 0; i < allParams.size(); i++)
+        {
+            //Using smhi key so its more accurate
+            if(paramKey == allParams[i].realParameter->smhiParameterkey)
+            {
+                //This works because the dropdown will use the same list to initialize the values, so will be same index.
+                conditions_dropdown->SetSelected(i);
+
+                const std::vector<DropdownStation>& stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(allParams[i].realParameter->enumParameterkey);
+                for(int j = 0; j < stations.size(); j++)
+                {
+                    if(stations[j].realStation->key == stationKey)
+                    {
+                        locations_dropdown->SetSelected(j);
+                        break;
+                    }
+                }
+                //Default not found but should be okay.
+                break;
+            }
+        }
+    }
+    pref.end();
 }

@@ -1,10 +1,12 @@
 #include "SMHIAPI.h"
 
-WiFiClientSecure* getSSLClient() {
+WiFiClientSecure* getSSLClient() 
+{
     static WiFiClientSecure client;
     static bool initialized = false;
     
-    if (!initialized) {
+    if (!initialized)
+     {
         client.setInsecure();  // BARA en gång
         client.setTimeout(15000);
         initialized = true;

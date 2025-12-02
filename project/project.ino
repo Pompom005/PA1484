@@ -34,10 +34,8 @@ static lv_obj_t* t0;
 static lv_obj_t* t1;
 static lv_obj_t* t2;
 
-static lv_obj_t* t1_label;
 static lv_obj_t* t2_label;
 static bool t2_dark = false;  // start tile #2 in light mode
-static lv_obj_t* t3_label;
 static lv_obj_t* t0_text1;
 static lv_obj_t* t0_text2;
 static lv_obj_t* t0_label;
@@ -64,11 +62,19 @@ static void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark)
   lv_obj_set_style_text_color(label, dark ? lv_color_white() : lv_color_black(), 0);
 }
 
-static void on_tile2_clicked(lv_event_t* e)
+static void OnTileChanged(_lv_event_t* event)
 {
-  LV_UNUSED(e);
-  t2_dark = !t2_dark;
-  apply_tile_colors(t2, t2_label, t2_dark);
+  if(event->code == LV_EVENT_VALUE_CHANGED)
+  {
+    if(lv_tileview_get_tile_act(tileview) == t0)
+    {
+      settings->HideOnTiles();
+    }
+    else
+    {
+      settings->ShowOnTiles();
+    }
+  }
 }
 
 // Function: Creates UI
@@ -78,6 +84,7 @@ static void create_ui()
   tileview = lv_tileview_create(lv_scr_act());
   lv_obj_set_size(tileview, lv_disp_get_hor_res(NULL), lv_disp_get_ver_res(NULL));
   lv_obj_set_scrollbar_mode(tileview, LV_SCROLLBAR_MODE_OFF);
+  lv_obj_add_event_cb(tileview, OnTileChanged, LV_EVENT_VALUE_CHANGED, 0);
 
   // Add two horizontal tiles
   t0 = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR);
@@ -104,13 +111,13 @@ static void create_ui()
       forecast_elements[i]->SetPosition(i * 0.60f, 0); //-0.5f because it is centered, meaning left side is -0.5f
     }
 
-    forecast_elements[0]->SetValues(25, "Karlskrona", "11-01", WeatherType::Sunny);
+    forecast_elements[0]->SetValues(25, "Karlskrona", "11-01", WeatherType::Clear);
     forecast_elements[1]->SetValues(15, "Karlskrona", "11-02", WeatherType::Thunder);
-    forecast_elements[2]->SetValues(-10, "Karlskrona", "11-03", WeatherType::Snow);
-    forecast_elements[3]->SetValues(-36, "Karlskrona", "11-04", WeatherType::Snow);
-    forecast_elements[4]->SetValues(13, "Karlskrona", "11-05", WeatherType::Rain);
-    forecast_elements[5]->SetValues(15, "Karlskrona", "11-06", WeatherType::Thunder);
-    forecast_elements[6]->SetValues(12, "Karlskrona", "11-07", WeatherType::Cloudy);
+    forecast_elements[2]->SetValues(-10, "Karlskrona", "11-03", WeatherType::Thunderstorm);
+    forecast_elements[3]->SetValues(-36, "Karlskrona", "11-04", WeatherType::NearlyClear);
+    forecast_elements[4]->SetValues(13, "Karlskrona", "11-05", WeatherType::LightSleet);
+    forecast_elements[5]->SetValues(15, "Karlskrona", "11-06", WeatherType::HeavySnowShowers);
+    forecast_elements[6]->SetValues(12, "Karlskrona", "11-07", WeatherType::LightSnowShowers);
   }
 
   // Tile #2
@@ -122,7 +129,6 @@ static void create_ui()
 
     apply_tile_colors(t2, t2_label, /*dark=*/false);
     lv_obj_add_flag(t2, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_add_event_cb(t2, on_tile2_clicked, LV_EVENT_CLICKED, NULL);
 
     grafobj = lv_obj_create(t2);
     lv_obj_align(grafobj, LV_ALIGN_CENTER, 0, 0);
@@ -169,6 +175,11 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
     forecast_elements[5]->SetLocation(newLocation.realStation->name);
     forecast_elements[6]->SetLocation(newLocation.realStation->name);
   });
+
+  settings->HideOnTiles();
+
+  //ADD ALL THE STUFF TO REACT TO SETTINGS BEFORE THIS. Otherwise default might not apply etc
+  settings->LoadDefaultValues();
 }
 
 

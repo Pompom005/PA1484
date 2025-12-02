@@ -5,7 +5,7 @@
 
 const SMHIParameter &SMHIStationsAndParameters::GetParameter(int parameter)
 {
-    return *parameters[parameter];
+   return *parametersMap[parameter].realParameter;
 }
 
 const SMHIParameter &SMHIStationsAndParameters::GetParameter(SupportedParameter parameter)

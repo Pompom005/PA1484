@@ -1,6 +1,17 @@
 #include <LilyGo_AMOLED.h>
 #include "ScaleableLabel.h"
 
+    LV_FONT_DECLARE(arial_12);
+    LV_FONT_DECLARE(arial_16);
+    LV_FONT_DECLARE(arial_20);
+    LV_FONT_DECLARE(arial_24);
+    LV_FONT_DECLARE(arial_28);
+    LV_FONT_DECLARE(arial_32);
+    LV_FONT_DECLARE(arial_36);
+    LV_FONT_DECLARE(arial_40);
+    LV_FONT_DECLARE(arial_44);
+    LV_FONT_DECLARE(arial_48);
+
 ScaleableLabel::ScaleableLabel(lv_obj_t *parent, float size, float size_offset)
 {
     this->size = size;
@@ -18,43 +29,43 @@ void ScaleableLabel::SetSize(float size)
     const lv_font_t* font = nullptr;
     if(final_size > 1.8f)
     {
-        font = &lv_font_montserrat_48;
+        font = &arial_48;
     }
     else if(final_size > 1.6f)
     {
-        font = &lv_font_montserrat_44;
+        font = &arial_44;
     }
     else if(final_size > 1.4f)
     {
-        font = &lv_font_montserrat_40;
+        font = &arial_40;
     }
     else if(final_size > 1.2f)
     {
-        font = &lv_font_montserrat_36;
+        font = &arial_36;
     }
     else if(final_size > 1.0f)
     {
-        font = &lv_font_montserrat_32;
+        font = &arial_32;
     }
     else if(final_size > 0.8f)
     {
-        font = &lv_font_montserrat_28;
+        font = &arial_28;
     }
     else if(final_size > 0.6f)
     {
-        font = &lv_font_montserrat_24;
+        font = &arial_24;
     }
     else if(final_size > 0.4f)
     {
-        font = &lv_font_montserrat_20;
+        font = &arial_20;
     }
     else if(final_size > 0.2f)
     {
-        font = &lv_font_montserrat_16;
+        font = &arial_16;
     }
     else
     {
-        font = &lv_font_montserrat_12;
+        font = &arial_12;
     }
 
     lv_obj_set_style_text_font(label, font, 0);
