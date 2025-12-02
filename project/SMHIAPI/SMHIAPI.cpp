@@ -52,7 +52,7 @@ bool httpsGetJson(const String& url, JsonDocument& doc) {
   return true;
 }
 
-bool buildURL(JsonDocument doc, SMHIParameter& parameter, SMHIStation& station, bool latest) {
+bool buildURL(JsonDocument& doc, const SMHIParameter& parameter, SMHIStation& station, bool latest) {
 
     /*std::unordered_map<std::string, std::string> parameterMap = {
     {"lufttemperatur", "22"},
