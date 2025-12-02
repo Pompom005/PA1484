@@ -1,10 +1,10 @@
-#include "SMHIAPI.h"
+//#include "SMHIAPI/SMHIAPI.h"
 #include <TFT_eSPI.h>
 #include <time.h>
 #include <LilyGo_AMOLED.h>
 #include <LV_Helper.h>
 #include <lvgl.h>
-#include <Dropdown.h>
+#include "Dropdown.h"
 #include "BootScreen.h"
 #include <sstream>
 #include <iostream> 
@@ -13,8 +13,7 @@
 #include "Graph.h"
 #include "WeatherForecastElement.h"
 #include "WiFiHandler.h"
-#include<Dropdown.h>
-#include<Linegraf.h>
+#include "Linegraf.h"
 #include "SettingsScreen.h"
 #include "SMHIStationsAndParameters/SMHIStationsAndParameters.h"
 
@@ -24,8 +23,8 @@
 
 using namespace std;
 
-// Wi-Fi credentials
-WiFiHandler wifi("OWNIT_5GHz_C1EB51","TP4YG3ANFJ", 2000);
+// Wi-Fi credentials (Delete these before commiting to GitHub)
+WiFiHandler wifi("BTH_Guest","papaya21turkos", 2000);
 
 LilyGo_Class amoled;
 
@@ -47,8 +46,9 @@ static lv_obj_t* t0_label;
 static std::vector<WeatherForecastElement*> forecast_elements;
 //static Dropdown<string>* dropdownobj;
 //static Dropdown <string> * dropdownobj2;
-static Linegraf* grafobj;static SettingsScreen* settings;
-
+static lv_obj_t* grafobj;
+static SettingsScreen* settings;
+static Linegraf* mygrafobj;
 static lv_obj_t* forecast_parent;
 
 //END of our variables
@@ -123,8 +123,14 @@ static void create_ui()
     apply_tile_colors(t2, t2_label, /*dark=*/false);
     lv_obj_add_flag(t2, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(t2, on_tile2_clicked, LV_EVENT_CLICKED, NULL);
-    vector<float> koord = {30, 10, 50, 40, 20};
-    grafobj = new Linegraf(t2, koord, "Lund");
+
+    grafobj = lv_obj_create(t2);
+    lv_obj_align(grafobj, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_content_height(grafobj, lv_obj_get_content_height(t2) * 0.85f);
+    lv_obj_set_content_width(grafobj, lv_obj_get_content_width(t2) * 0.65f);
+
+    vector<float> koord = {30, 10, 50, 40, 20, 24, 85, 74, 26, 45, 56, 78, 90, 65, 98};
+    mygrafobj = new Linegraf(grafobj, koord);
   }
   
   {
@@ -219,19 +225,19 @@ wifi.createWiFiStatusIcon();
   Serial.println("\n=== Testing CSV Data ===");
   
   
-  String testCSVUrl = buildURL("lufttemperatur", "karlskrona");
+//   String testCSVUrl = buildURL("lufttemperatur", "karlskrona");
   
-  String csvData;
-  if (httpsGetCSV(testCSVUrl, csvData)) {
-    Serial.println("SUCCESS - Got CSV data:");
-    Serial.println(csvData);  // Just print everything
-  } else {
-    Serial.println("FAILED to get CSV data");
-  }
+//   String csvData;
+//   if (httpsGetCSV(testCSVUrl, csvData)) {
+//     Serial.println("SUCCESS - Got CSV data:");
+//     Serial.println(csvData);  // Just print everything
+//   } else {
+//     Serial.println("FAILED to get CSV data");
+//   }
 
-  Serial.print("Free heap after test: ");
-  Serial.println(ESP.getFreeHeap());
-////////////////////////////////////////////////////////////////
+//   Serial.print("Free heap after test: ");
+//   Serial.println(ESP.getFreeHeap());
+// ////////////////////////////////////////////////////////////////
 }
 
 // Must have function: Loop runs continously on device after setup
