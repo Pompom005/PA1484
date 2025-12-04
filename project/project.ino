@@ -240,14 +240,14 @@ wifi.createWiFiStatusIcon();
   
   JsonDocument doc;
 
-  bool res = buildURL(doc, param, *stations[0].realStation, true);
-  String str;
-  serializeJson(doc, str);
-  Serial.println(str);
+  // bool res = buildURL(doc, param, *stations[0].realStation, true);
+  // String str;
+  // serializeJson(doc, str);
+  // Serial.println(str);
 
-  if (res) {
-    Serial.println();
-  }
+  // if (res) {
+  //   Serial.println();
+  // }
 
 //   Serial.print("Free heap after test: ");
 //   Serial.println(ESP.getFreeHeap());

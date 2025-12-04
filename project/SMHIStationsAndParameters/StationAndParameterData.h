@@ -1398,7 +1398,7 @@ stationVector.push_back(station);
 static void FillWithParameters(std::vector<SMHIParameter*>& parameterVector)
 {
 SMHIParameter* parameter;
-parameter = new SMHIParameter({"Wind Direction","Average over 10 minutes, taken each hour. Unit:�",3,1});
+parameter = new SMHIParameter({"Wind Direction","Average over 10 minutes, taken each hour. Unit:째",3,1});
 parameterVector.push_back(parameter);
 parameter = new SMHIParameter({"Wind Speed","Average over 10 minutes, taken each hour. Unit:m/s",4,2});
 parameterVector.push_back(parameter);
@@ -1434,20 +1434,20 @@ parameter = new SMHIParameter({"Wind Speed Max Avg","Hourly max of averages for 
 parameterVector.push_back(parameter);
 parameter = new SMHIParameter({"Air Pressure","Air pressure at ocean surface, instant value per hour. Unit: hPa",9,131072});
 parameterVector.push_back(parameter);
-parameter = new SMHIParameter({"Temp Max Daily","Max temperature per day. Unit: 캜",20,262144});
+parameter = new SMHIParameter({"Temp Max Daily","Max temperature per day. Unit: 째C",20,262144});
 parameterVector.push_back(parameter);
-parameter = new SMHIParameter({"Temp Average Daily","Average temperature per day. Unit: 캜",2,524288});
+parameter = new SMHIParameter({"Temp Average Daily","Average temperature per day. Unit: 째C",2,524288});
 parameterVector.push_back(parameter);
-parameter = new SMHIParameter({"Temperature Hourly","Hourly instant temperature. Unit: 캜",1,1048576});
+parameter = new SMHIParameter({"Temperature Hourly","Hourly instant temperature. Unit: 째C",1,1048576});
 parameterVector.push_back(parameter);
-parameter = new SMHIParameter({"Temp Min Daily","Min temperature per day. Unit: 캜",19,2097152});
+parameter = new SMHIParameter({"Temp Min Daily","Min temperature per day. Unit: 째C",19,2097152});
 parameterVector.push_back(parameter);
-parameter = new SMHIParameter({"Temp Max Daily x2","Max temperature, twice per day at 06 & 18. Unit: 캜",27,4194304});
+parameter = new SMHIParameter({"Temp Max Daily x2","Max temperature, twice per day at 06 & 18. Unit: 째C",27,4194304});
 parameterVector.push_back(parameter);
-parameter = new SMHIParameter({"Temp Min Daily x2","Min temperature, twice per day at 06 & 18. Unit: 캜",26,8388608});
+parameter = new SMHIParameter({"Temp Min Daily x2","Min temperature, twice per day at 06 & 18. Unit: 째C",26,8388608});
 parameterVector.push_back(parameter);
-parameter = new SMHIParameter({"Temp Avg Monthly","Average temperature per month. Unit: 캜",22,16777216});
+parameter = new SMHIParameter({"Temp Avg Monthly","Average temperature per month. Unit: 째C",22,16777216});
 parameterVector.push_back(parameter);
-parameter = new SMHIParameter({"Dew Point Temperature","Hourly instant temperature. Unit: 캜",39,33554432});
+parameter = new SMHIParameter({"Dew Point Temperature","Hourly instant temperature. Unit: 째C",39,33554432});
 parameterVector.push_back(parameter);
 }
