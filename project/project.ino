@@ -254,10 +254,7 @@ wifi.createWiFiStatusIcon();
   String str;
   serializeJson(doc, str);
   Serial.println(str);
-
-   if (res) {
-     Serial.println();
-   }
+  Serial.println("Fuck this mother fucker");
 
   Serial.print("Free heap after test: ");
   Serial.println(ESP.getFreeHeap());
