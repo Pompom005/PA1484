@@ -3,6 +3,7 @@
 #include <ArduinoJson.h>
 #include <vector>
 #include <String>
+#include "SMHIStationsAndParameters/SMHIStation.h"
 
 struct ForecastDataPoint {
     int year;
@@ -30,6 +31,7 @@ public:
     
     bool parseJSONFromFile(const String& filename);
     bool parseJSONFromString(const String& jsonString);
+    bool parseJSONFromStation(const SMHIStation& station);
     
     std::vector<float> getTemperatureData() const;
     std::vector<float> getWindSpeedData() const;

@@ -1,5 +1,6 @@
 #include "SMHIForecastParser.h"
 #include <LittleFS.h>
+#include <sstream>
 
 SMHIForecastParser::SMHIForecastParser() {
 }
@@ -95,6 +96,18 @@ bool SMHIForecastParser::parseJSONFromFile(const String& filename) {
 
 bool SMHIForecastParser::parseJSONFromString(const String& jsonString) {
     extractForecastData(jsonString);
+    return forecastData.size() > 0;
+}
+
+bool SMHIForecastParser::parseJSONFromStation(const SMHIStation &station)
+{
+    //https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/16.158/lat/58.5812/data.json example url
+
+    //TODO: fix haha, just temp for funny example
+    
+    std::stringstream jsonStr;
+    jsonStr <<  "https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/" << station.longitude << "/lat/" << station.latitude << "/data.json";
+    extractForecastData(jsonStr.str().c_str());
     return forecastData.size() > 0;
 }
 
