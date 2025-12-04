@@ -25,7 +25,7 @@
 using namespace std;
 
 // Wi-Fi credentials
-WiFiHandler wifi("BTH_Guest","papaya21turkos", 2000);
+WiFiHandler wifi("Salleh","00000000", 15000);
 
 LilyGo_Class amoled;
 
