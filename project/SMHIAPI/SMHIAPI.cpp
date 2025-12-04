@@ -52,31 +52,7 @@ bool httpsGetJson(const String& url, JsonDocument& doc) {
   return true;
 }
 
-bool buildURL(JsonDocument& doc, const SMHIParameter& parameter, SMHIStation& station, bool latest) {
-
-    /*std::unordered_map<std::string, std::string> parameterMap = {
-    {"lufttemperatur", "22"},
-    {"luftfuktighet", "6"}, 
-    {"vindhastighet", "4"}, 
-    {"max av medelvindhastighet", "25"}, 
-    {"lufttryck", "9"}, //neråt funkar inte
-    {"nederbördsmängd", "27"},
-    {"snödjup", "28"},
-    {"sikt", "29"},
-    {"molntäckning", "30"},
-    {"solskenstid", "31"},
-    {"globalstrålning", "32"}
-    };
-    //temperatur, humidity, windspeed
-
-    std::unordered_map<std::string, std::string> cityMap = {
-    {"karlskrona", "65090"},    // Karlskrona-Söderstjärna
-    {"lund", "53430"},          // Lund
-    {"malmö", "53360"},         // Malmö A
-    {"stockholm", "09740"},     // Stockholm //här och neråt funkar inte
-    {"göteborg", "07160"},      // Göteborg
-    {"uppsala", "09760"}        // Uppsala
-    };*/
+bool buildURL(JsonDocument doc, const SMHIParameter& parameter, const SMHIStation& station, bool latest) {
 
     std::string parameterKey = std::to_string(parameter.smhiParameterkey);
     std::string stationKey = std::to_string(station.key);
