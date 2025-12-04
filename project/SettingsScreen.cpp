@@ -63,14 +63,14 @@ SettingsScreen::SettingsScreen()
     //Images
     close_image = lv_label_create(lv_scr_act());
     lv_label_set_text(close_image, LV_SYMBOL_CLOSE);
-    lv_obj_set_style_text_font(close_image, &lv_font_montserrat_30, 0);
+    lv_obj_set_style_text_font(close_image, &arial_32, 0);
     lv_obj_align(close_image, LV_ALIGN_CENTER, 0, 0);
     lv_obj_clear_flag(close_image, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_pos(close_image, lv_obj_get_content_width(lv_scr_act()) * -0.4f, lv_obj_get_content_height(lv_scr_act()) * -0.4f);
 
     open_image = lv_label_create(lv_scr_act());
     lv_label_set_text(open_image, LV_SYMBOL_SETTINGS);
-    lv_obj_set_style_text_font(open_image, &lv_font_montserrat_30, 0);
+    lv_obj_set_style_text_font(open_image, &arial_32, 0);
     lv_obj_align(open_image, LV_ALIGN_CENTER, 0, 0);
     lv_obj_clear_flag(open_image, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_pos(open_image, lv_obj_get_content_width(lv_scr_act()) * -0.4f, lv_obj_get_content_height(lv_scr_act()) * -0.4f);
@@ -102,27 +102,27 @@ SettingsScreen::SettingsScreen()
     //Labels
     settings_label = lv_label_create(popup_screen);
     lv_obj_align(settings_label, LV_ALIGN_TOP_MID, 0, 0);
-    lv_obj_set_style_text_font(settings_label, &lv_font_montserrat_30, 0);
+    lv_obj_set_style_text_font(settings_label, &arial_32, 0);
     lv_label_set_text(settings_label, "Settings");
 
     locations_label = lv_label_create(popup_screen);
     lv_obj_align(locations_label, LV_ALIGN_BOTTOM_MID, popup_width * -0.25f, popup_height * -.6f);
-    lv_obj_set_style_text_font(locations_label, &lv_font_montserrat_18, 0);
+    lv_obj_set_style_text_font(locations_label, &arial_20, 0);
     lv_label_set_text(locations_label, "Location");
 
     conditions_label = lv_label_create(popup_screen);
     lv_obj_align(conditions_label, LV_ALIGN_BOTTOM_MID, popup_width * 0.25f, popup_height * -0.6f);
-    lv_obj_set_style_text_font(conditions_label, &lv_font_montserrat_18, 0);
+    lv_obj_set_style_text_font(conditions_label, &arial_20, 0);
     lv_label_set_text(conditions_label, "Condition");
 
     save_label = lv_label_create(save_button);
     lv_obj_align(save_label, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_set_style_text_font(save_label, &lv_font_montserrat_16, 0);
+    lv_obj_set_style_text_font(save_label, &arial_20, 0);
     lv_label_set_text(save_label, "Save Default");
 
     load_label = lv_label_create(load_button);
     lv_obj_align(load_label, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_set_style_text_font(load_label, &lv_font_montserrat_16, 0);
+    lv_obj_set_style_text_font(load_label, &arial_20, 0);
     lv_label_set_text(load_label, "Load Default");
 
     //Set default values. Close popup and close image by default

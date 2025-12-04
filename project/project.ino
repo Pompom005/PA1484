@@ -35,7 +35,6 @@ static lv_obj_t* t0;
 static lv_obj_t* t1;
 static lv_obj_t* t2;
 
-static lv_obj_t* t2_label;
 static bool t2_dark = false;  // start tile #2 in light mode
 static lv_obj_t* t0_text1;
 static lv_obj_t* t0_text2;
@@ -43,12 +42,13 @@ static lv_obj_t* t0_label;
 //OUR variables
 
 static std::vector<WeatherForecastElement*> forecast_elements;
-//static Dropdown<string>* dropdownobj;
-//static Dropdown <string> * dropdownobj2;
 static lv_obj_t* grafobj;
 static SettingsScreen* settings;
 static Linegraf* mygrafobj;
 static lv_obj_t* forecast_parent;
+
+static lv_obj_t* graphTitle;
+static lv_obj_t* graphDescription;
 
 //END of our variables
 
@@ -123,14 +123,6 @@ static void create_ui()
 
   // Tile #2
   {
-    t2_label = lv_label_create(t2);
-    lv_label_set_text(t2_label, "");
-    lv_obj_set_style_text_font(t2_label, &lv_font_montserrat_28, 0);
-    lv_obj_center(t2_label);
-
-    apply_tile_colors(t2, t2_label, /*dark=*/false);
-    lv_obj_add_flag(t2, LV_OBJ_FLAG_CLICKABLE);
-
     grafobj = lv_obj_create(t2);
     lv_obj_align(grafobj, LV_ALIGN_CENTER, 0, 0);
     lv_obj_set_content_height(grafobj, lv_obj_get_content_height(t2) * 0.85f);
@@ -138,12 +130,21 @@ static void create_ui()
 
     vector<float> koord = {30, 10, 50, 40, 20, 24, 85, 74, 26, 45, 56, 78, 90, 65, 98};
     mygrafobj = new Linegraf(grafobj, koord);
+
+    graphTitle = lv_label_create(t2);
+    lv_label_set_text(graphTitle, "");
+    lv_obj_set_style_text_font(graphTitle, &arial_32, LV_PART_MAIN);
+    lv_obj_align(graphTitle,LV_ALIGN_TOP_MID, 0, 95);
+    graphDescription = lv_label_create(t2);
+    lv_label_set_text(graphDescription, "");
+    lv_obj_set_style_text_font(graphDescription, &arial_16, LV_PART_MAIN);
+    lv_obj_align(graphDescription,LV_ALIGN_BOTTOM_MID, 0, -5);
   }
   
   {
     t0_label = lv_label_create(t0);
     lv_label_set_text(t0_label, "Weather app");
-    lv_obj_set_style_text_font(t0_label, &lv_font_montserrat_32, LV_PART_MAIN);
+    lv_obj_set_style_text_font(t0_label, &arial_32, LV_PART_MAIN);
     lv_obj_align(t0_label,LV_ALIGN_TOP_MID, 0, 95);
 
     t0_text1 = lv_label_create(t0);
@@ -187,6 +188,12 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
     // }
   });
 
+  settings->AddListenerToCondition([&](DropdownParameter newParam)
+  {
+        lv_label_set_text(graphTitle, newParam.realParameter->title.c_str());
+        lv_label_set_text(graphDescription, newParam.realParameter->description.c_str());
+  });
+
   settings->HideOnTiles();
 
   //ADD ALL THE STUFF TO REACT TO SETTINGS BEFORE THIS. Otherwise default might not apply etc
@@ -206,6 +213,7 @@ void setup()
   delay(200);
   Serial.print("Free heap at start of setup(): ");
   Serial.println(ESP.getFreeHeap());  
+  Serial.println(ESP.getFreePsram());
 
 
   if (!amoled.begin()) {
@@ -245,22 +253,22 @@ wifi.createWiFiStatusIcon();
   Serial.println(ESP.getFreeHeap());
 
   
-  const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureAverageDaily);
-  std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageDaily);
+  const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureAverageMonthly);
+  std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageMonthly);
   
   JsonDocument doc;
 
-  // bool res = buildURL(doc, param, *stations[0].realStation, true);
-  // String str;
-  // serializeJson(doc, str);
-  // Serial.println(str);
+  bool res = buildURL(doc, param, *stations[0].realStation, true);
+  String str;
+  serializeJson(doc, str);
+  Serial.println(str);
 
-  // if (res) {
-  //   Serial.println();
-  // }
+  if (res) {
+    Serial.println();
+  }
 
-//   Serial.print("Free heap after test: ");
-//   Serial.println(ESP.getFreeHeap());
+  Serial.print("Free heap after test: ");
+  Serial.println(ESP.getFreeHeap());
 // ////////////////////////////////////////////////////////////////
 }
 

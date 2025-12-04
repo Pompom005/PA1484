@@ -353,23 +353,23 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 #define LV_FONT_MONTSERRAT_8  0
 #define LV_FONT_MONTSERRAT_10 0
 #define LV_FONT_MONTSERRAT_12 1
-#define LV_FONT_MONTSERRAT_14 1
+#define LV_FONT_MONTSERRAT_14 0
 #define LV_FONT_MONTSERRAT_16 1
-#define LV_FONT_MONTSERRAT_18 1
+#define LV_FONT_MONTSERRAT_18 0
 #define LV_FONT_MONTSERRAT_20 1
-#define LV_FONT_MONTSERRAT_22 1
+#define LV_FONT_MONTSERRAT_22 0
 #define LV_FONT_MONTSERRAT_24 1
-#define LV_FONT_MONTSERRAT_26 1
+#define LV_FONT_MONTSERRAT_26 0
 #define LV_FONT_MONTSERRAT_28 1
-#define LV_FONT_MONTSERRAT_30 1
+#define LV_FONT_MONTSERRAT_30 0
 #define LV_FONT_MONTSERRAT_32 1
-#define LV_FONT_MONTSERRAT_34 1
+#define LV_FONT_MONTSERRAT_34 0
 #define LV_FONT_MONTSERRAT_36 1
-#define LV_FONT_MONTSERRAT_38 1
+#define LV_FONT_MONTSERRAT_38 0
 #define LV_FONT_MONTSERRAT_40 1
-#define LV_FONT_MONTSERRAT_42 1
+#define LV_FONT_MONTSERRAT_42 0
 #define LV_FONT_MONTSERRAT_44 1
-#define LV_FONT_MONTSERRAT_46 1
+#define LV_FONT_MONTSERRAT_46 0
 #define LV_FONT_MONTSERRAT_48 1
 
 /*Demonstrate special features*/
@@ -385,7 +385,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 /*Optionally declare custom fonts here.
  *You can use these fonts as default font too and they will be available globally.
  *E.g. #define LV_FONT_CUSTOM_DECLARE   LV_FONT_DECLARE(my_font_1) LV_FONT_DECLARE(my_font_2)*/
-#define LV_FONT_CUSTOM_DECLARE LV_FONT_DECLARE(arial_16)
+#define LV_FONT_CUSTOM_DECLARE LV_FONT_DECLARE(arial_16) LV_FONT_DECLARE(arial_20) LV_FONT_DECLARE(arial_24) LV_FONT_DECLARE(arial_28) LV_FONT_DECLARE(arial_32) LV_FONT_DECLARE(arial_36) LV_FONT_DECLARE(arial_40) LV_FONT_DECLARE(arial_44) LV_FONT_DECLARE(arial_48) LV_FONT_DECLARE(arial_12)
 
 /*Always set a default font*/
 #define LV_FONT_DEFAULT &arial_16
@@ -460,17 +460,17 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 /*Documentation of the widgets: https://docs.lvgl.io/latest/en/html/widgets/index.html*/
 
-#define LV_USE_ARC        1
+#define LV_USE_ARC        0
 
 #define LV_USE_BAR        1
 
 #define LV_USE_BTN        1
 
-#define LV_USE_BTNMATRIX  1
+#define LV_USE_BTNMATRIX  0
 
-#define LV_USE_CANVAS     1
+#define LV_USE_CANVAS     0
 
-#define LV_USE_CHECKBOX   1
+#define LV_USE_CHECKBOX   0
 
 #define LV_USE_DROPDOWN   1   /*Requires: lv_label*/
 
@@ -484,21 +484,21 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 #define LV_USE_LINE       1
 
-#define LV_USE_ROLLER     1   /*Requires: lv_label*/
+#define LV_USE_ROLLER     0   /*Requires: lv_label*/
 #if LV_USE_ROLLER
 #define LV_ROLLER_INF_PAGES 7 /*Number of extra "pages" when the roller is infinite*/
 #endif
 
 #define LV_USE_SLIDER     1   /*Requires: lv_bar*/
 
-#define LV_USE_SWITCH     1
+#define LV_USE_SWITCH     0
 
-#define LV_USE_TEXTAREA   1   /*Requires: lv_label*/
+#define LV_USE_TEXTAREA   0   /*Requires: lv_label*/
 #if LV_USE_TEXTAREA != 0
 #define LV_TEXTAREA_DEF_PWD_SHOW_TIME 1500    /*ms*/
 #endif
 
-#define LV_USE_TABLE      1
+#define LV_USE_TABLE      0
 
 /*==================
  * EXTRA COMPONENTS
@@ -509,7 +509,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
  *----------*/
 #define LV_USE_ANIMIMG    1
 
-#define LV_USE_CALENDAR   1
+#define LV_USE_CALENDAR   0
 #if LV_USE_CALENDAR
 #define LV_CALENDAR_WEEK_STARTS_MONDAY 0
 #if LV_CALENDAR_WEEK_STARTS_MONDAY
@@ -525,33 +525,33 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 #define LV_USE_CHART      1
 
-#define LV_USE_COLORWHEEL 1
+#define LV_USE_COLORWHEEL 0
 
-#define LV_USE_IMGBTN     1
+#define LV_USE_IMGBTN     0
 
-#define LV_USE_KEYBOARD   1
+#define LV_USE_KEYBOARD   0
 
-#define LV_USE_LED        1
+#define LV_USE_LED        0
 
-#define LV_USE_LIST       1
+#define LV_USE_LIST       0
 
-#define LV_USE_MENU       1
+#define LV_USE_MENU       0
 
-#define LV_USE_METER      1
+#define LV_USE_METER      0
 
-#define LV_USE_MSGBOX     1
+#define LV_USE_MSGBOX     0
 
-#define LV_USE_SPAN       1
+#define LV_USE_SPAN       0
 #if LV_USE_SPAN
 /*A line text can contain maximum num of span descriptor */
 #define LV_SPAN_SNIPPET_STACK_SIZE 64
 #endif
 
-#define LV_USE_SPINBOX    1
+#define LV_USE_SPINBOX    0
 
-#define LV_USE_SPINNER    1
+#define LV_USE_SPINNER    0
 
-#define LV_USE_TABVIEW    1
+#define LV_USE_TABVIEW    0
 
 #define LV_USE_TILEVIEW   1
 
@@ -629,20 +629,20 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 #endif
 
 /*PNG decoder library*/
-#define LV_USE_PNG 1
+#define LV_USE_PNG 0
 
 /*BMP decoder library*/
-#define LV_USE_BMP 1
+#define LV_USE_BMP 0
 
 /* JPG + split JPG decoder library.
  * Split JPG is a custom format optimized for embedded systems. */
-#define LV_USE_SJPG 1
+#define LV_USE_SJPG 0
 
 /*GIF decoder library*/
-#define LV_USE_GIF 1
+#define LV_USE_GIF 0
 
 /*QR code library*/
-#define LV_USE_QRCODE 1
+#define LV_USE_QRCODE 0
 
 /*FreeType library*/
 #define LV_USE_FREETYPE 0
@@ -692,7 +692,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 #define LV_USE_IMGFONT 0
 
 /*1: Enable a published subscriber based messaging system */
-#define LV_USE_MSG 1
+#define LV_USE_MSG 0
 
 /*1: Enable Pinyin input method*/
 /*Requires: lv_keyboard*/
@@ -717,14 +717,14 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 *==================*/
 
 /*Enable the examples to be built with the library*/
-#define LV_BUILD_EXAMPLES 1
+#define LV_BUILD_EXAMPLES 0
 
 /*===================
  * DEMO USAGE
  ====================*/
 
 /*Show some widget. It might be required to increase `LV_MEM_SIZE` */
-#define LV_USE_DEMO_WIDGETS 1
+#define LV_USE_DEMO_WIDGETS 0
 #if LV_USE_DEMO_WIDGETS
 #define LV_DEMO_WIDGETS_SLIDESHOW 0
 #endif
@@ -743,7 +743,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 #define LV_USE_DEMO_STRESS 0
 
 /*Music player demo*/
-#define LV_USE_DEMO_MUSIC 1
+#define LV_USE_DEMO_MUSIC 0
 #if LV_USE_DEMO_MUSIC
 #define LV_DEMO_MUSIC_SQUARE    0
 #define LV_DEMO_MUSIC_LANDSCAPE 0

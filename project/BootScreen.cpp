@@ -1,5 +1,7 @@
 #include "BootScreen.h"
 
+LV_FONT_DECLARE(arial_32)
+
 BootScreen::BootScreen()
     : screen(nullptr), logoLabel(nullptr), text1(nullptr), text2(nullptr), flash(nullptr) {}
 
@@ -20,7 +22,7 @@ void BootScreen::init() {
     logoLabel = lv_label_create(screen);
     lv_label_set_text(logoLabel, "Weather app");
     lv_obj_set_style_text_color(logoLabel, lv_color_white(), LV_PART_MAIN);
-    lv_obj_set_style_text_font(logoLabel, &lv_font_montserrat_32, LV_PART_MAIN);
+    lv_obj_set_style_text_font(logoLabel, &arial_32, LV_PART_MAIN);
     lv_obj_align(logoLabel, LV_ALIGN_TOP_MID, 0, -60);
 
     text1 = lv_label_create(screen);
