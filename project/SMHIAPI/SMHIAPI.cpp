@@ -52,7 +52,7 @@ bool httpsGetJson(const String& url, JsonDocument& doc) {
   return true;
 }
 
-bool buildURL(JsonDocument doc, const SMHIParameter& parameter, const SMHIStation& station, bool latest) {
+bool buildURL(JsonDocument& doc, const SMHIParameter& parameter, const SMHIStation& station, bool latest) {
 
     std::string parameterKey = std::to_string(parameter.smhiParameterkey);
     std::string stationKey = std::to_string(station.key);

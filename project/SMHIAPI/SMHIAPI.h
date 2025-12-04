@@ -19,7 +19,7 @@ bool httpsGetJson(const String& url, JsonDocument& doc);
 
 bool httpsGetCSV(const String& url, String& csvData);
 
-bool buildURL(JsonDocument& doc, const SMHIParameter& parameter, SMHIStation& station, bool latest);
+bool buildURL(JsonDocument& doc, const SMHIParameter& parameter, const SMHIStation& station, bool latest);
 
 
 //Old work
