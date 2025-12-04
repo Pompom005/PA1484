@@ -175,6 +175,16 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
     forecast_elements[4]->SetLocation(newLocation.realStation->name);
     forecast_elements[5]->SetLocation(newLocation.realStation->name);
     forecast_elements[6]->SetLocation(newLocation.realStation->name);
+
+    // SMHIForecastParser forecast;
+    // forecast.parseJSONFromStation(*newLocation.realStation);
+
+    // const std::vector<ForecastDataPoint>& data = forecast.getAllData();
+
+    // for(int i = 0; i < forecast_elements.size(); i++)
+    // {
+    //   forecast_elements[i]->SetValues(data[i].temperature, newLocation.realStation->name, (data[i].month + "/" + data[i].day), static_cast<WeatherType>(data[i].weatherSymbol));
+    // }
   });
 
   settings->HideOnTiles();
