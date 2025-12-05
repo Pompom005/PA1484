@@ -31,7 +31,7 @@ public:
     
     bool parseJSONFromFile(const String& filename);
     bool parseJSONFromString(const String& jsonString);
-    bool parseJSONFromStation(const SMHIStation& station);
+    bool getDataFromJSON(JsonDocument& doc);
     
     std::vector<float> getTemperatureData() const;
     std::vector<float> getWindSpeedData() const;
@@ -39,7 +39,7 @@ public:
     std::vector<float> getPressureData() const;
     std::vector<float> getPrecipitationData() const;
     
-    const std::vector<ForecastDataPoint>& getAllData() const { return forecastData; }
+    const std::vector<ForecastDataPoint>& getAllData() const;
     
     void clearData();
     size_t getDataCount() const;

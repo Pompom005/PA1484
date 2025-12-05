@@ -177,15 +177,34 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
     forecast_elements[5]->SetLocation(newLocation.realStation->name);
     forecast_elements[6]->SetLocation(newLocation.realStation->name);
 
-    // SMHIForecastParser forecast;
-    // forecast.parseJSONFromStation(*newLocation.realStation);
+    Serial.println("Start");
 
-    // const std::vector<ForecastDataPoint>& data = forecast.getAllData();
+  JsonDocument doc;
+  std::stringstream jsonStr;
+  jsonStr <<  "https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/" << newLocation.realStation->longitude << "/lat/" << newLocation.realStation->latitude << "/data.json";
+  bool res = httpsGetJson(jsonStr.str().c_str(), doc);
 
-    // for(int i = 0; i < forecast_elements.size(); i++)
-    // {
-    //   forecast_elements[i]->SetValues(data[i].temperature, newLocation.realStation->name, (data[i].month + "/" + data[i].day), static_cast<WeatherType>(data[i].weatherSymbol));
-    // }
+  if(res)
+  {
+    Serial.println("Doc built");
+
+    SMHIForecastParser forecast;
+    if(!forecast.getDataFromJSON(doc))
+    {
+      Serial.println("Failed getting data");
+      return;
+    }
+    Serial.println("Fetched data!");
+
+    const std::vector<ForecastDataPoint>& data = forecast.getAllData();
+
+    for(int i = 0; i < forecast_elements.size(); i++)
+    {
+      forecast_elements[i]->SetValues(data[i].temperature, newLocation.realStation->name, (std::to_string(data[i].month) + "-" + std::to_string(data[i].day)), static_cast<WeatherType>(data[i].weatherSymbol));
+    }
+    Serial.println("Done");
+  }
+
   });
 
   settings->AddListenerToCondition([&](DropdownParameter newParam)
@@ -195,9 +214,6 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
   });
 
   settings->HideOnTiles();
-
-  //ADD ALL THE STUFF TO REACT TO SETTINGS BEFORE THIS. Otherwise default might not apply etc
-  settings->LoadDefaultValues();
 }
 
 
@@ -270,6 +286,9 @@ wifi.createWiFiStatusIcon();
   Serial.print("Free heap after test: ");
   Serial.println(ESP.getFreeHeap());
 // ////////////////////////////////////////////////////////////////
+
+ //ADD ALL THE STUFF TO REACT TO SETTINGS BEFORE THIS. Otherwise default might not apply etc
+  settings->LoadDefaultValues();
 }
 
 // Must have function: Loop runs continously on device after setup

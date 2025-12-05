@@ -9,7 +9,7 @@ private:
     SMHIHistoricalParser historicalParser;
 
 public:
-    void runForecastTest();
+    void runForecastTest(String testJSON);
     void runHistoricalTest();
     void runAllTests();
     void runTimestampDebug();

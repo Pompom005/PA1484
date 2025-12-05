@@ -1,4 +1,5 @@
 #include "SMHIAPI.h"
+#include <sstream>
 
 WiFiClientSecure* getSSLClient() 
 {
@@ -14,8 +15,9 @@ WiFiClientSecure* getSSLClient()
     return &client;
 }
 
-bool httpsGetJson(const String& url, JsonDocument& doc) {
-
+bool httpsGetJson(const String& url, JsonDocument& doc) 
+{
+  Serial.println(url);
   WiFiClientSecure* client = getSSLClient();
   HTTPClient http;
   if (!http.begin(*client, url)) {
@@ -30,25 +32,66 @@ bool httpsGetJson(const String& url, JsonDocument& doc) {
     http.end();
     return false;
   }
+  
+  //int contentLength = http.getSize();
+  // Serial.printf("Content-Length: %d bytes (%.1f KB)\n", contentLength, contentLength / 1024.0);
 
-  int contentLength = http.getSize();
-  Serial.printf("Content-Length: %d bytes (%.1f KB)\n", contentLength, contentLength / 1024.0);
+  // const String payload = http.getString(); //String too big ?
+  // Serial.printf("Actual payload size: %d bytes (%.1f KB)\n", payload.length(), payload.length() / 1024.0);
 
-  const String payload = http.getString();
-  Serial.printf("Actual payload size: %d bytes (%.1f KB)\n", payload.length(), payload.length() / 1024.0);
+  // Serial.printf("Memory after receiving data: %d\n", ESP.getFreeHeap());
 
+  // Serial.println(payload.c_str());
+
+  //Worked at one point
+  // String str = http.getString();
+  // char* charArray = (char*)malloc(str.length() + 1);
+  // str.toCharArray(charArray, str.length() + 1);
+
+  // str.clear();
+
+  //This is done to not enter below here before there is anything available, was in example and on some forums 
+  //It is supposed to wait until the connection is ready
+  while(!client->available())
+  {
+
+  }
+
+  std::stringstream currentLine;
+  std::stringstream stream;
+  bool foundQuoteMark = false;
+  while(client->available() || client->connected())
+  {
+    //Maybe check the data read vs http.getSize,
+    //Could get real size eventually maybe?
+    if(client->available())
+    {
+      char c = (char)(client->read());
+      if(c == '"')
+      {
+        foundQuoteMark = true;
+      }
+
+        currentLine << c;
+        if(c == '\n') //End of line
+        {
+          if(foundQuoteMark)//Check to skip chunk stuff
+          {
+            //Serial.print(currentLine.str().c_str());
+            stream << currentLine.str();
+            foundQuoteMark = false;
+          }
+          currentLine.str(std::string()); //We clear the line, and chunkvalue is removed 
+        }
+    }
+  }
   http.end();
-
-  Serial.printf("Memory after receiving data: %d\n", ESP.getFreeHeap());
-
   doc.clear();
-  DeserializationError err = deserializeJson(doc, payload);
+  DeserializationError err = deserializeJson(doc, stream.str().c_str());
   if (err) {
     Serial.printf("\nDeserialise json returned: %s", err.c_str());
     return false;
   }
-
-  http.end();
   return true;
 }
 
