@@ -9,7 +9,6 @@
 #include <iostream> 
 #include <string>
 #include <vector>
-#include "Graph.h"
 #include "WeatherForecastElement.h"
 #include "WiFiHandler.h"
 #include "Linegraf.h"
