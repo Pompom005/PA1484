@@ -9,7 +9,6 @@
 #include <iostream> 
 #include <string>
 #include <vector>
-#include "Graph.h"
 #include "WeatherForecastElement.h"
 #include "WiFiHandler.h"
 #include "Linegraf.h"
@@ -50,6 +49,9 @@ static lv_obj_t* graphDescription;
 
 BootScreen boot;
 bool bootDone = false;
+
+static SupportedParameter selectedParam;
+static int stationKey;
 
 //END of our variables
 
@@ -162,6 +164,7 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
 
   settings->AddListenerToLocation([&](DropdownStation newLocation)
   {
+    stationKey = newLocation.realStation->key;
     forecast_elements[0]->SetLocation(newLocation.realStation->name);
     forecast_elements[1]->SetLocation(newLocation.realStation->name);
     forecast_elements[2]->SetLocation(newLocation.realStation->name);
@@ -202,8 +205,38 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
 
   settings->AddListenerToCondition([&](DropdownParameter newParam)
   {
+        selectedParam = static_cast<SupportedParameter>(newParam.realParameter->enumParameterkey);
         lv_label_set_text(graphTitle, newParam.realParameter->title.c_str());
         lv_label_set_text(graphDescription, newParam.realParameter->description.c_str());
+
+        const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(selectedParam);
+        std::vector<lv_coord_t> values;
+
+        std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(selectedParam);
+        SMHIStation* station = stations[0].realStation;
+
+        for(int i = 0; i < stations.size(); i++)
+        {
+          if(stations[i].realStation->key == stationKey)
+          {
+            station = stations[i].realStation;
+            break;
+          }
+        }
+
+        bool res = buildURL(values, param, *station, true);
+
+        mygrafobj->replacedata(values, true);
+  });
+
+  settings->AddListenerToLocation([&](DropdownStation newStation)
+  {
+        const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(selectedParam);
+        std::vector<lv_coord_t> values;
+
+        bool res = buildURL(values, param, *newStation.realStation, true);
+
+        mygrafobj->replacedata(values, true);
   });
 
   settings->HideOnTiles();
@@ -252,36 +285,36 @@ wifi.createWiFiStatusIcon();
   }
 
 //SMHI Tests of doom
-{
-  Serial.println("Checking monthly...");
-  const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureAverageMonthly);
-  std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageMonthly);
+// {
+//   Serial.println("Checking monthly...");
+//   const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureAverageMonthly);
+//   std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageMonthly);
   
-  std::vector<lv_coord_t> values;
+//   std::vector<lv_coord_t> values;
 
-  bool res = buildURL(values, param, *stations[0].realStation, true);
-  Serial.println("Monthly check done!");
-}
-{
-  Serial.println("Checking daily...");
-  const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureAverageDaily);
-  std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageDaily);
+//   bool res = buildURL(values, param, *stations[0].realStation, true);
+//   Serial.println("Monthly check done!");
+// }
+// {
+//   Serial.println("Checking daily...");
+//   const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureAverageDaily);
+//   std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageDaily);
   
-  std::vector<lv_coord_t> values;
+//   std::vector<lv_coord_t> values;
 
-  bool res = buildURL(values, param, *stations[0].realStation, true);
-  Serial.println("Daily check done!");
-}
-{
-  Serial.println("Checking hourly...");
-  const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureMoment);
-  std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureMoment);
+//   bool res = buildURL(values, param, *stations[0].realStation, true);
+//   Serial.println("Daily check done!");
+// }
+// {
+//   Serial.println("Checking hourly...");
+//   const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureMoment);
+//   std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureMoment);
   
-  std::vector<lv_coord_t> values;
+//   std::vector<lv_coord_t> values;
 
-  bool res = buildURL(values, param, *stations[0].realStation, true);
-  Serial.println("Hourly check done!");
-}
+//   bool res = buildURL(values, param, *stations[0].realStation, true);
+//   Serial.println("Hourly check done!");
+// }
 
  //ADD ALL THE STUFF TO REACT TO SETTINGS BEFORE THIS. Otherwise default might not apply etc
   settings->LoadDefaultValues();

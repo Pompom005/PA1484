@@ -16,10 +16,14 @@ class Linegraf{
         lv_obj_t * obj1; 
         lv_chart_series_t * serie1 = nullptr;
         std::vector<lv_coord_t> values;
+        lv_obj_t* parent;
+        float maxvalue;
+        float minvalue;
         // i need a pointer to the graf too 
     public:
         Linegraf(lv_obj_t* parent_tile, const vector<lv_coord_t>& chosen);
         void replacedata(const vector<lv_coord_t>& chosen, bool clearolddata);
+        void getthemaxminvalue(const vector<lv_coord_t>& chosen);
         // void replacedata(int numberofdots, const vector<HistoricalDataPoint>& chosen);
         // void setDataFromSMHI(vector<HistoricalDataPoint>& history );
 
