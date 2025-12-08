@@ -24,7 +24,7 @@
 using namespace std;
 
 // Wi-Fi credentials
-WiFiHandler wifi("BTH_Guest","paprika45svart", 15000);
+WiFiHandler wifi("jesper's Galaxy A52","pqss3103", 15000);
 
 LilyGo_Class amoled;
 
@@ -138,7 +138,7 @@ static void create_ui()
     lv_obj_align(t0_label,LV_ALIGN_TOP_MID, 0, 95);
 
     t0_text1 = lv_label_create(t0);
-    lv_label_set_text(t0_text1, "v1.0");
+    lv_label_set_text(t0_text1, "v4.0");
     lv_obj_set_style_text_color(t0_text1, lv_color_white(), LV_PART_MAIN);
     lv_obj_align(t0_text1, LV_ALIGN_BOTTOM_LEFT, 10, -30);
 
@@ -146,6 +146,11 @@ static void create_ui()
     lv_label_set_text(t0_text2, "Grupp 9");
     lv_obj_set_style_text_color(t0_text2, lv_color_white(), LV_PART_MAIN);
     lv_obj_align(t0_text2, LV_ALIGN_BOTTOM_LEFT, 10, -10);
+
+    lv_obj_set_style_bg_opa(t0, LV_OPA_COVER, 0);
+    lv_obj_set_style_bg_color(t0, lv_color_black(), 0);
+
+    lv_obj_set_style_text_color(t0_label, lv_color_white(), 0);
   }
 // Sätt start-tile till t0 som ligger i kolumn 0, rad 0 utan animation
 //lv_tileview_set_act(tileview, 0, 0, LV_ANIM_OFF);
@@ -170,7 +175,7 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
   JsonDocument doc;
   std::stringstream jsonStr;
   jsonStr <<  "https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/" << newLocation.realStation->longitude << "/lat/" << newLocation.realStation->latitude << "/data.json";
-  bool res = httpsGetJson(jsonStr.str().c_str(), doc);
+  bool res = httpsGetForecastJson(jsonStr.str().c_str(), doc);
 
   if(res)
   {
@@ -245,29 +250,38 @@ wifi.createWiFiStatusIcon();
   else { 
     Serial.println("Failed to connect to WiFi");
   }
-//////////////////////////////////////////////////////////////// smhi grejer
 
-  Serial.print("Free heap before test: ");
-  Serial.println(ESP.getFreeHeap());
-
-  
+//SMHI Tests of doom
+{
+  Serial.println("Checking monthly...");
   const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureAverageMonthly);
   std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageMonthly);
   
-  JsonDocument doc;
+  std::vector<lv_coord_t> values;
 
-  bool res = buildURL(doc, param, *stations[0].realStation, true);
-  String str;
-  serializeJson(doc, str);
-  Serial.println(str);
+  bool res = buildURL(values, param, *stations[0].realStation, true);
+  Serial.println("Monthly check done!");
+}
+{
+  Serial.println("Checking daily...");
+  const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureAverageDaily);
+  std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageDaily);
+  
+  std::vector<lv_coord_t> values;
 
-  if (res) {
-    Serial.println();
-  }
+  bool res = buildURL(values, param, *stations[0].realStation, true);
+  Serial.println("Daily check done!");
+}
+{
+  Serial.println("Checking hourly...");
+  const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureMoment);
+  std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureMoment);
+  
+  std::vector<lv_coord_t> values;
 
-  Serial.print("Free heap after test: ");
-  Serial.println(ESP.getFreeHeap());
-// ////////////////////////////////////////////////////////////////
+  bool res = buildURL(values, param, *stations[0].realStation, true);
+  Serial.println("Hourly check done!");
+}
 
  //ADD ALL THE STUFF TO REACT TO SETTINGS BEFORE THIS. Otherwise default might not apply etc
   settings->LoadDefaultValues();
