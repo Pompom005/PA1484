@@ -65,9 +65,10 @@ bool httpsGetForecastJson(const String& url, JsonDocument& doc)
         Serial.println("Read size\n");
         if(packageSizeInBytes > 0) //Means there is a package after this first hex message
         {
+          client->read(); //Reads the '\n' at the end of "end" of bytes, if not this could cause problems
           std::string dataLine = client->readStringUntil('\r').c_str(); //'\r' also marks the end of the package
           stream << dataLine;
-          //Serial.println(dataLine.c_str());
+          //Serial.print(dataLine.c_str());
         }
         else if(packageSizeInBytes == 0) //A message with 0 bits is the "end" message for the whole package
         {
