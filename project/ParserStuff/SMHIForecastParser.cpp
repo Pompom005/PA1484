@@ -1,6 +1,7 @@
 #include "SMHIForecastParser.h"
 #include <LittleFS.h>
 
+
 SMHIForecastParser::SMHIForecastParser() {
 }
 

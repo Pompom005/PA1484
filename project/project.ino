@@ -136,8 +136,10 @@ static void create_ui()
     lv_obj_set_content_height(grafobj, lv_obj_get_content_height(t2) * 0.85f);
     lv_obj_set_content_width(grafobj, lv_obj_get_content_width(t2) * 0.65f);
 
-    vector<float> koord = {30, 10, 50, 40, 20, 24, 85, 74, 26, 45, 56, 78, 90, 65, 98};
+    vector<lv_coord_t> koord = {30, 10, 50, 40, 20, 24, 85, 74, 26, 45, 56, 78, 90, 65, 98};
     mygrafobj = new Linegraf(grafobj, koord);
+    vector<lv_coord_t> koord1 = {30, 10, 50, 40, 20};
+    mygrafobj->replacedata(koord1, true);
   }
   
   {
