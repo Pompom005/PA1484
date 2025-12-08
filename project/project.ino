@@ -24,7 +24,7 @@
 using namespace std;
 
 // Wi-Fi credentials
-WiFiHandler wifi("jesper's Galaxy A52","pqss3103", 15000);
+WiFiHandler wifi("BTH_Guest","paprika45svart", 15000);
 
 LilyGo_Class amoled;
 
