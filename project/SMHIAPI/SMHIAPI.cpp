@@ -1,4 +1,6 @@
 #include "SMHIAPI.h"
+#include <sstream>
+#include <queue>
 
 WiFiClientSecure* getSSLClient() 
 {
@@ -14,8 +16,9 @@ WiFiClientSecure* getSSLClient()
     return &client;
 }
 
-bool httpsGetJson(const String& url, JsonDocument& doc) {
-
+bool httpsGetForecastJson(const String& url, JsonDocument& doc) 
+{
+  Serial.println(url);
   WiFiClientSecure* client = getSSLClient();
   HTTPClient http;
   if (!http.begin(*client, url)) {
@@ -30,53 +33,212 @@ bool httpsGetJson(const String& url, JsonDocument& doc) {
     http.end();
     return false;
   }
+  
+  while(!client->available())
+  {
 
-  int contentLength = http.getSize();
-  Serial.printf("Content-Length: %d bytes (%.1f KB)\n", contentLength, contentLength / 1024.0);
+  }
 
-  const String payload = http.getString();
-  Serial.printf("Actual payload size: %d bytes (%.1f KB)\n", payload.length(), payload.length() / 1024.0);
+  std::stringstream currentLine;
+  std::stringstream stream;
+  bool foundQuoteMark = false;
+  while(client->available() || client->connected())
+  {
+    //Maybe check the data read vs http.getSize,
+    //Could get real size eventually maybe?
+    if(client->available())
+    {
+      char c = (char)(client->read());
+      if(c == '"')
+      {
+        foundQuoteMark = true;
+      }
 
+        currentLine << c;
+        if(c == '\n') //End of line
+        { 
+          if(foundQuoteMark)//Check to skip chunk stuff
+          {
+            //Serial.print(currentLine.str().c_str());
+            stream << currentLine.str();
+            foundQuoteMark = false;
+          }
+          currentLine.str(std::string()); //We clear the line, and chunkvalue is removed 
+        }
+    }
+  }
   http.end();
-
-  Serial.printf("Memory after receiving data: %d\n", ESP.getFreeHeap());
-
   doc.clear();
-  DeserializationError err = deserializeJson(doc, payload);
+  DeserializationError err = deserializeJson(doc, stream.str().c_str());
   if (err) {
     Serial.printf("\nDeserialise json returned: %s", err.c_str());
     return false;
   }
-
-  http.end();
   return true;
 }
 
-bool buildURL(JsonDocument& doc, const SMHIParameter& parameter, SMHIStation& station, bool latest) {
+bool httpsGetData(const String &url, std::vector<lv_coord_t> &values)
+{
+    Serial.println(url);
+  WiFiClientSecure* client = getSSLClient();
+  HTTPClient http;
+  if (!http.begin(*client, url)) {
+    Serial.println("httpsGetJson http.begin() failed");
+    return false;
+  }
 
-    /*std::unordered_map<std::string, std::string> parameterMap = {
-    {"lufttemperatur", "22"},
-    {"luftfuktighet", "6"}, 
-    {"vindhastighet", "4"}, 
-    {"max av medelvindhastighet", "25"}, 
-    {"lufttryck", "9"}, //neråt funkar inte
-    {"nederbördsmängd", "27"},
-    {"snödjup", "28"},
-    {"sikt", "29"},
-    {"molntäckning", "30"},
-    {"solskenstid", "31"},
-    {"globalstrålning", "32"}
-    };
-    //temperatur, humidity, windspeed
+  Serial.println("\nCalling http.get():");
+  const int code = http.GET();
+  Serial.printf("\nGet command returned: %d\n", code);
+  if (code != HTTP_CODE_OK) { // HTTP_CODE_OK = 200
+    http.end();
+    return false;
+  }
+  
+  while(!client->available())
+  {
 
-    std::unordered_map<std::string, std::string> cityMap = {
-    {"karlskrona", "65090"},    // Karlskrona-Söderstjärna
-    {"lund", "53430"},          // Lund
-    {"malmö", "53360"},         // Malmö A
-    {"stockholm", "09740"},     // Stockholm //här och neråt funkar inte
-    {"göteborg", "07160"},      // Göteborg
-    {"uppsala", "09760"}        // Uppsala
-    };*/
+  }
+
+  //Find first "value", skip it
+
+  //Find "value"
+  //Find next ""
+  //Grab number inside that ""
+  //Add to vector
+  //Repeat
+
+  std::stringstream currentline;
+  
+  enum class ReadState
+  {
+    SkipFirst,
+    FindQuotemark,
+    FindValue,
+    GetNumber
+  };
+
+  std::queue<ReadState> stateQueue;
+  stateQueue.push(ReadState::FindQuotemark);
+  stateQueue.push(ReadState::SkipFirst);
+
+  while(client->available() || client->connected())
+  {
+    //Maybe check the data read vs http.getSize,
+    //Could get real size eventually maybe?
+    if(client->available())
+    {
+      char c = (char)(client->read());
+      ReadState state = stateQueue.front();
+
+      switch(state)
+      {
+        case ReadState::SkipFirst:
+        {      
+          currentline << c;
+          std::string str = currentline.str();
+          std::string target = "value";
+          bool matches = true;
+
+          for(int i = 0; i < str.length(); i++)
+          {
+            if(str[i] != target[i])
+            {
+              matches = false;
+            }
+          }
+
+          if(!matches)
+          {
+            currentline.str(std::string()); //Clear
+            stateQueue.pop();
+            stateQueue.push(ReadState::FindQuotemark); //Double because there's always going to be one at the end of this current word
+            stateQueue.push(ReadState::FindQuotemark);
+            stateQueue.push(ReadState::SkipFirst);
+          }
+          else if(str.length() == target.length()) //Full match
+          {
+            currentline.str(std::string()); //Clear
+            stateQueue.pop();
+            stateQueue.push(ReadState::FindQuotemark);
+            stateQueue.push(ReadState::FindQuotemark);
+            stateQueue.push(ReadState::FindValue);
+          }
+          break;
+        }
+        case ReadState::FindQuotemark:
+        {
+          if(c == '"')
+          {
+            stateQueue.pop();
+          }
+          break;
+        }
+        case ReadState::FindValue:
+        {          
+          currentline << c;
+          std::string str = currentline.str();
+          std::string target = "value";
+          bool matches = true;
+
+          for(int i = 0; i < str.length(); i++)
+          {
+            if(str[i] != target[i])
+            {
+              matches = false;
+            }
+          }
+
+          if(!matches)
+          {
+            currentline.str(std::string()); //Clear
+            stateQueue.pop();
+            stateQueue.push(ReadState::FindQuotemark);
+            stateQueue.push(ReadState::FindQuotemark);
+            stateQueue.push(ReadState::FindValue);
+          }
+          else if(str.length() == target.length()) //Full match
+          {
+            currentline.str(std::string()); //Clear
+            stateQueue.pop();
+            stateQueue.push(ReadState::FindQuotemark);
+            stateQueue.push(ReadState::FindQuotemark);
+            stateQueue.push(ReadState::GetNumber);
+          }
+          break;
+        }
+        case ReadState::GetNumber:
+        {
+          if(c == '"') //Should be end of number
+          {
+            Serial.print(std::stof(currentline.str()));
+            Serial.print("  ");
+            values.push_back(std::stof(currentline.str()));
+            currentline.str(std::string()); //Clear
+
+            if(values.size() % 25 == 0)
+            {
+              Serial.println(" ");
+            }
+
+            stateQueue.pop();
+            stateQueue.push(ReadState::FindQuotemark);
+            stateQueue.push(ReadState::FindValue);
+          }
+          else
+          {
+            currentline << c;
+          }
+          break;
+        }
+      }
+    }
+  }
+  http.end();
+  return values.size() > 0;
+}
+
+bool buildURL(std::vector<lv_coord_t>& values, const SMHIParameter& parameter, const SMHIStation& station, bool latest) {
 
     std::string parameterKey = std::to_string(parameter.smhiParameterkey);
     std::string stationKey = std::to_string(station.key);
@@ -89,155 +251,9 @@ bool buildURL(JsonDocument& doc, const SMHIParameter& parameter, SMHIStation& st
     else 
       URL += "corrected-archive/data.json";
 
-    if (httpsGetJson(URL.c_str(), doc))
+    if (httpsGetData(URL.c_str(), values))
       return true;
     else 
       return false;
 }
 
-
-
-bool httpsGetCSV(const String& url, String& csvData) {
-  WiFiClientSecure* client = getSSLClient();
-  HTTPClient http;
-  
-  if (!http.begin(*client, url)) {
-    Serial.println("httpsGetCSV http.begin() failed");
-    return false;
-  }
-
-  const int code = http.GET();
-  if (code != HTTP_CODE_OK) {
-    http.end();
-    return false;
-  }
-
-  csvData = http.getString();
-  http.end();
-  return true;
-}
-
-
-
-//////////////////////////////////////////
-/*bool setupStream(const String& url) {
-  // Close any existing stream first
-  Serial.println("\nExecuting setupStream.");
-  closeStream();
-  WiFiClientSecure* currentClient = nullptr;
-  HTTPClient currentHttp;
-  bool streamActive = false;
-  Serial.println("Declared variables.");
-
-  currentClient = getSSLClient();
-  if (!currentHttp.begin(*currentClient, url)) {
-    currentClient = nullptr;
-    return false;
-  }
-  
-  int code = currentHttp.GET();
-  if (code != HTTP_CODE_OK) {
-    currentHttp.end();
-    currentClient = nullptr;
-    return false;
-  }
-  
-  streamActive = true;
-  return true;
-}*/
-
-// Function to close the current stream
-/*void closeStream() {
-  if (streamActive) {
-    currentHttp.end();
-    currentClient = nullptr;
-    streamActive = false;
-  }
-}*/
-
-// Function to get the current stream
-/*WiFiClient* getCurrentStream() {
-  return streamActive ? currentHttp.getStreamPtr() : nullptr;
-}*/
-
-//////////////////////////////
-// Generic HTTPS → JSON helper (ESP32)
-
-
-bool getParameter(String parameter, JsonDocument& doc, const String url) {
-  doc.clear();
-  httpsGetJson(url, doc);
-
-  for (JsonObject obj: doc["resource"].as<JsonArray>()) {
-    String title = String(obj["title"].as<String>()); 
-    title.toLowerCase();
-
-    if (title == parameter) {
-      Serial.printf("\nFound parameter: %s",parameter.c_str()); //felsökning
-
-      for (JsonObject param: obj["link"].as<JsonArray>()) {
-        String type = param["type"].as<String>();
-
-        if (type.indexOf("application/json") == 0) {
-          String link = param["href"].as<String>();
-
-          Serial.printf("\nFound link to parameter: %s", link.c_str());
-
-          doc.clear();
-          bool res = httpsGetJson(link, doc);
-
-          if (res) {
-            Serial.println("\nGetParameter returned json successfully");
-            return true;
-          }else {
-            Serial.println("\nGetParameter failed getting json.");
-            return false;
-          }
-        }
-      }
-    }
-  }
-  Serial.println("getParameter failed.");
-  return false;
-}
-
-bool getCity(String city, JsonDocument& doc) {
-  //doc needs to be sent as parameter after sending it to getParameter
-  
-  if (doc.isNull()) {
-  Serial.println("No data in document for getCity");
-  return false;
-  }
-  
-  for (JsonObject obj : doc["station"].as<JsonArray>()) {
-    String name = obj["name"].as<String>();
-    name.toLowerCase();
-
-    if (name.indexOf(city) >= 0) {
-
-      Serial.printf("\nFound city: %s", name.c_str());
-
-      for (JsonObject obj1 : obj["link"].as<JsonArray>()) {
-        String link = obj1["href"].as<String>();
-        Serial.printf("\nTook first link: %s\n", link.c_str());
-        Serial.print("Free heap before problem: ");
-        Serial.println(ESP.getFreeHeap());
-        Serial.printf("Link calling get on: %s", link.c_str());
-        doc.clear();
-        bool res = httpsGetJson(link, doc);
-
-        if (res) {
-          Serial.printf("\nGot json for city: %s", city.c_str());
-          return true;
-        } else {
-          Serial.printf("\nhttpsGetJson in getCity failed. City was %s", name.c_str());
-          return false;
-        }
-      }
-    }
-  }
-      
-  Serial.printf("\ncouldn't find city: %s", city.c_str());
-  Serial.println("\ngetCity function call failed.");
-  return false;
-}

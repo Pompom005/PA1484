@@ -1,13 +1,13 @@
 #include "SMHITestRunner.h"
 #include <LittleFS.h>
 
-void SMHITestRunner::runForecastTest() {
+void SMHITestRunner::runForecastTest(String testJSON) {
     Serial.println("\n" + String(50, '='));
     Serial.println("=== FORECAST PARSER TEST ===");
     Serial.println(String(50, '='));
     
-    String testJSON = SMHITestData::getForecastTestJSON();
-    
+
+    Serial.println(testJSON);
     if (forecastParser.parseJSONFromString(testJSON)) {
         Serial.println("✓ JSON parsing successful");
         forecastParser.printData();
@@ -88,7 +88,7 @@ void SMHITestRunner::runAllTests() {
     Serial.println("=== SMHI PARSER COMPLETE TEST SUITE ===");
     Serial.println(String(60, '='));
     
-    runForecastTest();
+    runForecastTest(SMHITestData::getForecastTestJSON());
     runHistoricalTest();
     
     Serial.println("\n" + String(60, '='));

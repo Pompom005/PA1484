@@ -1,4 +1,3 @@
-//#include "SMHIAPI/SMHIAPI.h"
 #include <TFT_eSPI.h>
 #include <time.h>
 #include <LilyGo_AMOLED.h>
@@ -25,7 +24,7 @@
 using namespace std;
 
 // Wi-Fi credentials
-WiFiHandler wifi("BTH_Guest","papaya21turkos", 2000);
+WiFiHandler wifi("jesper's Galaxy A52","pqss3103", 15000);
 
 LilyGo_Class amoled;
 
@@ -35,33 +34,24 @@ static lv_obj_t* t0;
 static lv_obj_t* t1;
 static lv_obj_t* t2;
 
-static lv_obj_t* t2_label;
-static bool t2_dark = false;  // start tile #2 in light mode
 static lv_obj_t* t0_text1;
 static lv_obj_t* t0_text2;
 static lv_obj_t* t0_label;
 //OUR variables
 
 static std::vector<WeatherForecastElement*> forecast_elements;
-//static Dropdown<string>* dropdownobj;
-//static Dropdown <string> * dropdownobj2;
 static lv_obj_t* grafobj;
 static SettingsScreen* settings;
 static Linegraf* mygrafobj;
 static lv_obj_t* forecast_parent;
 
+static lv_obj_t* graphTitle;
+static lv_obj_t* graphDescription;
+
+BootScreen boot;
+bool bootDone = false;
+
 //END of our variables
-
-// Function: Tile #2 Color change
-static void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark)
-{
-  // Background
-  lv_obj_set_style_bg_opa(tile, LV_OPA_COVER, 0);
-  lv_obj_set_style_bg_color(tile, dark ? lv_color_black() : lv_color_white(), 0);
-
-  // Text
-  lv_obj_set_style_text_color(label, dark ? lv_color_white() : lv_color_black(), 0);
-}
 
 static void OnTileChanged(_lv_event_t* event)
 {
@@ -123,14 +113,6 @@ static void create_ui()
 
   // Tile #2
   {
-    t2_label = lv_label_create(t2);
-    lv_label_set_text(t2_label, "");
-    lv_obj_set_style_text_font(t2_label, &lv_font_montserrat_28, 0);
-    lv_obj_center(t2_label);
-
-    apply_tile_colors(t2, t2_label, /*dark=*/false);
-    lv_obj_add_flag(t2, LV_OBJ_FLAG_CLICKABLE);
-
     grafobj = lv_obj_create(t2);
     lv_obj_align(grafobj, LV_ALIGN_CENTER, 0, 0);
     lv_obj_set_content_height(grafobj, lv_obj_get_content_height(t2) * 0.85f);
@@ -138,18 +120,25 @@ static void create_ui()
 
     vector<lv_coord_t> koord = {30, 10, 50, 40, 20, 24, 85, 74, 26, 45, 56, 78, 90, 65, 98};
     mygrafobj = new Linegraf(grafobj, koord);
-    vector<lv_coord_t> koord1 = {30, 10, 50, 40, 20};
-    mygrafobj->replacedata(koord1, true);
+
+    graphTitle = lv_label_create(t2);
+    lv_label_set_text(graphTitle, "");
+    lv_obj_set_style_text_font(graphTitle, &arial_32, LV_PART_MAIN);
+    lv_obj_align(graphTitle,LV_ALIGN_TOP_MID, 0, 95);
+    graphDescription = lv_label_create(t2);
+    lv_label_set_text(graphDescription, "");
+    lv_obj_set_style_text_font(graphDescription, &arial_16, LV_PART_MAIN);
+    lv_obj_align(graphDescription,LV_ALIGN_BOTTOM_MID, 0, -5);
   }
   
   {
     t0_label = lv_label_create(t0);
     lv_label_set_text(t0_label, "Weather app");
-    lv_obj_set_style_text_font(t0_label, &lv_font_montserrat_32, LV_PART_MAIN);
+    lv_obj_set_style_text_font(t0_label, &arial_32, LV_PART_MAIN);
     lv_obj_align(t0_label,LV_ALIGN_TOP_MID, 0, 95);
 
     t0_text1 = lv_label_create(t0);
-    lv_label_set_text(t0_text1, "v1.0");
+    lv_label_set_text(t0_text1, "v4.0");
     lv_obj_set_style_text_color(t0_text1, lv_color_white(), LV_PART_MAIN);
     lv_obj_align(t0_text1, LV_ALIGN_BOTTOM_LEFT, 10, -30);
 
@@ -158,7 +147,10 @@ static void create_ui()
     lv_obj_set_style_text_color(t0_text2, lv_color_white(), LV_PART_MAIN);
     lv_obj_align(t0_text2, LV_ALIGN_BOTTOM_LEFT, 10, -10);
 
-    apply_tile_colors(t0, t0_label, /*dark=*/true);
+    lv_obj_set_style_bg_opa(t0, LV_OPA_COVER, 0);
+    lv_obj_set_style_bg_color(t0, lv_color_black(), 0);
+
+    lv_obj_set_style_text_color(t0_label, lv_color_white(), 0);
   }
 // Sätt start-tile till t0 som ligger i kolumn 0, rad 0 utan animation
 //lv_tileview_set_act(tileview, 0, 0, LV_ANIM_OFF);
@@ -177,27 +169,54 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
     forecast_elements[4]->SetLocation(newLocation.realStation->name);
     forecast_elements[5]->SetLocation(newLocation.realStation->name);
     forecast_elements[6]->SetLocation(newLocation.realStation->name);
+
+    Serial.println("Start");
+
+  JsonDocument doc;
+  std::stringstream jsonStr;
+  jsonStr <<  "https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/" << newLocation.realStation->longitude << "/lat/" << newLocation.realStation->latitude << "/data.json";
+  bool res = httpsGetForecastJson(jsonStr.str().c_str(), doc);
+
+  if(res)
+  {
+    Serial.println("Doc built");
+
+    SMHIForecastParser forecast;
+    if(!forecast.getDataFromJSON(doc))
+    {
+      Serial.println("Failed getting data");
+      return;
+    }
+    Serial.println("Fetched data!");
+
+    const std::vector<ForecastDataPoint>& data = forecast.getAllData();
+
+    for(int i = 0; i < forecast_elements.size(); i++)
+    {
+      forecast_elements[i]->SetValues(data[i].temperature, newLocation.realStation->name, (std::to_string(data[i].month) + "-" + std::to_string(data[i].day)), static_cast<WeatherType>(data[i].weatherSymbol));
+    }
+    Serial.println("Done");
+  }
+
+  });
+
+  settings->AddListenerToCondition([&](DropdownParameter newParam)
+  {
+        lv_label_set_text(graphTitle, newParam.realParameter->title.c_str());
+        lv_label_set_text(graphDescription, newParam.realParameter->description.c_str());
   });
 
   settings->HideOnTiles();
-
-  //ADD ALL THE STUFF TO REACT TO SETTINGS BEFORE THIS. Otherwise default might not apply etc
-  settings->LoadDefaultValues();
 }
 
-
 // Must have function: Setup is run once on startup
-BootScreen boot;
-bool bootDone = false;
-//Dropdown <string> *myDropdown;
-
-
 void setup()
 {
   Serial.begin(115200);
   delay(200);
   Serial.print("Free heap at start of setup(): ");
   Serial.println(ESP.getFreeHeap());  
+  Serial.println(ESP.getFreePsram());
 
 
   if (!amoled.begin()) {
@@ -231,29 +250,41 @@ wifi.createWiFiStatusIcon();
   else { 
     Serial.println("Failed to connect to WiFi");
   }
-//////////////////////////////////////////////////////////////// smhi grejer
 
-  Serial.print("Free heap before test: ");
-  Serial.println(ESP.getFreeHeap());
-
+//SMHI Tests of doom
+{
+  Serial.println("Checking monthly...");
+  const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureAverageMonthly);
+  std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageMonthly);
   
+  std::vector<lv_coord_t> values;
+
+  bool res = buildURL(values, param, *stations[0].realStation, true);
+  Serial.println("Monthly check done!");
+}
+{
+  Serial.println("Checking daily...");
   const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureAverageDaily);
   std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageDaily);
   
-  JsonDocument doc;
+  std::vector<lv_coord_t> values;
 
-  // bool res = buildURL(doc, param, *stations[0].realStation, true);
-  // String str;
-  // serializeJson(doc, str);
-  // Serial.println(str);
+  bool res = buildURL(values, param, *stations[0].realStation, true);
+  Serial.println("Daily check done!");
+}
+{
+  Serial.println("Checking hourly...");
+  const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureMoment);
+  std::vector<DropdownStation> stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureMoment);
+  
+  std::vector<lv_coord_t> values;
 
-  // if (res) {
-  //   Serial.println();
-  // }
+  bool res = buildURL(values, param, *stations[0].realStation, true);
+  Serial.println("Hourly check done!");
+}
 
-//   Serial.print("Free heap after test: ");
-//   Serial.println(ESP.getFreeHeap());
-// ////////////////////////////////////////////////////////////////
+ //ADD ALL THE STUFF TO REACT TO SETTINGS BEFORE THIS. Otherwise default might not apply etc
+  settings->LoadDefaultValues();
 }
 
 // Must have function: Loop runs continously on device after setup

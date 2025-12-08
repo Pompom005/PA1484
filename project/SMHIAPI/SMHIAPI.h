@@ -7,6 +7,7 @@
 #include <string>
 #include "SMHIStationsAndParameters/SMHIParameter.h"
 #include "SMHIStationsAndParameters/SMHIStation.h"
+#include "LV_Helper.h"
 
 const String SMHI_ENTRY_JSON        = "https://opendata-download-metobs.smhi.se/api.json";
 const String SMHI_VERSION_LATEST_JS = "https://opendata-download-metobs.smhi.se/api/version/latest.json";
@@ -15,19 +16,20 @@ const String SMHI_VERSION_LATEST_JS = "https://opendata-download-metobs.smhi.se/
 //New work
 WiFiClientSecure* getSSLClient();
 
-bool httpsGetJson(const String& url, JsonDocument& doc);
+bool httpsGetForecastJson(const String& url, JsonDocument& doc);
+bool httpsGetData(const String& url, std::vector<lv_coord_t>& values);
 
-bool httpsGetCSV(const String& url, String& csvData);
+// bool httpsGetCSV(const String& url, String& csvData);
 
-bool buildURL(JsonDocument doc, SMHIParameter& parameter, SMHIStation& station, bool latest);
+bool buildURL(std::vector<lv_coord_t>& values, const SMHIParameter& parameter, const SMHIStation& station, bool latest);
 
 
 //Old work
 
-bool httpsGetJson(const String& url, JsonDocument& doc); //hämtar json document
+// bool httpsGetJson(const String& url, JsonDocument& doc); //hämtar json document
 
-bool getParameter(String parameter, JsonDocument& doc, const String url = SMHI_VERSION_LATEST_JS);
+// bool getParameter(String parameter, JsonDocument& doc, const String url = SMHI_VERSION_LATEST_JS);
 
-bool getCity(String City, JsonDocument& doc);
+// bool getCity(String City, JsonDocument& doc);
 
-struct SmhiObs;
+// struct SmhiObs;

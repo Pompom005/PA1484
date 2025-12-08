@@ -1,5 +1,6 @@
 #include "SMHIForecastParser.h"
 #include <LittleFS.h>
+#include <sstream>
 
 
 SMHIForecastParser::SMHIForecastParser() {
@@ -36,12 +37,13 @@ void SMHIForecastParser::extractForecastData(const String& jsonString) {
     if (error) {
         return;
     }
-    
-    JsonArray timeSeries = doc["timeSeries"];
+    Serial.println(error.c_str());
+
+    JsonArray timeSeries = doc["timeSeries"].as<JsonArray>();
     if (timeSeries.isNull()) {
         return;
     }
-    
+    Serial.print("Timeseries exists");
     for (JsonObject dataPoint : timeSeries) {
         const char* timeStr = dataPoint["time"];
         JsonObject data = dataPoint["data"];
@@ -99,6 +101,54 @@ bool SMHIForecastParser::parseJSONFromString(const String& jsonString) {
     return forecastData.size() > 0;
 }
 
+bool SMHIForecastParser::getDataFromJSON(JsonDocument &doc)
+{
+    JsonArray timeSeries = doc["timeSeries"];
+    if (timeSeries.isNull()) {
+        return false;
+    }
+    
+    for (JsonObject dataPoint : timeSeries) 
+    {
+        const char* timeStr = dataPoint["time"];
+        JsonObject data = dataPoint["data"];
+        
+        if (timeStr && !data.isNull() && isNoonTime(String(timeStr))) {
+            ForecastDataPoint point;
+            
+            if (parseDateTime(String(timeStr), point.year, point.month, point.day)) {
+                // Handle both string and number types for all data fields
+                point.temperature = data["air_temperature"].is<const char*>() ? 
+                    String(data["air_temperature"].as<const char*>()).toFloat() : 
+                    data["air_temperature"].as<float>();
+                    
+                point.windSpeed = data["wind_speed"].is<const char*>() ? 
+                    String(data["wind_speed"].as<const char*>()).toFloat() : 
+                    data["wind_speed"].as<float>();
+                    
+                point.humidity = data["relative_humidity"].is<const char*>() ? 
+                    String(data["relative_humidity"].as<const char*>()).toFloat() : 
+                    data["relative_humidity"].as<float>();
+                    
+                point.pressure = data["air_pressure_at_mean_sea_level"].is<const char*>() ? 
+                    String(data["air_pressure_at_mean_sea_level"].as<const char*>()).toFloat() : 
+                    data["air_pressure_at_mean_sea_level"].as<float>();
+                    
+                point.precipitation = data["precipitation_amount_mean"].is<const char*>() ? 
+                    String(data["precipitation_amount_mean"].as<const char*>()).toFloat() : 
+                    data["precipitation_amount_mean"].as<float>();
+                    
+                point.weatherSymbol = data["symbol_code"].is<const char*>() ? 
+                    String(data["symbol_code"].as<const char*>()).toInt() : 
+                    data["symbol_code"].as<int>();
+                
+                forecastData.push_back(point);
+            }
+        }
+    }
+    return true;
+}
+
 std::vector<float> SMHIForecastParser::getTemperatureData() const {
     std::vector<float> temperatures;
     for (const auto& data : forecastData) {
@@ -147,6 +197,11 @@ std::vector<float> SMHIForecastParser::getPrecipitationData() const {
         }
     }
     return precipitations;
+}
+
+const std::vector<ForecastDataPoint> &SMHIForecastParser::getAllData() const
+{
+    return forecastData;
 }
 
 void SMHIForecastParser::clearData() {
