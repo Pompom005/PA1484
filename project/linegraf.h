@@ -21,6 +21,7 @@ class Linegraf{
         float minvalue;
         // i need a pointer to the graf too 
     public:
+        static void DrawCallbackEvent(lv_event_t* e);
         Linegraf(lv_obj_t* parent_tile, const vector<lv_coord_t>& chosen);
         void replacedata(const vector<lv_coord_t>& chosen, bool clearolddata);
         void getthemaxminvalue(const vector<lv_coord_t>& chosen);

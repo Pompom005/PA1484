@@ -226,7 +226,10 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
 
         bool res = buildURL(values, param, *station, true);
 
-        mygrafobj->replacedata(values, true);
+        if(res)
+        {
+          mygrafobj->replacedata(values, true);
+        }
   });
 
   settings->AddListenerToLocation([&](DropdownStation newStation)
@@ -236,7 +239,10 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
 
         bool res = buildURL(values, param, *newStation.realStation, true);
 
-        mygrafobj->replacedata(values, true);
+        if(res)
+        {
+          mygrafobj->replacedata(values, true);
+        }
   });
 
   settings->HideOnTiles();

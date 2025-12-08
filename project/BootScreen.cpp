@@ -26,7 +26,7 @@ void BootScreen::init() {
     lv_obj_align(logoLabel, LV_ALIGN_TOP_MID, 0, -60);
 
     text1 = lv_label_create(screen);
-    lv_label_set_text(text1, "v1.0");
+    lv_label_set_text(text1, "v4.0");
     lv_obj_set_style_text_color(text1, lv_color_white(), LV_PART_MAIN);
     lv_obj_align(text1, LV_ALIGN_BOTTOM_LEFT, 10, -30);
 
