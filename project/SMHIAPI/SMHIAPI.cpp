@@ -42,14 +42,12 @@ bool httpsGetForecastJson(const String& url, JsonDocument& doc)
   std::stringstream currentLine;
   std::stringstream stream;
   bool foundQuoteMark = false;
-  int notAvailableTime = 0;
   while(client->available() || client->connected())
   {
     //Maybe check the data read vs http.getSize,
     //Could get real size eventually maybe?
     if(client->available())
     {
-      notAvailableTime = 0;
       char c = (char)(client->read());
       if(c == '"')
       {
@@ -67,18 +65,6 @@ bool httpsGetForecastJson(const String& url, JsonDocument& doc)
           }
           currentLine.str(std::string()); //We clear the line, and chunkvalue is removed 
         }
-    }
-    else
-    {
-      if(notAvailableTime > 250)
-      {
-        break;
-      }
-      else
-      {
-        delay(10);
-        notAvailableTime += 10;
-      }
     }
   }
   http.end();
@@ -136,15 +122,12 @@ bool httpsGetData(const String &url, std::vector<lv_coord_t> &values)
   stateQueue.push(ReadState::FindQuotemark);
   stateQueue.push(ReadState::SkipFirst);
 
-  int notAvailableTime = 0;
-
   while(client->available() || client->connected())
   {
     //Maybe check the data read vs http.getSize,
     //Could get real size eventually maybe?
     if(client->available())
     {
-      notAvailableTime = 0;
       char c = (char)(client->read());
       ReadState state = stateQueue.front();
 
@@ -248,18 +231,6 @@ bool httpsGetData(const String &url, std::vector<lv_coord_t> &values)
           }
           break;
         }
-      }
-    }
-    else
-    {
-      if(notAvailableTime > 250)
-      {
-        break;
-      }
-      else
-      {
-        delay(10);
-        notAvailableTime += 10;
       }
     }
   }
