@@ -101,8 +101,51 @@ bool SMHIHistoricalParser::parseJSONFromString(const String& jsonString) {
     return historicalData.size() > 0;
 }
 
-std::vector<float> SMHIHistoricalParser::getValueData() const {
-    std::vector<float> values;
+bool SMHIHistoricalParser::getDataFromJSON(JsonDocument &doc)
+{
+    JsonArray values = doc["value"];
+    if (values.isNull()) {
+        return false;
+    }
+    
+    for (JsonObject dataPoint : values) {
+        // Handle both string and number types for all fields
+        unsigned long timestamp = 0;
+        float value = 0.0f;
+        const char* quality = nullptr;
+        
+        // Date can be string or number
+        if (dataPoint["date"].is<const char*>()) {
+            timestamp = String(dataPoint["date"].as<const char*>()).toInt();
+        } else {
+            timestamp = dataPoint["date"].as<unsigned long>();
+        }
+        
+        // Value can be string or number  
+        if (dataPoint["value"].is<const char*>()) {
+            value = String(dataPoint["value"].as<const char*>()).toFloat();
+        } else {
+            value = dataPoint["value"].as<float>();
+        }
+        
+        // Quality is always string
+        quality = dataPoint["quality"].as<const char*>();
+        
+        if (quality && (String(quality) == "Y" || String(quality) == "G")) {
+            HistoricalDataPoint point;
+            
+            timestampToDateTime(timestamp, point.year, point.month, point.day, point.hour, point.minute);
+            point.value = value;
+            point.quality = String(quality);
+            
+            historicalData.push_back(point);
+        }
+    }
+    return historicalData.size() > 0;
+}
+
+std::vector<lv_coord_t> SMHIHistoricalParser::getValueData() const {
+    std::vector<lv_coord_t> values;
     for (const auto& data : historicalData) {
         values.push_back(data.value);
     }

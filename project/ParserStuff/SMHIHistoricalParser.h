@@ -3,6 +3,7 @@
 #include <ArduinoJson.h>
 #include <vector>
 #include <String>
+#include "LV_Helper.h"
 
 struct HistoricalDataPoint {
     int year;
@@ -29,8 +30,9 @@ public:
     
     bool parseJSONFromFile(const String& filename);
     bool parseJSONFromString(const String& jsonString);
+    bool getDataFromJSON(JsonDocument& doc);
     
-    std::vector<float> getValueData() const;
+    std::vector<lv_coord_t> getValueData() const;
     const std::vector<HistoricalDataPoint>& getAllData() const { return historicalData; }
     String getParameterName() const { return parameterName; }
     String getUnit() const { return unit; }

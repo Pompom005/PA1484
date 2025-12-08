@@ -17,11 +17,10 @@ const String SMHI_VERSION_LATEST_JS = "https://opendata-download-metobs.smhi.se/
 WiFiClientSecure* getSSLClient();
 
 bool httpsGetForecastJson(const String& url, JsonDocument& doc);
-bool httpsGetData(const String& url, std::vector<lv_coord_t>& values);
 
 // bool httpsGetCSV(const String& url, String& csvData);
 
-bool buildURL(std::vector<lv_coord_t>& values, const SMHIParameter& parameter, const SMHIStation& station, bool latest);
+bool buildURL(JsonDocument& doc, const SMHIParameter& parameter, const SMHIStation& station, bool latest);
 
 
 //Old work

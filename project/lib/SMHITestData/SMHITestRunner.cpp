@@ -52,7 +52,7 @@ void SMHITestRunner::runHistoricalTest() {
         Serial.println("✓ Historical temperature parsing successful");
         historicalParser.printData();
         
-        std::vector<float> values = historicalParser.getValueData();
+        std::vector<lv_coord_t> values = historicalParser.getValueData();
         Serial.printf("Parsed %d historical data points\n", values.size());
         Serial.print("Values: ");
         for (float val : values) {
@@ -74,7 +74,7 @@ void SMHITestRunner::runHistoricalTest() {
         Serial.printf("Parameter: %s\n", historicalParser.getParameterName().c_str());
         Serial.printf("Unit: %s\n", historicalParser.getUnit().c_str());
         
-        std::vector<float> values = historicalParser.getValueData();
+        std::vector<lv_coord_t> values = historicalParser.getValueData();
         Serial.printf("Parsed %d humidity data points\n", values.size());
         
         printTestResult("Historical humidity parsing", values.size() == 7);
