@@ -1,4 +1,3 @@
-//#include "SMHIAPI/SMHIAPI.h"
 #include <TFT_eSPI.h>
 #include <time.h>
 #include <LilyGo_AMOLED.h>
@@ -35,7 +34,6 @@ static lv_obj_t* t0;
 static lv_obj_t* t1;
 static lv_obj_t* t2;
 
-static bool t2_dark = false;  // start tile #2 in light mode
 static lv_obj_t* t0_text1;
 static lv_obj_t* t0_text2;
 static lv_obj_t* t0_label;
@@ -50,18 +48,10 @@ static lv_obj_t* forecast_parent;
 static lv_obj_t* graphTitle;
 static lv_obj_t* graphDescription;
 
+BootScreen boot;
+bool bootDone = false;
+
 //END of our variables
-
-// Function: Tile #2 Color change
-static void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark)
-{
-  // Background
-  lv_obj_set_style_bg_opa(tile, LV_OPA_COVER, 0);
-  lv_obj_set_style_bg_color(tile, dark ? lv_color_black() : lv_color_white(), 0);
-
-  // Text
-  lv_obj_set_style_text_color(label, dark ? lv_color_white() : lv_color_black(), 0);
-}
 
 static void OnTileChanged(_lv_event_t* event)
 {
@@ -156,8 +146,6 @@ static void create_ui()
     lv_label_set_text(t0_text2, "Grupp 9");
     lv_obj_set_style_text_color(t0_text2, lv_color_white(), LV_PART_MAIN);
     lv_obj_align(t0_text2, LV_ALIGN_BOTTOM_LEFT, 10, -10);
-
-    apply_tile_colors(t0, t0_label, /*dark=*/true);
   }
 // Sätt start-tile till t0 som ligger i kolumn 0, rad 0 utan animation
 //lv_tileview_set_act(tileview, 0, 0, LV_ANIM_OFF);
@@ -216,13 +204,7 @@ lv_obj_set_tile_id(tileview, 0, 0, LV_ANIM_ON);
   settings->HideOnTiles();
 }
 
-
 // Must have function: Setup is run once on startup
-BootScreen boot;
-bool bootDone = false;
-//Dropdown <string> *myDropdown;
-
-
 void setup()
 {
   Serial.begin(115200);
