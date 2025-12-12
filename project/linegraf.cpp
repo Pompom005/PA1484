@@ -1,7 +1,7 @@
 #include<Linegraf.h>
 #include "LV_Helper.h"
 
-void Linegraf::DrawCallbackEvent(lv_event_t* e)
+void Linegraph::DrawCallbackEvent(lv_event_t* e)
 {
     //Get the event descriptor
     lv_obj_draw_part_dsc_t* dsc = lv_event_get_draw_part_dsc(e);
@@ -22,7 +22,7 @@ void Linegraf::DrawCallbackEvent(lv_event_t* e)
     }
 }
 
-Linegraf:: Linegraf(lv_obj_t*parent_tile, const vector<lv_coord_t>& chosen){
+Linegraph:: Linegraph(lv_obj_t*parent_tile, const vector<lv_coord_t>& chosen){
     parent = parent_tile;
     obj1 = lv_chart_create(parent_tile);
     //lv_obj_t* chart = lv_chart_create(parent_tile);
@@ -36,7 +36,7 @@ Linegraf:: Linegraf(lv_obj_t*parent_tile, const vector<lv_coord_t>& chosen){
     lv_chart_set_type(obj1, LV_CHART_TYPE_LINE);
     lv_obj_add_event_cb(obj1, DrawCallbackEvent, LV_EVENT_DRAW_PART_BEGIN, 0);
     serie1 = lv_chart_add_series(obj1, lv_palette_main(LV_PALETTE_ORANGE), LV_CHART_AXIS_PRIMARY_Y);
-    replacedata(chosen, false);
+    replace_data(chosen, false);
 
 }
 
@@ -49,7 +49,7 @@ Linegraf:: Linegraf(lv_obj_t*parent_tile, const vector<lv_coord_t>& chosen){
 //     lv_chart_refresh(obj1);
 // }
 // this is the old replacedata
-void Linegraf:: replacedata(const vector<lv_coord_t>& chosen, bool clearolddata){
+void Linegraph:: replace_data(const vector<lv_coord_t>& chosen, bool clearolddata){
     // if(clearolddata){
     //     lv_chart_remove_series(obj1, serie1);
     // }
@@ -67,7 +67,7 @@ void Linegraf:: replacedata(const vector<lv_coord_t>& chosen, bool clearolddata)
     int graph_width = lv_obj_get_content_width(parent);
     int graph_height = lv_obj_get_content_height(parent);
 
-    getthemaxminvalue(values);
+    get_the_max_min_value(values);
     lv_chart_set_range(obj1, LV_CHART_AXIS_PRIMARY_Y,minvalue, maxvalue );
 
     int width = values.size()*2;
@@ -87,7 +87,7 @@ void Linegraf:: replacedata(const vector<lv_coord_t>& chosen, bool clearolddata)
 
 }
 
-void Linegraf::getthemaxminvalue(const vector<lv_coord_t>& chosen)
+void Linegraph::get_the_max_min_value(const vector<lv_coord_t>& chosen)
 {
 
     auto anotherminvalue = min_element(chosen.begin(), chosen.end());

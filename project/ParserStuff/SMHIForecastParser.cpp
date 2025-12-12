@@ -7,10 +7,10 @@ SMHIForecastParser::SMHIForecastParser() {
 }
 
 SMHIForecastParser::~SMHIForecastParser() {
-    clearData();
+    clear_data();
 }
 
-bool SMHIForecastParser::parseDateTime(const String& dateTimeStr, int& year, int& month, int& day) {
+bool SMHIForecastParser::parse_date_time(const String& dateTimeStr, int& year, int& month, int& day) {
     if (dateTimeStr.length() < 10) return false;
     
     year = dateTimeStr.substring(0, 4).toInt();
@@ -20,15 +20,15 @@ bool SMHIForecastParser::parseDateTime(const String& dateTimeStr, int& year, int
     return true;
 }
 
-bool SMHIForecastParser::isNoonTime(const String& dateTimeStr) {
+bool SMHIForecastParser::is_noon_time(const String& dateTimeStr) {
     if (dateTimeStr.length() < 16) return false;
     
     int hour = dateTimeStr.substring(11, 13).toInt();
     return hour == 12;
 }
 
-void SMHIForecastParser::extractForecastData(const String& jsonString) {
-    clearData();
+void SMHIForecastParser::extract_forecast_data(const String& jsonString) {
+    clear_data();
     
     const size_t capacity = JSON_ARRAY_SIZE(100) + 100 * JSON_OBJECT_SIZE(3) + 100 * JSON_OBJECT_SIZE(20) + 20000;
     DynamicJsonDocument doc(capacity);
@@ -48,16 +48,16 @@ void SMHIForecastParser::extractForecastData(const String& jsonString) {
         const char* timeStr = dataPoint["time"];
         JsonObject data = dataPoint["data"];
         
-        if (timeStr && !data.isNull() && isNoonTime(String(timeStr))) {
+        if (timeStr && !data.isNull() && is_noon_time(String(timeStr))) {
             ForecastDataPoint point;
             
-            if (parseDateTime(String(timeStr), point.year, point.month, point.day)) {
+            if (parse_date_time(String(timeStr), point.year, point.month, point.day)) {
                 // Handle both string and number types for all data fields
                 point.temperature = data["air_temperature"].is<const char*>() ? 
                     String(data["air_temperature"].as<const char*>()).toFloat() : 
                     data["air_temperature"].as<float>();
                     
-                point.windSpeed = data["wind_speed"].is<const char*>() ? 
+                point.wind_speed = data["wind_speed"].is<const char*>() ? 
                     String(data["wind_speed"].as<const char*>()).toFloat() : 
                     data["wind_speed"].as<float>();
                     
@@ -73,35 +73,35 @@ void SMHIForecastParser::extractForecastData(const String& jsonString) {
                     String(data["precipitation_amount_mean"].as<const char*>()).toFloat() : 
                     data["precipitation_amount_mean"].as<float>();
                     
-                point.weatherSymbol = data["symbol_code"].is<const char*>() ? 
+                point.weather_symbol = data["symbol_code"].is<const char*>() ? 
                     String(data["symbol_code"].as<const char*>()).toInt() : 
                     data["symbol_code"].as<int>();
                 
-                forecastData.push_back(point);
+                forecast_data.push_back(point);
             }
         }
     }
 }
 
-bool SMHIForecastParser::parseJSONFromFile(const String& filename) {
+bool SMHIForecastParser::parse_json_from_file(const String& filename) {
     if (LittleFS.begin(true)) {
         File file = LittleFS.open(filename, "r");
         if (file) {
             String jsonString = file.readString();
             file.close();
-            extractForecastData(jsonString);
-            return forecastData.size() > 0;
+            extract_forecast_data(jsonString);
+            return forecast_data.size() > 0;
         }
     }
     return false;
 }
 
-bool SMHIForecastParser::parseJSONFromString(const String& jsonString) {
-    extractForecastData(jsonString);
-    return forecastData.size() > 0;
+bool SMHIForecastParser::parse_json_from_string(const String& jsonString) {
+    extract_forecast_data(jsonString);
+    return forecast_data.size() > 0;
 }
 
-bool SMHIForecastParser::getDataFromJSON(JsonDocument &doc)
+bool SMHIForecastParser::get_data_from_json(JsonDocument &doc)
 {
     JsonArray timeSeries = doc["timeSeries"];
     if (timeSeries.isNull()) {
@@ -113,16 +113,16 @@ bool SMHIForecastParser::getDataFromJSON(JsonDocument &doc)
         const char* timeStr = dataPoint["time"];
         JsonObject data = dataPoint["data"];
         
-        if (timeStr && !data.isNull() && isNoonTime(String(timeStr))) {
+        if (timeStr && !data.isNull() && is_noon_time(String(timeStr))) {
             ForecastDataPoint point;
             
-            if (parseDateTime(String(timeStr), point.year, point.month, point.day)) {
+            if (parse_date_time(String(timeStr), point.year, point.month, point.day)) {
                 // Handle both string and number types for all data fields
                 point.temperature = data["air_temperature"].is<const char*>() ? 
                     String(data["air_temperature"].as<const char*>()).toFloat() : 
                     data["air_temperature"].as<float>();
                     
-                point.windSpeed = data["wind_speed"].is<const char*>() ? 
+                point.wind_speed = data["wind_speed"].is<const char*>() ? 
                     String(data["wind_speed"].as<const char*>()).toFloat() : 
                     data["wind_speed"].as<float>();
                     
@@ -138,20 +138,20 @@ bool SMHIForecastParser::getDataFromJSON(JsonDocument &doc)
                     String(data["precipitation_amount_mean"].as<const char*>()).toFloat() : 
                     data["precipitation_amount_mean"].as<float>();
                     
-                point.weatherSymbol = data["symbol_code"].is<const char*>() ? 
+                point.weather_symbol = data["symbol_code"].is<const char*>() ? 
                     String(data["symbol_code"].as<const char*>()).toInt() : 
                     data["symbol_code"].as<int>();
                 
-                forecastData.push_back(point);
+                forecast_data.push_back(point);
             }
         }
     }
     return true;
 }
 
-std::vector<float> SMHIForecastParser::getTemperatureData() const {
+std::vector<float> SMHIForecastParser::get_temperature_data() const {
     std::vector<float> temperatures;
-    for (const auto& data : forecastData) {
+    for (const auto& data : forecast_data) {
         if (data.temperature > -900.0f) {
             temperatures.push_back(data.temperature);
         }
@@ -159,19 +159,19 @@ std::vector<float> SMHIForecastParser::getTemperatureData() const {
     return temperatures;
 }
 
-std::vector<float> SMHIForecastParser::getWindSpeedData() const {
+std::vector<float> SMHIForecastParser::get_wind_speed_data() const {
     std::vector<float> windSpeeds;
-    for (const auto& data : forecastData) {
-        if (data.windSpeed > -900.0f) {
-            windSpeeds.push_back(data.windSpeed);
+    for (const auto& data : forecast_data) {
+        if (data.wind_speed > -900.0f) {
+            windSpeeds.push_back(data.wind_speed);
         }
     }
     return windSpeeds;
 }
 
-std::vector<float> SMHIForecastParser::getHumidityData() const {
+std::vector<float> SMHIForecastParser::get_humidity_data() const {
     std::vector<float> humidities;
-    for (const auto& data : forecastData) {
+    for (const auto& data : forecast_data) {
         if (data.humidity > -900.0f) {
             humidities.push_back(data.humidity);
         }
@@ -179,9 +179,9 @@ std::vector<float> SMHIForecastParser::getHumidityData() const {
     return humidities;
 }
 
-std::vector<float> SMHIForecastParser::getPressureData() const {
+std::vector<float> SMHIForecastParser::get_pressure_data() const {
     std::vector<float> pressures;
-    for (const auto& data : forecastData) {
+    for (const auto& data : forecast_data) {
         if (data.pressure > -900.0f) {
             pressures.push_back(data.pressure);
         }
@@ -189,9 +189,9 @@ std::vector<float> SMHIForecastParser::getPressureData() const {
     return pressures;
 }
 
-std::vector<float> SMHIForecastParser::getPrecipitationData() const {
+std::vector<float> SMHIForecastParser::get_precipitation_data() const {
     std::vector<float> precipitations;
-    for (const auto& data : forecastData) {
+    for (const auto& data : forecast_data) {
         if (data.precipitation > -900.0f) {
             precipitations.push_back(data.precipitation);
         }
@@ -199,25 +199,25 @@ std::vector<float> SMHIForecastParser::getPrecipitationData() const {
     return precipitations;
 }
 
-const std::vector<ForecastDataPoint> &SMHIForecastParser::getAllData() const
+const std::vector<ForecastDataPoint> &SMHIForecastParser::get_all_data() const
 {
-    return forecastData;
+    return forecast_data;
 }
 
-void SMHIForecastParser::clearData() {
-    forecastData.clear();
+void SMHIForecastParser::clear_data() {
+    forecast_data.clear();
 }
 
-size_t SMHIForecastParser::getDataCount() const {
-    return forecastData.size();
+size_t SMHIForecastParser::get_data_count() const {
+    return forecast_data.size();
 }
 
-void SMHIForecastParser::printData() const {
+void SMHIForecastParser::print_data() const {
     Serial.println("=== Forecast Data (12:00 only) ===");
-    for (size_t i = 0; i < forecastData.size(); i++) {
-        const auto& data = forecastData[i];
+    for (size_t i = 0; i < forecast_data.size(); i++) {
+        const auto& data = forecast_data[i];
         Serial.printf("[%zu] %04d-%02d-%02d 12:00 - Temp: %.1f°C, Wind: %.1fm/s, Hum: %.0f%%, Press: %.1fhPa\n",
                      i, data.year, data.month, data.day,
-                     data.temperature, data.windSpeed, data.humidity, data.pressure);
+                     data.temperature, data.wind_speed, data.humidity, data.pressure);
     }
 }

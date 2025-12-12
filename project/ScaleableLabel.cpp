@@ -18,9 +18,9 @@ ScaleableLabel::ScaleableLabel(lv_obj_t *parent, float size, float size_offset)
 
     label = lv_label_create(parent);
     lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
-    SetSizeOffset(size_offset); 
+    set_size_offset(size_offset); 
 }
-void ScaleableLabel::SetSize(float size)
+void ScaleableLabel::set_size(float size)
 {
     this->size = size;
     float final_size = size + size_offset;
@@ -70,16 +70,16 @@ void ScaleableLabel::SetSize(float size)
 
     lv_obj_set_style_text_font(label, font, 0);
 }
-void ScaleableLabel::SetSizeOffset(float offset)
+void ScaleableLabel::set_size_offset(float offset)
 {
     size_offset = offset;
-    SetSize(size); //Update
+    set_size(size); //Update
 }
-void ScaleableLabel::SetText(const char *text)
+void ScaleableLabel::set_text(const char *text)
 {
     lv_label_set_text(label, text);
 }
-void ScaleableLabel::SetPosition(float x, float y)
+void ScaleableLabel::set_position(float x, float y)
 {
     lv_obj_set_pos(label, x, y);
 };

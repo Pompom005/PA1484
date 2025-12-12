@@ -34,10 +34,10 @@ enum class SupportedParameter
 struct SMHIStation
 {
 	std::string name;
-	int key;
-	float latitude;
+	int key; //Nr used in url for smhi calls
+	float latitude; 
 	float longitude;
-	int supportedParameters = 0;
+	int supported_parameters = 0; //Represents all supported parameters, each bit corresponds to a parameter
 
 	SMHIStation(std::string name = "", int key = -1, float latitude = 0, float longitude = 0, int supportedParameters = 0)
 	{
@@ -45,6 +45,6 @@ struct SMHIStation
 		this->key = key;
 		this->latitude = latitude;
 		this->longitude = longitude;
-		this->supportedParameters = supportedParameters;
+		this->supported_parameters = supportedParameters;
 	}
 };

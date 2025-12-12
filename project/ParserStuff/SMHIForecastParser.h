@@ -10,39 +10,41 @@ struct ForecastDataPoint {
     int month;
     int day;
     float temperature;
-    float windSpeed;
+    float wind_speed;
     float humidity;
     float pressure;
     float precipitation;
-    int weatherSymbol;
+    int weather_symbol;
 };
 
 class SMHIForecastParser {
 private:
-    std::vector<ForecastDataPoint> forecastData;
+    std::vector<ForecastDataPoint> forecast_data;
     
-    bool parseDateTime(const String& dateTimeStr, int& year, int& month, int& day);
-    bool isNoonTime(const String& dateTimeStr);
-    void extractForecastData(const String& jsonString);
+    bool parse_date_time(const String& dateTimeStr, int& year, int& month, int& day);
+    bool is_noon_time(const String& dateTimeStr);
+    void extract_forecast_data(const String& jsonString);
 
 public:
     SMHIForecastParser();
     ~SMHIForecastParser();
     
-    bool parseJSONFromFile(const String& filename);
-    bool parseJSONFromString(const String& jsonString);
-    bool getDataFromJSON(JsonDocument& doc);
+    //Call this to fill with data
+    bool parse_json_from_file(const String& filename);
+    bool parse_json_from_string(const String& jsonString);
+    bool get_data_from_json(JsonDocument& doc);
     
-    std::vector<float> getTemperatureData() const;
-    std::vector<float> getWindSpeedData() const;
-    std::vector<float> getHumidityData() const;
-    std::vector<float> getPressureData() const;
-    std::vector<float> getPrecipitationData() const;
+    //Call these to get data later
+    std::vector<float> get_temperature_data() const;
+    std::vector<float> get_wind_speed_data() const;
+    std::vector<float> get_humidity_data() const;
+    std::vector<float> get_pressure_data() const;
+    std::vector<float> get_precipitation_data() const;
     
-    const std::vector<ForecastDataPoint>& getAllData() const;
+    const std::vector<ForecastDataPoint>& get_all_data() const;
     
-    void clearData();
-    size_t getDataCount() const;
+    void clear_data();
+    size_t get_data_count() const;
     
-    void printData() const;
+    void print_data() const;
 };

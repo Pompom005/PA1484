@@ -4,6 +4,10 @@
 #include <vector>
 #include <map>
 
+
+//This file is generated externally, but you can add/remove whatever you want.
+//Or we can generate it ourselves with a specific get call and function in the SMHIAPI. But we generated this before we figured out the chunked response handling.
+
 static void FillWithStations(std::vector<SMHIStation*>& stationVector)
 {
 SMHIStation* station;

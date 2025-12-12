@@ -17,28 +17,30 @@ struct HistoricalDataPoint {
 
 class SMHIHistoricalParser {
 private:
-    std::vector<HistoricalDataPoint> historicalData;
-    String parameterName;
+    std::vector<HistoricalDataPoint> historical_data;
+    String parameter_name;
     String unit;
     
-    void timestampToDateTime(unsigned long timestamp, int& year, int& month, int& day, int& hour, int& minute);
-    void extractHistoricalData(const String& jsonString);
+    void timestamp_to_date_time(unsigned long timestamp, int& year, int& month, int& day, int& hour, int& minute);
+    void extract_historical_data(const String& jsonString);
 
 public:
     SMHIHistoricalParser();
     ~SMHIHistoricalParser();
     
-    bool parseJSONFromFile(const String& filename);
-    bool parseJSONFromString(const String& jsonString);
-    bool getDataFromJSON(JsonDocument& doc);
+    //Call this to fill with data
+    bool parse_json_from_file(const String& filename);
+    bool parse_json_from_string(const String& jsonString);
+    bool get_data_from_json(JsonDocument& doc);
     
-    std::vector<lv_coord_t> getValueData() const;
-    const std::vector<HistoricalDataPoint>& getAllData() const { return historicalData; }
-    String getParameterName() const { return parameterName; }
-    String getUnit() const { return unit; }
+    //Call these to get data
+    std::vector<lv_coord_t> get_value_data() const;
+    const std::vector<HistoricalDataPoint>& get_all_data() const { return historical_data; }
+    String get_parameter_name() const { return parameter_name; }
+    String get_unit() const { return unit; }
     
-    void clearData();
-    size_t getDataCount() const;
+    void clear_data();
+    size_t get_data_count() const;
     
-    void printData() const;
+    void print_data() const;
 };

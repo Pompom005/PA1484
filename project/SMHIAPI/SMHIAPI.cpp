@@ -16,7 +16,7 @@ WiFiClientSecure* getSSLClient()
     return &client;
 }
 
-bool httpsGetForecastJson(const String& url, JsonDocument& doc) 
+bool https_get_json(const String& url, JsonDocument& doc) 
 {
   Serial.println(url);
   WiFiClientSecure* client = getSSLClient();
@@ -98,9 +98,9 @@ bool httpsGetForecastJson(const String& url, JsonDocument& doc)
   return true;
 }
 
-bool buildURL(JsonDocument& doc, const SMHIParameter& parameter, const SMHIStation& station, bool latest) {
+bool build_url(JsonDocument& doc, const SMHIParameter& parameter, const SMHIStation& station, bool latest) {
 
-    std::string parameterKey = std::to_string(parameter.smhiParameterkey);
+    std::string parameterKey = std::to_string(parameter.smhi_parameter_key);
     std::string stationKey = std::to_string(station.key);
     std::string URL = "https://opendata-download-metobs.smhi.se/api/version/latest/parameter/" 
                   + parameterKey + "/station/" 
@@ -111,7 +111,7 @@ bool buildURL(JsonDocument& doc, const SMHIParameter& parameter, const SMHIStati
     else 
       URL += "corrected-archive/data.json";
 
-    if (httpsGetForecastJson(URL.c_str(), doc))
+    if (https_get_json(URL.c_str(), doc))
       return true;
     else 
       return false;

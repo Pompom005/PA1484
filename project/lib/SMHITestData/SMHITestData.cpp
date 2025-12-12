@@ -1,6 +1,6 @@
 #include "SMHITestData.h"
 
-String SMHITestData::getForecastTestJSON() {
+String SMHITestData::get_forecast_test_json() {
     return R"({
   "timeSeries": [
     {
@@ -77,7 +77,7 @@ String SMHITestData::getForecastTestJSON() {
 })";
 }
 
-String SMHITestData::getHistoricalTemperatureTestJSON() {
+String SMHITestData::get_historical_temperature_test_json() {
     return R"({
   "parameter": {
     "key": "1",
@@ -107,7 +107,7 @@ String SMHITestData::getHistoricalTemperatureTestJSON() {
 })";
 }
 
-String SMHITestData::getHistoricalHumidityTestJSON() {
+String SMHITestData::get_historical_humidity_test_json() {
     return R"({
   "parameter": {
     "name": "Relativ Luftfuktighet", 
@@ -125,7 +125,7 @@ String SMHITestData::getHistoricalHumidityTestJSON() {
 })";
 }
 
-String SMHITestData::getHistoricalPressureTestJSON() {
+String SMHITestData::get_historical_pressure_test_json() {
     return R"({
   "parameter": {
     "name": "Lufttryck",
@@ -140,7 +140,7 @@ String SMHITestData::getHistoricalPressureTestJSON() {
 })";
 }
 
-String SMHITestData::getHistoricalWindTestJSON() {
+String SMHITestData::get_historical_wind_test_json() {
     return R"({
   "parameter": {
     "name": "Vindhastighet",
@@ -155,19 +155,19 @@ String SMHITestData::getHistoricalWindTestJSON() {
 })";
 }
 
-std::vector<float> SMHITestData::getExpectedTemperatures() {
+std::vector<float> SMHITestData::get_expected_temperature() {
     return {7.7, 7.4, 7.0, 6.3, 5.7, 6.0, 5.8};
 }
 
-std::vector<float> SMHITestData::getExpectedHumidity() {
+std::vector<float> SMHITestData::get_expected_humidity() {
     return {91.0, 90.0, 89.0, 87.0, 85.0, 82.0, 84.0};
 }
 
-std::vector<float> SMHITestData::getExpectedWindSpeeds() {
+std::vector<float> SMHITestData::get_expected_wind_speeds() {
     return {4.6, 5.6, 6.1, 5.8, 4.3, 3.9, 4.1};
 }
 
-void SMHITestData::debugTimestamps() {
+void SMHITestData::debug_timestamps() {
     Serial.println("\n=== DEBUG TIMESTAMPS ===");
     
     // Test with one of your timestamps
@@ -195,10 +195,10 @@ void SMHITestData::debugTimestamps() {
                  nowInfo->tm_mday, nowInfo->tm_hour, nowInfo->tm_min);
 }
 
-void SMHITestData::debugJSONStructure() {
+void SMHITestData::debug_json_structure() {
     Serial.println("\n=== DEBUG JSON STRUCTURE ===");
     
-    String testJSON = getHistoricalTemperatureTestJSON();
+    String testJSON = get_historical_temperature_test_json();
     Serial.println("JSON length: " + String(testJSON.length()));
     Serial.println("First 200 chars:");
     Serial.println(testJSON.substring(0, 200));

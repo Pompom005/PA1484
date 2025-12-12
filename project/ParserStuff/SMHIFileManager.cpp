@@ -9,11 +9,11 @@ bool SMHIFileManager::begin() {
         return false;
     }
     
-    createFolder();
+    create_folder();
     return true;
 }
 
-bool SMHIFileManager::createFolder() {
+bool SMHIFileManager::create_folder() {
     // In SPIFFS, folders don't really exist - we'll use filename prefixes
     // But we can create a marker file to represent the folder
     File folder = SPIFFS.open(fileFolder + "/.folder", "w");
@@ -24,12 +24,12 @@ bool SMHIFileManager::createFolder() {
     return true;
 }
 
-bool SMHIFileManager::fileExists(const String& filename) {
+bool SMHIFileManager::file_exists(const String& filename) {
     String fullPath = fileFolder + "/" + filename;
     return SPIFFS.exists(fullPath);
 }
 
-void SMHIFileManager::listAllFiles() {
+void SMHIFileManager::list_all_files() {
     Serial.println("=== Files in SMHIJsonFiles folder ===");
     
     File root = SPIFFS.open(fileFolder);
@@ -63,7 +63,7 @@ void SMHIFileManager::listAllFiles() {
     }
 }
 
-std::vector<String> SMHIFileManager::getAvailableFiles() {
+std::vector<String> SMHIFileManager::get_available_files() {
     std::vector<String> files;
     
     File root = SPIFFS.open(fileFolder);
@@ -90,7 +90,7 @@ std::vector<String> SMHIFileManager::getAvailableFiles() {
     return files;
 }
 
-bool SMHIFileManager::deleteFile(const String& filename) {
+bool SMHIFileManager::delete_file(const String& filename) {
     String fullPath = fileFolder + "/" + filename;
     if (SPIFFS.exists(fullPath)) {
         return SPIFFS.remove(fullPath);
@@ -98,15 +98,15 @@ bool SMHIFileManager::deleteFile(const String& filename) {
     return false;
 }
 
-void SMHIFileManager::deleteAllFiles() {
-    std::vector<String> files = getAvailableFiles();
+void SMHIFileManager::delete_all_files() {
+    std::vector<String> files = get_available_files();
     for (const String& file : files) {
-        deleteFile(file);
+        delete_file(file);
     }
     Serial.printf("Deleted %d files\n", files.size());
 }
 
-void SMHIFileManager::printStorageInfo() {
+void SMHIFileManager::print_storage_info() {
     Serial.println("=== Storage Information ===");
     Serial.printf("Total space: %d bytes\n", SPIFFS.totalBytes());
     Serial.printf("Used space: %d bytes\n", SPIFFS.usedBytes());

@@ -29,7 +29,7 @@ class SettingsScreen
         bool state = false; //True == open, false == closed
 
         static void OnButtonPressed(lv_event_t* event);
-        void InternalButtonPressed();
+        void internal_button_pressed(); //Need access to the specific settings screen variables,  cant get from the static one.
 
         static void ButtonSave(lv_event_t* e);
         static void ButtonLoad(lv_event_t* e);
@@ -37,19 +37,12 @@ class SettingsScreen
     public:
         SettingsScreen();
 
-        void HideOnTiles();
-        void ShowOnTiles();
+        void hide_on_tiles(); //Hides the settings screen along with its button
+        void show_on_tiles(); //Shows the settings screen along with its button
 
-        void AddListenerToLocation(std::function<void(DropdownStation)> func);
-        void AddListenerToCondition(std::function<void(DropdownParameter)> func);
+        void add_listener(std::function<void(DropdownStation)> func);
+        void add_listener(std::function<void(DropdownParameter)> func);
 
-        void SaveSelectionAsDefault();
-        void LoadDefaultValues();
+        void save_selection_as_default(); //Saves to preferences
+        void load_default_values(); //Loads from preferences and overwrites the current dropdown values
 };
-
-//Create button on scr, not tile
-//Create settings screen rect
-//Create label + dropdowns on the settings screen rect
-//Make button open/close screen
-//Default state should be closed
-//Allow us to "sign up" to setting changes, maybe observer pattern or something

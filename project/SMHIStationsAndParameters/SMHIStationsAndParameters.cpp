@@ -3,36 +3,36 @@
 #include <iostream>
 #include <HWCDC.h>
 
-const SMHIParameter &SMHIStationsAndParameters::GetParameter(int parameter)
+const SMHIParameter &SMHIStationsAndParameters::get_parameter(int parameter)
 {
-   return *parametersMap[parameter].realParameter;
+   return *parameters_map[parameter].real_parameter;
 }
 
-const SMHIParameter &SMHIStationsAndParameters::GetParameter(SupportedParameter parameter)
+const SMHIParameter &SMHIStationsAndParameters::get_parameter(SupportedParameter parameter)
 {
-    return GetParameter(static_cast<int>(parameter));
+    return get_parameter(static_cast<int>(parameter));
 }
 
-const std::vector<DropdownParameter> SMHIStationsAndParameters::GetParameters()
+const std::vector<DropdownParameter> SMHIStationsAndParameters::get_parameters()
 {   
     std::vector<DropdownParameter> toReturn;
     for(int i = 0; i < parameters.size(); i++)
     {
         DropdownParameter param;
-        param.realParameter = parameters[i];
+        param.real_parameter = parameters[i];
         toReturn.push_back(param);
     }
     return toReturn;
 }
 
-const std::vector<DropdownStation> &SMHIStationsAndParameters::GetEligibleStations(int parameter)
+const std::vector<DropdownStation> &SMHIStationsAndParameters::get_eligible_stations(int parameter)
 {
-    return eligibleStations[parameter];
+    return eligible_stations[parameter];
 }
 
-const std::vector<DropdownStation> &SMHIStationsAndParameters::GetEligibleStations(SupportedParameter parameter)
+const std::vector<DropdownStation> &SMHIStationsAndParameters::get_eligible_stations(SupportedParameter parameter)
 {
-    return GetEligibleStations(static_cast<int>(parameter));
+    return get_eligible_stations(static_cast<int>(parameter));
 }
 
 void SMHIStationsAndParameters::Init()
@@ -47,16 +47,16 @@ void SMHIStationsAndParameters::Init()
     for(int i = 0; i < parameters.size(); i++)
     {
         DropdownParameter parameter;
-        parameter.realParameter  = parameters[i];
-        parametersMap[parameter.realParameter->enumParameterkey] = parameter;
+        parameter.real_parameter  = parameters[i];
+        parameters_map[parameter.real_parameter->enum_parameter_key] = parameter;
 
-        eligibleStations[parameter.realParameter->enumParameterkey] = std::vector<DropdownStation>();
-        std::vector<DropdownStation>& eligibleStationsVec = eligibleStations[parameter.realParameter->enumParameterkey];
+        eligible_stations[parameter.real_parameter->enum_parameter_key] = std::vector<DropdownStation>();
+        std::vector<DropdownStation>& eligibleStationsVec = eligible_stations[parameter.real_parameter->enum_parameter_key];
         for(int j = 0; j < stations.size(); j++)
         {
             DropdownStation station;
-            station.realStation = stations[j];
-            if(station.realStation->supportedParameters & parameter.realParameter->enumParameterkey) //This parameter is supported on this station
+            station.real_station = stations[j];
+            if(station.real_station->supported_parameters & parameter.real_parameter->enum_parameter_key) //This parameter is supported on this station
             {
                 eligibleStationsVec.push_back(station);
             }
@@ -67,10 +67,10 @@ void SMHIStationsAndParameters::Init()
 
 std::ostream &operator<<(std::ostream &os, const DropdownParameter &s)
 {
-    std::string str = s.realParameter->title;
+    std::string str = s.real_parameter->title;
     return (os << str.substr(0, str.find(":", 0)));
 }
 std::ostream &operator<<(std::ostream &os, const DropdownStation &s)
 {
-    return (os << s.realStation->name);
+    return (os << s.real_station->name);
 }

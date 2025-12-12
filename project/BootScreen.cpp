@@ -69,7 +69,7 @@ void BootScreen::show() {
     lv_anim_start(&flashAnim);
 }
 
-void BootScreen::setLogoText(const char* text) {
+void BootScreen::set_logo_text(const char* text) {
     lv_label_set_text(logoLabel, text);
 }
 

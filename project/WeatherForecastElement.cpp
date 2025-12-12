@@ -10,11 +10,11 @@ WeatherForecastElement::WeatherForecastElement(lv_obj_t* parent_tile, float size
     xPos = 0;
     yPos = 0;
     tile = parent_tile;
-    CreateTextsAndSymbol();
-    SetDefaultValues(); //Just sets random 0 values.  
+    create_texts_and_symbol();
+    set_default_values(); //Just sets random 0 values.  
 }
 
-void WeatherForecastElement::CreateTextsAndSymbol()
+void WeatherForecastElement::create_texts_and_symbol()
 { 
     //Order matters for rendering order.
     //Symbol
@@ -23,73 +23,73 @@ void WeatherForecastElement::CreateTextsAndSymbol()
 
     //Temperature
     temperature_text = new ScaleableLabel(tile, 1.0f, 0.6f);
-    temperature_text->SetSize(size);
+    temperature_text->set_size(size);
 
     //Location
     location_text = new ScaleableLabel(tile, 1.0f, -0.2f);
-    location_text->SetSize(size);
+    location_text->set_size(size);
 
     //Time
     time_text = new ScaleableLabel(tile, 1.0f, -0.2f);
-    time_text->SetSize(size);
+    time_text->set_size(size);
 
     //Symbol text
     symbol_text = new ScaleableLabel(tile);
-    symbol_text->SetSize(size);
+    symbol_text->set_size(size);
 }
 
-void WeatherForecastElement::SetDefaultValues()
+void WeatherForecastElement::set_default_values()
 {
-    SetValues(0, "0", "0", static_cast<WeatherType>(0));
-    SetSize(size);
-    SetPosition(xPos, yPos);
+    set_values(0, "0", "0", static_cast<WeatherType>(0));
+    set_size(size);
+    set_position(xPos, yPos);
 }
 
-void WeatherForecastElement::SetValues(float temperature, const std::string& location, const std::string& time, WeatherType type)
+void WeatherForecastElement::set_values(float temperature, const std::string& location, const std::string& time, WeatherType type)
 {
-    SetTemp(temperature);
-    SetLocation(location);
-    SetTime(time);
-    SetWeatherType(type);
+    set_temp(temperature);
+    set_location(location);
+    set_time(time);
+    set_weather_type(type);
 }
 
-void WeatherForecastElement::SetTemp(float temperature)
+void WeatherForecastElement::set_temp(float temperature)
 {
     std::stringstream stream;
     stream << std::fixed << std::setprecision(1) << temperature;
-    temperature_text->SetText((stream.str() + "°").c_str());
+    temperature_text->set_text((stream.str() + "°").c_str());
 }
 
-void WeatherForecastElement::SetLocation(const std::string &location)
+void WeatherForecastElement::set_location(const std::string &location)
 {
-    location_text->SetText(location.c_str());
+    location_text->set_text(location.c_str());
     int referenceTextAmount = 12; //This amount of chars are a good fit with 0.0f offset
     int locationAmount = location.length();
 
     int diff = referenceTextAmount - locationAmount;
-    location_text->SetSizeOffset((float)diff * 0.1f);
+    location_text->set_size_offset((float)diff * 0.1f);
 }
 
-void WeatherForecastElement::SetTime(const std::string &time)
+void WeatherForecastElement::set_time(const std::string &time)
 {
-    time_text->SetText(time.c_str());
+    time_text->set_text(time.c_str());
 }
 
-void WeatherForecastElement::SetWeatherType(WeatherType type)
+void WeatherForecastElement::set_weather_type(WeatherType type)
 {
     std::string text = GetTypeName(type);
-    symbol_text->SetText(text.c_str());
+    symbol_text->set_text(text.c_str());
 
     int referenceTextAmount = 12; //This amount of chars are a good fit with 0.0f offset
     int locationAmount = text.length();
 
     int diff = referenceTextAmount - locationAmount;
-    symbol_text->SetSizeOffset((float)diff * 0.1f);
+    symbol_text->set_size_offset((float)diff * 0.1f);
 
     lv_img_set_src(symbol, GetWeatherSymbol(type));
 }
 
-void WeatherForecastElement::SetPosition(float x, float y)
+void WeatherForecastElement::set_position(float x, float y)
 {
     float xSize = lv_obj_get_content_width(tile); //Size of x in pixels 
     float ySize = lv_obj_get_content_height(tile); //Size of y in pixels
@@ -98,22 +98,22 @@ void WeatherForecastElement::SetPosition(float x, float y)
     lv_obj_set_pos(symbol, (x - 0.12 * size)*xSize, y*ySize); //Centered
 
     //Temp
-    temperature_text->SetPosition((x + 0.12 * size) *xSize, y*ySize);
+    temperature_text->set_position((x + 0.12 * size) *xSize, y*ySize);
 
     //Location
-    location_text->SetPosition(x*xSize, (y + 0.20f * size)*ySize); //Above
+    location_text->set_position(x*xSize, (y + 0.20f * size)*ySize); //Above
 
     //Time
-    time_text->SetPosition(x*xSize, (y + 0.28f * size)*ySize); //Above
+    time_text->set_position(x*xSize, (y + 0.28f * size)*ySize); //Above
 
     //Symbol text
-    symbol_text->SetPosition(x*xSize, (y - 0.20f * size)*ySize); //Above
+    symbol_text->set_position(x*xSize, (y - 0.20f * size)*ySize); //Above
 
     xPos = x;
     yPos = y;
 }
 
-void WeatherForecastElement::SetSize(float size) //In percentage
+void WeatherForecastElement::set_size(float size) //In percentage
 {
     float finalSize = lv_obj_get_content_width(tile) * size;
 
@@ -124,13 +124,13 @@ void WeatherForecastElement::SetSize(float size) //In percentage
     //Size intervals for the text size:
     if(this->size != size)
     {
-        temperature_text->SetSize(size);
-        symbol_text->SetSize(size);
-        location_text->SetSize(size);
-        time_text->SetSize(size);
+        temperature_text->set_size(size);
+        symbol_text->set_size(size);
+        location_text->set_size(size);
+        time_text->set_size(size);
             
         //Do this to update position relative to screen
         this->size = size;
-        SetPosition(xPos, yPos);
+        set_position(xPos, yPos);
     }
 }

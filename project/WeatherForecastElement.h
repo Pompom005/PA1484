@@ -21,8 +21,8 @@ class WeatherForecastElement
     float xPos; //Percentages
     float yPos;
 
-    void CreateTextsAndSymbol();
-    void SetDefaultValues();
+    void create_texts_and_symbol();
+    void set_default_values();
 
     public:
 
@@ -30,14 +30,14 @@ class WeatherForecastElement
 
     //Function for setting values on everything
     //Function for setting position, size etc. Should align stuff in a nice manner
-    void SetValues(float temperature, const std::string& location, const std::string& time, WeatherType type);
-    void SetTemp(float temperature);
-    void SetLocation(const std::string& location);
-    void SetTime(const std::string& time);
-    void SetWeatherType(WeatherType type);
+    void set_values(float temperature, const std::string& location, const std::string& time, WeatherType type);
+    void set_temp(float temperature);
+    void set_location(const std::string& location);
+    void set_time(const std::string& time);
+    void set_weather_type(WeatherType type);
 
-    void SetPosition(float x, float y); //In percentage on parent tile, 0,0 is middle.
-    void SetSize(float size); //In percentage to parent tile width, always square for now.
+    void set_position(float x, float y); //In percentage on parent tile, 0,0 is middle.
+    void set_size(float size); //In percentage to parent tile width, always square for now.
 };
 
 //Maybe eventually add refresh button to forecast screenf

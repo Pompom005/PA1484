@@ -16,19 +16,6 @@ const String SMHI_VERSION_LATEST_JS = "https://opendata-download-metobs.smhi.se/
 //New work
 WiFiClientSecure* getSSLClient();
 
-bool httpsGetForecastJson(const String& url, JsonDocument& doc);
+bool https_get_json(const String& url, JsonDocument& doc); //Parses url into jsondoc
 
-// bool httpsGetCSV(const String& url, String& csvData);
-
-bool buildURL(JsonDocument& doc, const SMHIParameter& parameter, const SMHIStation& station, bool latest);
-
-
-//Old work
-
-// bool httpsGetJson(const String& url, JsonDocument& doc); //hämtar json document
-
-// bool getParameter(String parameter, JsonDocument& doc, const String url = SMHI_VERSION_LATEST_JS);
-
-// bool getCity(String City, JsonDocument& doc);
-
-// struct SmhiObs;
+bool build_url(JsonDocument& doc, const SMHIParameter& parameter, const SMHIStation& station, bool latest); //Parses url into jsondoc, but builds url from station and parameter

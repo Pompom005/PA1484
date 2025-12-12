@@ -1,14 +1,14 @@
 #include "SMHIHistoricalParser.h"
 #include <LittleFS.h>
 
-SMHIHistoricalParser::SMHIHistoricalParser() : parameterName(""), unit("") {
+SMHIHistoricalParser::SMHIHistoricalParser() : parameter_name(""), unit("") {
 }
 
 SMHIHistoricalParser::~SMHIHistoricalParser() {
-    clearData();
+    clear_data();
 }
 
-void SMHIHistoricalParser::timestampToDateTime(unsigned long timestamp, int& year, int& month, int& day, int& hour, int& minute) {
+void SMHIHistoricalParser::timestamp_to_date_time(unsigned long timestamp, int& year, int& month, int& day, int& hour, int& minute) {
     // SMHI timestamps are milliseconds since 1900
     // Convert to seconds since 1970
     unsigned long offset = 2208988800000UL; // 70 years in milliseconds
@@ -23,8 +23,8 @@ void SMHIHistoricalParser::timestampToDateTime(unsigned long timestamp, int& yea
     minute = timeInfo->tm_min;
 }
 
-void SMHIHistoricalParser::extractHistoricalData(const String& jsonString) {
-    clearData();
+void SMHIHistoricalParser::extract_historical_data(const String& jsonString) {
+    clear_data();
     
     const size_t capacity = JSON_ARRAY_SIZE(1000) + 1000 * JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(10) + 30000;
     DynamicJsonDocument doc(capacity);
@@ -36,7 +36,7 @@ void SMHIHistoricalParser::extractHistoricalData(const String& jsonString) {
     
     // Extract metadata
     if (doc["parameter"].containsKey("name")) {
-        parameterName = doc["parameter"]["name"].as<String>();
+        parameter_name = doc["parameter"]["name"].as<String>();
     }
     if (doc["parameter"].containsKey("unit")) {
         unit = doc["parameter"]["unit"].as<String>();
@@ -74,34 +74,34 @@ void SMHIHistoricalParser::extractHistoricalData(const String& jsonString) {
         if (quality && (String(quality) == "Y" || String(quality) == "G")) {
             HistoricalDataPoint point;
             
-            timestampToDateTime(timestamp, point.year, point.month, point.day, point.hour, point.minute);
+            timestamp_to_date_time(timestamp, point.year, point.month, point.day, point.hour, point.minute);
             point.value = value;
             point.quality = String(quality);
             
-            historicalData.push_back(point);
+            historical_data.push_back(point);
         }
     }
 }
 
-bool SMHIHistoricalParser::parseJSONFromFile(const String& filename) {
+bool SMHIHistoricalParser::parse_json_from_file(const String& filename) {
     if (LittleFS.begin(true)) {
         File file = LittleFS.open(filename, "r");
         if (file) {
             String jsonString = file.readString();
             file.close();
-            extractHistoricalData(jsonString);
-            return historicalData.size() > 0;
+            extract_historical_data(jsonString);
+            return historical_data.size() > 0;
         }
     }
     return false;
 }
 
-bool SMHIHistoricalParser::parseJSONFromString(const String& jsonString) {
-    extractHistoricalData(jsonString);
-    return historicalData.size() > 0;
+bool SMHIHistoricalParser::parse_json_from_string(const String& jsonString) {
+    extract_historical_data(jsonString);
+    return historical_data.size() > 0;
 }
 
-bool SMHIHistoricalParser::getDataFromJSON(JsonDocument &doc)
+bool SMHIHistoricalParser::get_data_from_json(JsonDocument &doc)
 {
     JsonArray values = doc["value"];
     if (values.isNull()) {
@@ -134,50 +134,50 @@ bool SMHIHistoricalParser::getDataFromJSON(JsonDocument &doc)
         if (quality && (String(quality) == "Y" || String(quality) == "G")) {
             HistoricalDataPoint point;
             
-            timestampToDateTime(timestamp, point.year, point.month, point.day, point.hour, point.minute);
+            timestamp_to_date_time(timestamp, point.year, point.month, point.day, point.hour, point.minute);
             point.value = value;
             point.quality = String(quality);
             
-            historicalData.push_back(point);
+            historical_data.push_back(point);
         }
     }
-    return historicalData.size() > 0;
+    return historical_data.size() > 0;
 }
 
-std::vector<lv_coord_t> SMHIHistoricalParser::getValueData() const {
+std::vector<lv_coord_t> SMHIHistoricalParser::get_value_data() const {
     std::vector<lv_coord_t> values;
-    for (const auto& data : historicalData) {
+    for (const auto& data : historical_data) {
         values.push_back(data.value);
     }
     return values;
 }
 
-void SMHIHistoricalParser::clearData() {
-    historicalData.clear();
-    parameterName = "";
+void SMHIHistoricalParser::clear_data() {
+    historical_data.clear();
+    parameter_name = "";
     unit = "";
 }
 
-size_t SMHIHistoricalParser::getDataCount() const {
-    return historicalData.size();
+size_t SMHIHistoricalParser::get_data_count() const {
+    return historical_data.size();
 }
 
-void SMHIHistoricalParser::printData() const {
+void SMHIHistoricalParser::print_data() const {
     Serial.println("=== Historical Data ===");
     Serial.print("Parameter: ");
-    Serial.println(parameterName);
+    Serial.println(parameter_name);
     Serial.print("Unit: ");
     Serial.println(unit);
     
-    size_t printCount = min(historicalData.size(), (size_t)10);
+    size_t printCount = min(historical_data.size(), (size_t)10);
     for (size_t i = 0; i < printCount; i++) {
-        const auto& data = historicalData[i];
+        const auto& data = historical_data[i];
         Serial.printf("[%zu] %04d-%02d-%02d %02d:%02d - Value: %.1f%s, Quality: %s\n",
                      i, data.year, data.month, data.day, data.hour, data.minute,
                      data.value, unit.c_str(), data.quality.c_str());
     }
     
-    if (historicalData.size() > 10) {
-        Serial.printf("... and %zu more data points\n", historicalData.size() - 10);
+    if (historical_data.size() > 10) {
+        Serial.printf("... and %zu more data points\n", historical_data.size() - 10);
     }
 }

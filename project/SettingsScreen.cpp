@@ -5,10 +5,10 @@
 void SettingsScreen::OnButtonPressed(lv_event_t *event)
 {
     SettingsScreen* settings = reinterpret_cast<SettingsScreen*>(event->user_data);
-    settings->InternalButtonPressed();
+    settings->internal_button_pressed();
 }
 
-void SettingsScreen::InternalButtonPressed()
+void SettingsScreen::internal_button_pressed()
 {
     state = !state;
     if(state)
@@ -31,12 +31,12 @@ void SettingsScreen::InternalButtonPressed()
 
 void SettingsScreen::ButtonSave(lv_event_t *e)
 {
-    reinterpret_cast<SettingsScreen*>(e->user_data)->SaveSelectionAsDefault();
+    reinterpret_cast<SettingsScreen*>(e->user_data)->save_selection_as_default();
 }
 
 void SettingsScreen::ButtonLoad(lv_event_t *e)
 {
-    reinterpret_cast<SettingsScreen*>(e->user_data)->LoadDefaultValues();
+    reinterpret_cast<SettingsScreen*>(e->user_data)->load_default_values();
 }
 
 SettingsScreen::SettingsScreen()
@@ -55,8 +55,8 @@ SettingsScreen::SettingsScreen()
     lv_obj_set_content_width(button, 40);
     lv_obj_align(button, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_event_cb(button, OnButtonPressed, LV_EVENT_CLICKED, this);
-    //lv_obj_set_style_bg_color(button, lv_color_make(255, 19, 240), LV_STATE_DEFAULT); //Neon pink, superior color
-    lv_obj_set_style_bg_color(button, lv_color_make(128, 128, 128), LV_STATE_DEFAULT); //Grey
+    lv_obj_set_style_bg_color(button, lv_color_make(255, 19, 240), LV_STATE_DEFAULT); //Neon pink, superior color
+    //lv_obj_set_style_bg_color(button, lv_color_make(128, 128, 128), LV_STATE_DEFAULT); //Grey
 
     lv_obj_set_pos(button, lv_obj_get_content_width(lv_scr_act()) * -0.4f, lv_obj_get_content_height(lv_scr_act()) * -0.4f);
 
@@ -76,8 +76,8 @@ SettingsScreen::SettingsScreen()
     lv_obj_set_pos(open_image, lv_obj_get_content_width(lv_scr_act()) * -0.4f, lv_obj_get_content_height(lv_scr_act()) * -0.4f);
 
     //Dropdowns
-    locations_dropdown = new Dropdown<DropdownStation>(SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageDaily), popup_screen);
-    conditions_dropdown = new Dropdown<DropdownParameter>(SMHIStationsAndParameters::GetInstance().GetParameters(), popup_screen);
+    locations_dropdown = new Dropdown<DropdownStation>(SMHIStationsAndParameters::instance().get_eligible_stations(SupportedParameter::AirTemperatureAverageDaily), popup_screen);
+    conditions_dropdown = new Dropdown<DropdownParameter>(SMHIStationsAndParameters::instance().get_parameters(), popup_screen);
 
     locations_dropdown->screenpos(popup_width * -0.25f, popup_height * -0.5f);
     conditions_dropdown->screenpos(popup_width * 0.25, popup_height * -0.5f);
@@ -88,16 +88,16 @@ SettingsScreen::SettingsScreen()
     lv_obj_set_content_width(save_button, 80);
     lv_obj_align(save_button, LV_ALIGN_BOTTOM_MID, popup_width * -0.25f, popup_height * -0.25f);
     lv_obj_add_event_cb(save_button, ButtonSave, LV_EVENT_CLICKED, this);
-    //lv_obj_set_style_bg_color(button, lv_color_make(255, 19, 240), LV_STATE_DEFAULT); //Neon pink, superior color
-    lv_obj_set_style_bg_color(save_button, lv_color_make(128, 128, 128), LV_STATE_DEFAULT); //Grey
+    lv_obj_set_style_bg_color(button, lv_color_make(255, 19, 240), LV_STATE_DEFAULT); //Neon pink, superior color
+    //lv_obj_set_style_bg_color(save_button, lv_color_make(128, 128, 128), LV_STATE_DEFAULT); //Grey
 
     load_button = lv_btn_create(popup_screen);
     lv_obj_set_content_height(load_button, 40);
     lv_obj_set_content_width(load_button, 80);
     lv_obj_align(load_button, LV_ALIGN_BOTTOM_MID, popup_width * +0.25f, popup_height * -0.25f);
     lv_obj_add_event_cb(load_button, ButtonLoad, LV_EVENT_CLICKED, this);
-    //lv_obj_set_style_bg_color(button, lv_color_make(255, 19, 240), LV_STATE_DEFAULT); //Neon pink, superior color
-    lv_obj_set_style_bg_color(load_button, lv_color_make(128, 128, 128), LV_STATE_DEFAULT); //Grey
+    lv_obj_set_style_bg_color(button, lv_color_make(255, 19, 240), LV_STATE_DEFAULT); //Neon pink, superior color
+    //lv_obj_set_style_bg_color(load_button, lv_color_make(128, 128, 128), LV_STATE_DEFAULT); //Grey
 
     //Labels
     settings_label = lv_label_create(popup_screen);
@@ -130,13 +130,13 @@ SettingsScreen::SettingsScreen()
     lv_obj_add_flag(popup_screen, LV_OBJ_FLAG_HIDDEN);
 
     //Important listener to change eligiblestations when we change parameter
-    AddListenerToCondition([&](DropdownParameter newParameter)
+    add_listener([&](DropdownParameter newParameter)
     {
-        locations_dropdown->UpdateList(SMHIStationsAndParameters::GetInstance().GetEligibleStations(newParameter.realParameter->enumParameterkey));
+        locations_dropdown->update_list(SMHIStationsAndParameters::instance().get_eligible_stations(newParameter.real_parameter->enum_parameter_key));
     });
 }
 
-void SettingsScreen::HideOnTiles()
+void SettingsScreen::hide_on_tiles()
 {
     lv_obj_add_flag(button, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(close_image, LV_OBJ_FLAG_HIDDEN);
@@ -144,33 +144,33 @@ void SettingsScreen::HideOnTiles()
     lv_obj_add_flag(popup_screen, LV_OBJ_FLAG_HIDDEN);
 }
 
-void SettingsScreen::ShowOnTiles()
+void SettingsScreen::show_on_tiles()
 {
     lv_obj_clear_flag(button, LV_OBJ_FLAG_HIDDEN);
     lv_obj_clear_flag(open_image, LV_OBJ_FLAG_HIDDEN);
 }
 
-void SettingsScreen::AddListenerToLocation(std::function<void(DropdownStation)> func)
+void SettingsScreen::add_listener(std::function<void(DropdownStation)> func)
 {
-    locations_dropdown->addlistener(func);
+    locations_dropdown->add_listener(func);
 }
 
-void SettingsScreen::AddListenerToCondition(std::function<void(DropdownParameter)> func)
+void SettingsScreen::add_listener(std::function<void(DropdownParameter)> func)
 {
-    conditions_dropdown->addlistener(func);
+    conditions_dropdown->add_listener(func);
 }
 
-void SettingsScreen::SaveSelectionAsDefault()
+void SettingsScreen::save_selection_as_default()
 {
     Preferences pref;
     pref.begin("defaults", false);
 
-    pref.putInt("defaultParam", conditions_dropdown->GetSelected().realParameter->smhiParameterkey);
-    pref.putInt("defaultStation", locations_dropdown->GetSelected().realStation->key);
+    pref.putInt("defaultParam", conditions_dropdown->get_selected().real_parameter->smhi_parameter_key);
+    pref.putInt("defaultStation", locations_dropdown->get_selected().real_station->key);
     pref.end();
 }
 
-void SettingsScreen::LoadDefaultValues()
+void SettingsScreen::load_default_values()
 {  
     Preferences pref;
 
@@ -178,42 +178,42 @@ void SettingsScreen::LoadDefaultValues()
 
     if(!pref.isKey("defaultParam")) //Doesnt exist
     {
-        const SMHIParameter& param = SMHIStationsAndParameters::GetInstance().GetParameter(SupportedParameter::AirTemperatureAverageDaily);
-        pref.putInt("defaultParam", param.smhiParameterkey);
+        const SMHIParameter& param = SMHIStationsAndParameters::instance().get_parameter(SupportedParameter::AirTemperatureAverageDaily);
+        pref.putInt("defaultParam", param.smhi_parameter_key);
 
-        const std::vector<DropdownStation>& stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(SupportedParameter::AirTemperatureAverageDaily);
+        const std::vector<DropdownStation>& stations = SMHIStationsAndParameters::instance().get_eligible_stations(SupportedParameter::AirTemperatureAverageDaily);
 
         if(stations.size() > 0)
         {
-            pref.putInt("defaultStation", stations[0].realStation->key);
+            pref.putInt("defaultStation", stations[0].real_station->key);
         }
         else
         {
             pref.putInt("defaultStation", 0);
         }
-        conditions_dropdown->SetSelected(log2(static_cast<int>(SupportedParameter::AirTemperatureAverageDaily)));
-        locations_dropdown->SetSelected(0);
+        conditions_dropdown->set_selected(log2(static_cast<int>(SupportedParameter::AirTemperatureAverageDaily)));
+        locations_dropdown->set_selected(0);
     }
     else
     {
         int paramKey = pref.getInt("defaultParam");
         int stationKey = pref.getInt("defaultStation");
 
-        const std::vector<DropdownParameter> allParams = SMHIStationsAndParameters::GetInstance().GetParameters();
+        const std::vector<DropdownParameter> allParams = SMHIStationsAndParameters::instance().get_parameters();
         for(int i = 0; i < allParams.size(); i++)
         {
             //Using smhi key so its more accurate
-            if(paramKey == allParams[i].realParameter->smhiParameterkey)
+            if(paramKey == allParams[i].real_parameter->smhi_parameter_key)
             {
                 //This works because the dropdown will use the same list to initialize the values, so will be same index.
-                conditions_dropdown->SetSelected(i);
+                conditions_dropdown->set_selected(i);
 
-                const std::vector<DropdownStation>& stations = SMHIStationsAndParameters::GetInstance().GetEligibleStations(allParams[i].realParameter->enumParameterkey);
+                const std::vector<DropdownStation>& stations = SMHIStationsAndParameters::instance().get_eligible_stations(allParams[i].real_parameter->enum_parameter_key);
                 for(int j = 0; j < stations.size(); j++)
                 {
-                    if(stations[j].realStation->key == stationKey)
+                    if(stations[j].real_station->key == stationKey)
                     {
-                        locations_dropdown->SetSelected(j);
+                        locations_dropdown->set_selected(j);
                         break;
                     }
                 }

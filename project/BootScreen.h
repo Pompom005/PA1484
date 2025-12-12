@@ -16,6 +16,6 @@ public:
     BootScreen();
     void init();
     void show();
-    void setLogoText(const char* text);
+    void set_logo_text(const char* text);
     void hide();
 };

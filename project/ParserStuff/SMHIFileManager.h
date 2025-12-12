@@ -14,16 +14,16 @@ public:
     bool begin();
     
     // File operations
-    bool fileExists(const String& filename);
-    void listAllFiles();
-    std::vector<String> getAvailableFiles();
-    bool deleteFile(const String& filename);
-    void deleteAllFiles();
+    bool file_exists(const String& filename);
+    void list_all_files();
+    std::vector<String> get_available_files();
+    bool delete_file(const String& filename);
+    void delete_all_files();
     
     // Folder operations
-    String getFolderPath() { return fileFolder; }
-    bool createFolder();
+    String get_folder_path() { return fileFolder; }
+    bool create_folder();
     
     // Debug info
-    void printStorageInfo();
+    void print_storage_info();
 };

@@ -13,13 +13,13 @@ Dropdown <T>::Dropdown(const vector<T>& cities, lv_obj_t * parent, int x, int y)
             Serial.println("No ptr found");
             return;
         }
-        dropdownBox = lv_dropdown_create(parent);
-        optionStr = makeittostring(cities);
-        lv_dropdown_set_options(dropdownBox,optionStr.c_str());
+        dropdown_box = lv_dropdown_create(parent);
+        option_str = make_it_to_string(cities);
+        lv_dropdown_set_options(dropdown_box,option_str.c_str());
         // i need to do a if sats som kollar om a bix is already created or not
         screenpos(x, y);//lv_obj_align(dropdownBox, LV_ALIGN_BOTTOM_MID, 0, 10);// have a function to itself that can change these numbers 20 and 10
-        lv_dropdown_set_selected(dropdownBox, 0);
-        lv_obj_add_event_cb(dropdownBox, event_handler, LV_EVENT_VALUE_CHANGED, this);
+        lv_dropdown_set_selected(dropdown_box, 0);
+        lv_obj_add_event_cb(dropdown_box, event_handler, LV_EVENT_VALUE_CHANGED, this);
 
         listeners = std::vector<std::function<void(T)>>();
 }
@@ -46,7 +46,7 @@ if(code == LV_EVENT_VALUE_CHANGED) {
 }
 
 template <typename T>
-string Dropdown<T>:: makeittostring(const vector<T> & stad){
+string Dropdown<T>:: make_it_to_string(const vector<T> & stad){
     string option;
     for(size_t i = 0; i < stad.size(); i++){
         stringstream ss;
@@ -60,30 +60,30 @@ string Dropdown<T>:: makeittostring(const vector<T> & stad){
 }
 
 template <typename T>
-void Dropdown<T>::addlistener(std::function<void(T)> func)
+void Dropdown<T>::add_listener(std::function<void(T)> func)
 {
     listeners.push_back(func);
 }
 
 template <typename T>
-void Dropdown<T>::UpdateList(const vector<T> &cities)
+void Dropdown<T>::update_list(const vector<T> &cities)
 {
     choices = cities;
     char buf[64];
-    lv_dropdown_get_selected_str(dropdownBox, buf, sizeof(buf));
+    lv_dropdown_get_selected_str(dropdown_box, buf, sizeof(buf));
 
-    optionStr = makeittostring(cities);
-    lv_dropdown_set_options(dropdownBox,optionStr.c_str());
+    option_str = make_it_to_string(cities);
+    lv_dropdown_set_options(dropdown_box,option_str.c_str());
 
-    int index = lv_dropdown_get_option_index(dropdownBox, buf);
+    int index = lv_dropdown_get_option_index(dropdown_box, buf);
     if(index != -1)
     {
         //The same station exists, so it should be selected now aswell!
-        lv_dropdown_set_selected(dropdownBox, index);
+        lv_dropdown_set_selected(dropdown_box, index);
     }
     else
     {
-        lv_dropdown_set_selected(dropdownBox, 0);
+        lv_dropdown_set_selected(dropdown_box, 0);
 
         T option = choices[0];
         for(int i = 0; i < listeners.size(); i++)
@@ -94,9 +94,9 @@ void Dropdown<T>::UpdateList(const vector<T> &cities)
 }
 
 template <typename T>
-void Dropdown<T>::SetSelected(int index)
+void Dropdown<T>::set_selected(int index)
 {        
-    lv_dropdown_set_selected(dropdownBox, index);
+    lv_dropdown_set_selected(dropdown_box, index);
     T option = choices[index];
     for(int i = 0; i < listeners.size(); i++)
     {
@@ -105,15 +105,15 @@ void Dropdown<T>::SetSelected(int index)
 }
 
 template <typename T>
-T Dropdown<T>::GetSelected()
+T Dropdown<T>::get_selected()
 {
-    int selectedIndex = lv_dropdown_get_selected(dropdownBox);
+    int selectedIndex = lv_dropdown_get_selected(dropdown_box);
     return choices[selectedIndex];
 }
 
 template <typename T>
 void Dropdown<T>::screenpos(int x, int y){
-    lv_obj_align(dropdownBox, LV_ALIGN_BOTTOM_MID, x, y);
+    lv_obj_align(dropdown_box, LV_ALIGN_BOTTOM_MID, x, y);
 }
 
 template class Dropdown <string>;

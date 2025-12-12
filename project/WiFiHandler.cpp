@@ -17,18 +17,18 @@ bool WiFiHandler::connect() {
 
 }
 
-bool WiFiHandler::isConnected() const{
+bool WiFiHandler::is_connected() const{
     return WiFi.status() == WL_CONNECTED;
 }
 
-void WiFiHandler::createWiFiStatusIcon(){
+void WiFiHandler::create_WiFi_status_icon(){
     wifi_status_icon = lv_label_create(lv_scr_act());
     lv_label_set_text(wifi_status_icon, LV_SYMBOL_WIFI);
     lv_obj_align(wifi_status_icon, LV_ALIGN_TOP_RIGHT, -8,8);
 
 }
 
-void WiFiHandler::UpdateWiFiStatusIcon(){
+void WiFiHandler::update_WiFi_status_icon(){
     if (!wifi_status_icon) return;
 
     if (WiFi.status() == WL_CONNECTED)

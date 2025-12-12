@@ -15,9 +15,9 @@ private:
 public:
     WiFiHandler(const char* ssid, const char* password, unsigned long timeoutMs = 10000);
     bool connect();
-    bool isConnected() const;
+    bool is_connected() const;
 
-    void createWiFiStatusIcon();
-    void UpdateWiFiStatusIcon();
+    void create_WiFi_status_icon();
+    void update_WiFi_status_icon();
 
 };

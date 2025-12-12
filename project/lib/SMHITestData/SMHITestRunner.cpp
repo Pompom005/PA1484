@@ -1,34 +1,34 @@
 #include "SMHITestRunner.h"
 #include <LittleFS.h>
 
-void SMHITestRunner::runForecastTest(String testJSON) {
+void SMHITestRunner::run_forecast_test(String testJSON) {
     Serial.println("\n" + String(50, '='));
     Serial.println("=== FORECAST PARSER TEST ===");
     Serial.println(String(50, '='));
     
 
     Serial.println(testJSON);
-    if (forecastParser.parseJSONFromString(testJSON)) {
+    if (forecastParser.parse_json_from_string(testJSON)) {
         Serial.println("✓ JSON parsing successful");
-        forecastParser.printData();
+        forecastParser.print_data();
         
         // Verify results
-        std::vector<float> actualTemps = forecastParser.getTemperatureData();
-        std::vector<float> expectedTemps = SMHITestData::getExpectedTemperatures();
+        std::vector<float> actualTemps = forecastParser.get_temperature_data();
+        std::vector<float> expectedTemps = SMHITestData::get_expected_temperature();
         
-        std::vector<float> actualHumidity = forecastParser.getHumidityData();
-        std::vector<float> expectedHumidity = SMHITestData::getExpectedHumidity();
+        std::vector<float> actualHumidity = forecastParser.get_humidity_data();
+        std::vector<float> expectedHumidity = SMHITestData::get_expected_humidity();
         
-        std::vector<float> actualWind = forecastParser.getWindSpeedData();
-        std::vector<float> expectedWind = SMHITestData::getExpectedWindSpeeds();
+        std::vector<float> actualWind = forecastParser.get_wind_speed_data();
+        std::vector<float> expectedWind = SMHITestData::get_expected_wind_speeds();
         
-        bool tempTest = compareVectors(actualTemps, expectedTemps);
-        bool humidityTest = compareVectors(actualHumidity, expectedHumidity);
-        bool windTest = compareVectors(actualWind, expectedWind);
+        bool tempTest = compare_vectors(actualTemps, expectedTemps);
+        bool humidityTest = compare_vectors(actualHumidity, expectedHumidity);
+        bool windTest = compare_vectors(actualWind, expectedWind);
         
-        printTestResult("Temperature parsing", tempTest);
-        printTestResult("Humidity parsing", humidityTest);
-        printTestResult("Wind speed parsing", windTest);
+        print_test_result("Temperature parsing", tempTest);
+        print_test_result("Humidity parsing", humidityTest);
+        print_test_result("Wind speed parsing", windTest);
         
         if (tempTest && humidityTest && windTest) {
             Serial.println("\n🎉 ALL FORECAST TESTS PASSED!");
@@ -41,18 +41,18 @@ void SMHITestRunner::runForecastTest(String testJSON) {
     }
 }
 
-void SMHITestRunner::runHistoricalTest() {
+void SMHITestRunner::run_historical_test() {
     Serial.println("\n" + String(50, '='));
     Serial.println("=== HISTORICAL PARSER TEST ===");
     Serial.println(String(50, '='));
     
     // Test temperature historical data
-    String tempJSON = SMHITestData::getHistoricalTemperatureTestJSON();
-    if (historicalParser.parseJSONFromString(tempJSON)) {
+    String tempJSON = SMHITestData::get_historical_temperature_test_json();
+    if (historicalParser.parse_json_from_string(tempJSON)) {
         Serial.println("✓ Historical temperature parsing successful");
-        historicalParser.printData();
+        historicalParser.print_data();
         
-        std::vector<lv_coord_t> values = historicalParser.getValueData();
+        std::vector<lv_coord_t> values = historicalParser.get_value_data();
         Serial.printf("Parsed %d historical data points\n", values.size());
         Serial.print("Values: ");
         for (float val : values) {
@@ -60,7 +60,7 @@ void SMHITestRunner::runHistoricalTest() {
         }
         Serial.println();
         
-        printTestResult("Historical temperature parsing", values.size() == 17);
+        print_test_result("Historical temperature parsing", values.size() == 17);
     } else {
         Serial.println("❌ Historical temperature parsing failed");
     }
@@ -68,44 +68,44 @@ void SMHITestRunner::runHistoricalTest() {
     Serial.println();
     
     // Test humidity historical data
-    String humidityJSON = SMHITestData::getHistoricalHumidityTestJSON();
-    if (historicalParser.parseJSONFromString(humidityJSON)) {
+    String humidityJSON = SMHITestData::get_historical_humidity_test_json();
+    if (historicalParser.parse_json_from_string(humidityJSON)) {
         Serial.println("✓ Historical humidity parsing successful");
-        Serial.printf("Parameter: %s\n", historicalParser.getParameterName().c_str());
-        Serial.printf("Unit: %s\n", historicalParser.getUnit().c_str());
+        Serial.printf("Parameter: %s\n", historicalParser.get_parameter_name().c_str());
+        Serial.printf("Unit: %s\n", historicalParser.get_unit().c_str());
         
-        std::vector<lv_coord_t> values = historicalParser.getValueData();
+        std::vector<lv_coord_t> values = historicalParser.get_value_data();
         Serial.printf("Parsed %d humidity data points\n", values.size());
         
-        printTestResult("Historical humidity parsing", values.size() == 7);
+        print_test_result("Historical humidity parsing", values.size() == 7);
     } else {
         Serial.println("❌ Historical humidity parsing failed");
     }
 }
 
-void SMHITestRunner::runAllTests() {
+void SMHITestRunner::run_all_tests() {
     Serial.println("\n" + String(60, '='));
     Serial.println("=== SMHI PARSER COMPLETE TEST SUITE ===");
     Serial.println(String(60, '='));
     
-    runForecastTest(SMHITestData::getForecastTestJSON());
-    runHistoricalTest();
+    run_forecast_test(SMHITestData::get_forecast_test_json());
+    run_historical_test();
     
     Serial.println("\n" + String(60, '='));
     Serial.println("=== TEST SUITE COMPLETE ===");
     Serial.println(String(60, '='));
 }
 
-void SMHITestRunner::runTimestampDebug() {
+void SMHITestRunner::run_timestamp_debug() {
     Serial.println("\n" + String(50, '='));
     Serial.println("=== TIMESTAMP DEBUG ===");
     Serial.println(String(50, '='));
     
-    SMHITestData::debugTimestamps();
-    SMHITestData::debugJSONStructure();
+    SMHITestData::debug_timestamps();
+    SMHITestData::debug_json_structure();
 }
 
-void SMHITestRunner::runFileSystemTest() {
+void SMHITestRunner::run_file_system_test() {
     Serial.println("\n" + String(50, '='));
     Serial.println("=== FILE SYSTEM TEST ===");
     Serial.println(String(50, '='));
@@ -133,11 +133,11 @@ void SMHITestRunner::runFileSystemTest() {
     }
 }
 
-void SMHITestRunner::debugJSONStructure() {
+void SMHITestRunner::debug_json_structure() {
     Serial.println("\n=== JSON STRUCTURE DEBUG ===");
     
     SMHIHistoricalParser parser;
-    String testJSON = SMHITestData::getHistoricalTemperatureTestJSON();
+    String testJSON = SMHITestData::get_historical_temperature_test_json();
     
     const size_t capacity = 10000;
     DynamicJsonDocument doc(capacity);
@@ -184,7 +184,7 @@ void SMHITestRunner::debugJSONStructure() {
     }
 }
 
-void SMHITestRunner::debugTimestampConversion() {
+void SMHITestRunner::debug_timestamp_conversion() {
     Serial.println("\n=== TIMESTAMP CONVERSION DEBUG ===");
     
     // Test specific timestamps from your data
@@ -205,10 +205,10 @@ unsigned long long testTimestamps[] = {1753146000000ULL, 1753149600000ULL, 17531
     }
 }
 
-void SMHITestRunner::debugDataTypes() {
+void SMHITestRunner::debug_data_types() {
     Serial.println("\n=== DATA TYPES DEBUG ===");
     
-    String testJSON = SMHITestData::getHistoricalTemperatureTestJSON();
+    String testJSON = SMHITestData::get_historical_temperature_test_json();
     
     const size_t capacity = 10000;
     DynamicJsonDocument doc(capacity);
@@ -235,11 +235,11 @@ void SMHITestRunner::debugDataTypes() {
     }
 }
 
-void SMHITestRunner::printTestResult(const String& testName, bool passed) {
+void SMHITestRunner::print_test_result(const String& testName, bool passed) {
     Serial.printf("  %s: %s\n", testName.c_str(), passed ? "✓ PASS" : "✗ FAIL");
 }
 
-bool SMHITestRunner::compareVectors(const std::vector<float>& actual, const std::vector<float>& expected) {
+bool SMHITestRunner::compare_vectors(const std::vector<float>& actual, const std::vector<float>& expected) {
     if (actual.size() != expected.size()) {
         Serial.printf("    Size mismatch: expected %zu, got %zu\n", expected.size(), actual.size());
         return false;
