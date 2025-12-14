@@ -6,6 +6,8 @@ This repository serves as a foundation for software engineering projects aimed a
 This document will guide you through the setup process and help you prepare to work with your ESP32 hardware.
 
 ---
+# Introduction
+This project is a touchscreen-based weather application built for ESP32 LilyGO device. It uses PlatformIO as IDE in visual studio code for development and SMHI's open data API as data source to fetches weather data and visualizes it on the device using a screen driven interface. The data is visualised with symbols and graphs on the device. This project solves the problem of not people not bieng able to access weather information freely.
 
 # How to get started
 
@@ -88,6 +90,26 @@ From LilyGO [link](https://github.com/Xinyuan-LilyGO/LilyGo-AMOLED-Series)
 11. Click (plug symbol) to monitor serial output
 12. If it cannot be written, or the USB device keeps flashing, please check the **FAQ** below
 
+# Building and running
+Once you have the repository opened in VS code platformIO. All you need to do to run the program on the device is build it and when that is done upload it to the device. This is done with two buttons on the left side of the screen under.
+## Startup procedure
+When the device starts a booting screen will show of the group number that worked on this device and what version of the program exists on the device. When the device has finished booting then it will be possible to navigate between three svreens. On the latter two screens there will be a settings button that brings up some configurable options. Like what city and parameter to display and what default city the user would like to have displayed when the device restarts. The first screen is just like the boot screen. This is so one could still get back to what group and version of the program is on the device. The second screen displayes weather forceast. And lastly the thrid screen displayes a historical data graph based on chosen parameter in the settings.
+
+#Features
+- [X] **US1.1C:** Show a starting screen with current program version and group number.
+- [X] **US1.3:** Provide a screen to view weather forecast data.
+- [X] **US1.2C:** Show a 7-day forecast for the selected city (12:00 each day) with temperature and weather condition symbols.
+- [X] **US2.1:** Navigate between screens by sliding a finger over the touchscreen.
+- [X] **US3.1:** Provide a screen to view historical weather data.
+- [X] **US3.2D:** Show latest-months historical hourly data for the selected parameter/city, with a slider to scroll from oldest to newest.
+- [X] **US4.1:** Provide a single settings screen to configure both city and weather parameter.
+- [X] **US4.2B:** Select between four weather parameters: temperature (1), humidity (6), wind speed (4), air pressure (9).
+- [X] **US4.3B:** Select between five cities: Karlskrona (65090), Stockholm (97400), Göteborg (72420), Malmö (53300), Kiruna (180940).
+- [X] **US4.4:** Reset the selected city and weather parameter to default using a button.
+- [X] **US4.5:** Set the default city/parameter to the current selection using a button.
+- [X] **US4.6:** Store default city/parameter so they persist after restart.
+- [ ] **US5.1:** Provide a screen to view weather forecast for all of Sweden.
+- [ ] **US5.2:** Show a Sweden “Landskap” temperature map with color-coded zones and a looped 24h hourly forecast animation.
 
 # 2️⃣ FAQ
 
