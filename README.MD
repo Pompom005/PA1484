@@ -7,7 +7,7 @@ This document will guide you through the setup process and help you prepare to w
 
 ---
 # Introduction
-This project is a touchscreen-based weather application built for ESP32 LilyGO device. It uses PlatformIO as IDE in visual studio code for development and SMHI's open data API as data source to fetches weather data and visualizes it on the device using a screen driven interface. The data is visualised with symbols and graphs on the device. This project solves the problem of not people not bieng able to access weather information freely.
+This project is a touchscreen-based weather application built for an ESP32 LilyGO device. It uses PlatformIO as the IDE in visual studio code for development and SMHI's open data API as data source to fetches weather data and visualizes it on the device using a screen driven interface. The data is visualised with symbols and graphs on the device. This project solves the problem of  people not bieng able to access weather information freely.
 
 # How to get started
 
@@ -93,9 +93,9 @@ From LilyGO [link](https://github.com/Xinyuan-LilyGO/LilyGo-AMOLED-Series)
 # Building and running
 Once you have the repository opened in VS code platformIO. All you need to do to run the program on the device is build it and when that is done upload it to the device. This is done with two buttons on the left side of the screen under.
 ## Startup procedure
-When the device starts a booting screen will show of the group number that worked on this device and what version of the program exists on the device. When the device has finished booting then it will be possible to navigate between three svreens. On the latter two screens there will be a settings button that brings up some configurable options. Like what city and parameter to display and what default city the user would like to have displayed when the device restarts. The first screen is just like the boot screen. This is so one could still get back to what group and version of the program is on the device. The second screen displayes weather forceast. And lastly the thrid screen displayes a historical data graph based on chosen parameter in the settings.
+When the device starts, a boot screen shows the group number and the program version. After booting, it is possible to navigate between three screens. On the second and third screens, there is a settings button that opens configurable options, such as the city and parameter to display, and the default city to use after a restart. The first screen mirrors the boot screen so you can always check the group and version. The second screen displays the weather forecast. The third screen displays a historical data graph based on the chosen parameter in the settings.
 
-#Features
+# Features
 - [X] **US1.1C:** Show a starting screen with current program version and group number.
 - [X] **US1.3:** Provide a screen to view weather forecast data.
 - [X] **US1.2C:** Show a 7-day forecast for the selected city (12:00 each day) with temperature and weather condition symbols.
