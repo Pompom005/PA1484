@@ -91,7 +91,7 @@ From LilyGO [link](https://github.com/Xinyuan-LilyGO/LilyGo-AMOLED-Series)
 12. If it cannot be written, or the USB device keeps flashing, please check the **FAQ** below
 
 # Building and running
-Once you have the repository opened in VS code platformIO. All you need to do to run the program on the device is build it and when that is done upload it to the device. This is done with two buttons on the left side of the screen under the PlatformIO extension.
+Once you have the repository opened in VS code platformIO. All you need to do to run the program on the device is build it and when that is done upload it to the device. This is done with two buttons on the left side of the screen under the PlatformIO extension (se screenshot under "How to run the program").
 
 ## Startup procedure
 When the device starts, a boot screen shows the group number and the program version. After booting, it is possible to navigate between three screens. On the second and third screens, there is a settings button that opens configurable options, such as the city and parameter to display, and the default city to use after a restart. The first screen mirrors the boot screen so you can always check the group and version. The second screen displays the weather forecast. The third screen displays a historical data graph based on the chosen parameter in the settings.
