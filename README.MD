@@ -7,7 +7,7 @@ This document will guide you through the setup process and help you prepare to w
 
 ---
 # Introduction
-This project is a touchscreen-based weather application built for an ESP32 LilyGO device. It uses PlatformIO as the IDE in visual studio code for development and SMHI's open data API as data source to fetches weather data and visualizes it on the device using a screen driven interface. The data is visualised with symbols and graphs on the device. This project solves the problem of  people not bieng able to access weather information freely.
+This project is a touchscreen-based weather application built for an ESP32 LilyGO device. It uses PlatformIO in Visual Studio Code and SMHI’s Open Data API as the data source to fetch weather data and visualize it on the device using a screen-driven interface. The data is visualized using symbols and graphs. The project solves the problem of accessing weather information in a portable, easy-to-use way directly on the device.
 
 # How to get started
 
@@ -91,9 +91,13 @@ From LilyGO [link](https://github.com/Xinyuan-LilyGO/LilyGo-AMOLED-Series)
 12. If it cannot be written, or the USB device keeps flashing, please check the **FAQ** below
 
 # Building and running
-Once you have the repository opened in VS code platformIO. All you need to do to run the program on the device is build it and when that is done upload it to the device. This is done with two buttons on the left side of the screen under.
+Once you have the repository opened in VS code platformIO. All you need to do to run the program on the device is build it and when that is done upload it to the device. This is done with two buttons on the left side of the screen under the PlatformIO extension.
+
 ## Startup procedure
 When the device starts, a boot screen shows the group number and the program version. After booting, it is possible to navigate between three screens. On the second and third screens, there is a settings button that opens configurable options, such as the city and parameter to display, and the default city to use after a restart. The first screen mirrors the boot screen so you can always check the group and version. The second screen displays the weather forecast. The third screen displays a historical data graph based on the chosen parameter in the settings.
+
+## Arguments and modes
+Not applicable. The program does not take startup arguments. It is controlled through the touchscreen UI. 
 
 # Features
 - [X] **US1.1C:** Show a starting screen with current program version and group number.
